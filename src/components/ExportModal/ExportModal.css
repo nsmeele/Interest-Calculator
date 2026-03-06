@@ -1,19 +1,19 @@
 @reference "../../style.css";
 
 .export-modal__count {
-  @apply text-sm text-navy-700 mb-3;
+  @apply text-sm text-navy-700 mb-3 dark:text-navy-200;
 }
 
 .export-modal__count strong {
-  @apply font-bold text-navy-900;
+  @apply font-bold text-navy-900 dark:text-navy-50;
 }
 
 .export-modal__warning {
-  @apply flex gap-3 text-sm text-navy-500 leading-relaxed px-3.5 py-3 rounded-lg bg-copper-100/50 border-l-2 border-copper-400;
+  @apply flex gap-3 text-sm text-navy-500 leading-relaxed px-3.5 py-3 rounded-lg bg-copper-100/50 border-l-2 border-copper-400 dark:text-navy-300 dark:bg-copper-500/10;
 }
 
 .export-modal__warning-icon {
-  @apply flex-shrink-0 text-copper-500;
+  @apply flex-shrink-0 text-copper-500 dark:text-copper-400;
 }
 
 .export-modal__hint {

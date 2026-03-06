@@ -80,14 +80,31 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
 
   if (results.length === 0) {
     return (
-      <div className="empty-state">
+      <section className="empty-state" aria-label="Nog geen rekeningen">
         <PlusIcon className="empty-state__icon" aria-hidden="true" />
         <h3>Nog geen rekeningen</h3>
-        <p>Voeg je eerste rekening toe en vergelijk meerdere rekeningen naast elkaar.</p>
-        <button className="btn-primary empty-state__btn" onClick={onNewAccount}>
-          Nieuwe rekening
-        </button>
-      </div>
+        <p>Voeg je eerste rekening toe of importeer een eerder opgeslagen bestand.</p>
+        <div className="empty-state__actions">
+          <button className="btn-primary empty-state__btn" onClick={onNewAccount}>
+            Nieuwe rekening
+          </button>
+          <button className="btn-secondary empty-state__btn" onClick={() => fileInputRef.current?.click()}>
+            Importeren
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            className="sr-only"
+            onChange={handleFileChange}
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+        </div>
+        {importError && (
+          <p className="data-transfer__error" role="alert">{importError}</p>
+        )}
+      </section>
     );
   }
 
@@ -100,48 +117,44 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
 
 
   return (
-    <div className="results-section">
-      <div className="card">
-        <div className="card-header">
-          <div className="results-header">
-            <div>
-              <h2>
-                Rekeningen
-                <span className="results-count">{results.length}</span>
-              </h2>
-              <p className="results-hint">Vergelijk je rekeningen en zie welke het meest oplevert. Klik op een rij voor periodedetails, of op het potlood om te bewerken. Met de ster voeg je een rekening toe aan je portefeuille — daar zie je je totale inleg, rente-opbrengst en maandelijkse rente-inkomsten bij elkaar.</p>
-            </div>
-            <div className="results-header__actions">
-              <button className="btn-new-account" onClick={onNewAccount}>
-                <PlusIcon aria-hidden="true" />
-                Nieuwe rekening
-              </button>
-              <button className="btn-transfer" onClick={onExport} aria-label="Exporteren">
-                Exporteren
-              </button>
-              <button className="btn-transfer" onClick={() => fileInputRef.current?.click()} aria-label="Importeren">
-                Importeren
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                className="sr-only"
-                onChange={handleFileChange}
-                aria-hidden="true"
-                tabIndex={-1}
-              />
-              <button className="btn-danger" onClick={onClear}>
-                Alles wissen
-              </button>
-            </div>
-          </div>
-          {importError && (
-            <p className="data-transfer__error" role="alert">{importError}</p>
-          )}
+    <section className="results-section" aria-label="Rekeningen">
+      <div className="section-header">
+        <div className="section-header__title">
+          <h2>
+            Rekeningen
+            <span className="results-count">{results.length}</span>
+          </h2>
         </div>
+        <div className="section-header__actions">
+          <button className="btn-action" onClick={onNewAccount}>
+            <PlusIcon aria-hidden="true" />
+            Nieuwe rekening
+          </button>
+          <button className="btn-action btn-action--muted" onClick={onExport} aria-label="Exporteren">
+            Exporteren
+          </button>
+          <button className="btn-action btn-action--muted" onClick={() => fileInputRef.current?.click()} aria-label="Importeren">
+            Importeren
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            className="sr-only"
+            onChange={handleFileChange}
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+          <button className="btn-action btn-action--danger" onClick={onClear}>
+            Alles wissen
+          </button>
+        </div>
+      </div>
+      {importError && (
+        <p className="data-transfer__error" role="alert">{importError}</p>
+      )}
 
-        <div className="comparison-table-wrapper-inner">
+      <div className="comparison-table-wrapper-inner">
           <table className="comparison-table">
           <thead>
             <tr>
@@ -194,7 +207,8 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                       )}
                     </td>
                     <td className="amount">{formatCurrency(r.endAmount)}</td>
-                    <td className="comparison-actions" onClick={(e) => e.stopPropagation()}>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <div className="comparison-actions">
                       <button
                         className="btn-icon"
                         title="Bewerken"
@@ -219,48 +233,79 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                       >
                         <XMarkIcon aria-hidden="true" />
                       </button>
+                      </div>
                     </td>
                   </tr>
                   {isOpen && (
                     <tr className="period-detail-row">
                       <td colSpan={13}>
-                        <div className="period-table-wrapper">
-                          <table className="period-table">
-                            <thead>
-                              <tr>
-                                <th>Periode</th>
-                                <th>Beginsaldo</th>
-                                {r.totalDeposited !== 0 && <th>Gestort</th>}
-                                <th>Rente</th>
-                                <th>Uitbetaald</th>
-                                <th>Eindsaldo</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {r.periods.map((p, idx) => {
-                                const periodStart = idx === 0 ? r.startDate : r.periods[idx - 1].endDate;
-                                return (
-                                <tr key={p.period}>
-                                  <td>
-                                    {p.periodLabel}
-                                    {periodStart && p.endDate && (
-                                      <span className="period-table__date">{formatDate(periodStart)} – {formatDate(p.endDate)}</span>
-                                    )}
-                                  </td>
-                                  <td>{formatCurrency(p.startBalance)}</td>
-                                  {r.totalDeposited !== 0 && (
-                                    <td className={p.deposited > 0 ? 'text-success' : p.deposited < 0 ? 'text-danger' : ''}>
-                                      {p.deposited !== 0 ? formatCurrency(p.deposited) : '—'}
-                                    </td>
-                                  )}
-                                  <td>{formatCurrency(p.interestEarned)}</td>
-                                  <td>{formatCurrency(p.disbursed)}</td>
-                                  <td>{formatCurrency(p.endBalance)}</td>
+                        <div className="period-detail-layout">
+                          <div className="period-table-wrapper">
+                            <table className="period-table">
+                              <thead>
+                                <tr>
+                                  <th>Periode</th>
+                                  <th>Beginsaldo</th>
+                                  {r.totalDeposited !== 0 && <th>Gestort</th>}
+                                  <th>Rente</th>
+                                  <th>Uitbetaald</th>
+                                  <th>Eindsaldo</th>
                                 </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody>
+                                {r.periods.map((p, idx) => {
+                                  const periodStart = idx === 0 ? r.startDate : r.periods[idx - 1].endDate;
+                                  return (
+                                  <tr key={p.period}>
+                                    <td>
+                                      {p.periodLabel}
+                                      {periodStart && p.endDate && (
+                                        <span className="period-table__date">{formatDate(periodStart)} – {formatDate(p.endDate)}</span>
+                                      )}
+                                    </td>
+                                    <td>{formatCurrency(p.startBalance)}</td>
+                                    {r.totalDeposited !== 0 && (
+                                      <td className={p.deposited > 0 ? 'text-success' : p.deposited < 0 ? 'text-danger' : ''}>
+                                        {p.deposited !== 0 ? formatCurrency(p.deposited) : '—'}
+                                      </td>
+                                    )}
+                                    <td>{formatCurrency(p.interestEarned)}</td>
+                                    <td>{formatCurrency(p.disbursed)}</td>
+                                    <td>{formatCurrency(p.endBalance)}</td>
+                                  </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                          <aside className="period-summary">
+                            <dl className="period-summary__list">
+                              <div className="period-summary__item">
+                                <dt>Inleg</dt>
+                                <dd>{formatCurrency(r.currentBalance)}</dd>
+                              </div>
+                              <div className="period-summary__item">
+                                <dt>Totale rente</dt>
+                                <dd className="period-summary__highlight">{formatCurrency(r.totalInterest)}</dd>
+                              </div>
+                              <div className="period-summary__item">
+                                <dt>Eindbedrag</dt>
+                                <dd>{formatCurrency(r.endAmount)}</dd>
+                              </div>
+                              {r.interestThisMonth > 0 && (
+                                <div className="period-summary__item">
+                                  <dt>Rente deze maand</dt>
+                                  <dd>{formatCurrency(r.interestThisMonth)}</dd>
+                                </div>
+                              )}
+                              {r.nextPayoutDate && (
+                                <div className="period-summary__item">
+                                  <dt>Volgende uitbetaling</dt>
+                                  <dd className="period-summary__date">{formatDate(r.nextPayoutDate)}</dd>
+                                </div>
+                              )}
+                            </dl>
+                          </aside>
                         </div>
                         <div className="period-editors">
                           <CashFlowEditor
@@ -283,7 +328,6 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
           </tbody>
         </table>
         </div>
-      </div>
-    </div>
+    </section>
   );
 }

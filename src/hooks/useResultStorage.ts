@@ -20,7 +20,7 @@ function reconstructResult(item: ExportedResult): BankAccount {
   let result: BankAccount;
 
   const durationMonths = isOngoing && item.startDate
-    ? Math.max(1, Math.ceil(daysBetween(item.startDate, todayISO()) / 30.44) + 1)
+    ? Math.max(1, Math.ceil(daysBetween(item.startDate, todayISO()) / 30.44) + 12)
     : item.durationMonths;
 
   const shouldRecalculate = (isOngoing && item.startDate)

@@ -8,8 +8,12 @@
   animation: fadeIn 0.2s ease;
 }
 
+[data-theme="dark"] .modal__overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
 .modal__panel {
-  @apply bg-navy-50 rounded-2xl w-full max-w-md border border-navy-200/80 shadow-card-hover;
+  @apply bg-navy-50 rounded-2xl w-full max-w-md border border-navy-200/80 shadow-lg dark:bg-navy-900 dark:border-navy-700/80;
   animation: fadeInUp 0.3s ease;
 }
 
@@ -18,11 +22,11 @@
 }
 
 .modal__header h2 {
-  @apply font-display text-lg font-semibold text-navy-900;
+  @apply font-display text-lg font-semibold text-navy-900 dark:text-navy-50;
 }
 
 .modal__close {
-  @apply inline-flex items-center justify-center w-9 h-9 p-0 text-lg bg-transparent border-none rounded-lg cursor-pointer text-navy-400 transition-all duration-200 hover:text-navy-700 hover:bg-navy-100 active:scale-95;
+  @apply inline-flex items-center justify-center w-9 h-9 p-0 text-lg bg-transparent border-none rounded-lg cursor-pointer text-navy-400 transition-all duration-200 hover:text-navy-700 hover:bg-navy-100 active:scale-95 dark:hover:text-navy-200 dark:hover:bg-navy-800;
 }
 
 
@@ -39,19 +43,19 @@
 }
 
 .modal__btn--cancel {
-  @apply text-navy-600 bg-navy-100;
+  @apply text-navy-600 bg-navy-100 dark:text-navy-300 dark:bg-navy-800;
 }
 
 .modal__btn--cancel:hover {
-  @apply bg-navy-200;
+  @apply bg-navy-200 dark:bg-navy-700;
 }
 
 .modal__btn--confirm {
-  @apply text-white bg-navy-800;
+  @apply text-white bg-navy-800 dark:bg-copper-500 dark:text-navy-950;
 }
 
 .modal__btn--confirm:hover {
-  @apply bg-navy-700;
+  @apply bg-navy-700 dark:bg-copper-400;
 }
 
 .modal__btn:active {

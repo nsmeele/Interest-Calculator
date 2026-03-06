@@ -1,9 +1,19 @@
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useState, useMemo } from 'react';
+import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import type { BankAccount } from '../../models/BankAccount';
 import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
 import { formatCurrency } from '../../utils/format';
+import { toMonthKey, addMonthsToISO, todayISO, getNextMonthStart } from '../../utils/date';
 import PortfolioChart from '../PortfolioChart';
 import './PortfolioSummary.css';
+
+function formatMonthLabel(monthKey: string): string {
+  const [year, month] = monthKey.split('-').map(Number);
+  const d = new Date(year, month - 1, 1);
+  return new Intl.DateTimeFormat('nl-NL', { month: 'long', year: 'numeric' }).format(d);
+}
+
+import { itemStatusForMonth } from '../../utils/portfolioStatus';
 
 interface PortfolioSummaryProps {
   results: BankAccount[];
@@ -14,32 +24,67 @@ interface PortfolioSummaryProps {
 
 export default function PortfolioSummary({ results, portfolioIds, onToggle, onClear }: PortfolioSummaryProps) {
   const items = results.filter((r) => portfolioIds.has(r.id));
+  const currentMonthKey = toMonthKey(todayISO());
+  const [monthOffset, setMonthOffset] = useState(0);
+
+  const selectedMonthKey = useMemo(() => {
+    if (monthOffset === 0) return currentMonthKey;
+    const shifted = addMonthsToISO(`${currentMonthKey}-01`, monthOffset);
+    return toMonthKey(shifted);
+  }, [currentMonthKey, monthOffset]);
+
+  const monthBounds = useMemo(() => {
+    let min = '';
+    let max = '';
+    for (const r of items) {
+      for (const key of r.calendarMonthProjection.keys()) {
+        if (!min || key < min) min = key;
+        if (!max || key > max) max = key;
+      }
+    }
+    return { min, max };
+  }, [items]);
 
   if (items.length === 0) return null;
 
-  const activeItems = items.filter((r) => !r.hasExpired && !r.hasNotStartedYet);
-  const totalInvested = activeItems.reduce((sum, r) => sum + r.startAmount + Math.max(0, r.totalDeposited), 0);
+  const atStart = monthBounds.min !== '' && selectedMonthKey <= monthBounds.min;
+  const atEnd = monthBounds.max !== '' && selectedMonthKey >= monthBounds.max;
+
   const totalInterest = items.reduce((sum, r) => sum + r.totalInterest, 0);
-  const totalPerMonth = activeItems.reduce((sum, r) => sum + r.interestThisMonth, 0);
+
+  const totalForMonth = items.reduce((sum, r) => {
+    return sum + (r.calendarMonthProjection.get(selectedMonthKey) ?? 0);
+  }, 0);
+
+  const monthEnd = getNextMonthStart(`${selectedMonthKey}-01`);
+
+  const activeForMonth = items.filter((r) => itemStatusForMonth(r, selectedMonthKey) === 'active');
+
+  const totalInvested = activeForMonth.reduce((sum, r) => {
+    const deposited = r.periods
+      .filter((p) => p.endDate && p.endDate <= monthEnd)
+      .reduce((s, p) => s + (p.deposited ?? 0), 0);
+    return sum + r.startAmount + deposited;
+  }, 0);
+
+  const isCurrentMonth = monthOffset === 0;
 
   return (
-    <div className="card portfolio">
-      <div className="card-header">
-        <div className="results-header">
-          <div>
-            <h2>
-              Portefeuille
-              <span className="results-count">{items.length}</span>
-            </h2>
-            <p className="results-hint">Bekijk het totaalplaatje van je geselecteerde rekeningen: hoeveel je hebt ingelegd, wat je totaal aan rente verdient en wat je deze maand aan rente ontvangt.</p>
-          </div>
-          <button className="btn-danger" onClick={onClear}>
+    <section className="portfolio-section" aria-label="Portefeuille">
+      <div className="section-header">
+        <div className="section-header__title">
+          <h2>
+            Portefeuille
+            <span className="results-count">{items.length}</span>
+          </h2>
+        </div>
+        <div className="section-header__actions">
+          <button className="btn-action btn-action--danger" onClick={onClear}>
             Leegmaken
           </button>
         </div>
       </div>
 
-      <div className="card-body">
       <div className="portfolio-stats">
         <div className="portfolio-stat">
           <div className="portfolio-stat-label">Totaal ingelegd</div>
@@ -50,22 +95,45 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
           <div className="portfolio-stat-value">{formatCurrency(totalInterest)}</div>
         </div>
         <div className="portfolio-stat portfolio-stat--highlight">
-          <div className="portfolio-stat-label">Deze maand</div>
-          <div className="portfolio-stat-value">{formatCurrency(totalPerMonth)}</div>
+          <div className="month-nav">
+            <button
+              className="month-nav__btn"
+              onClick={() => setMonthOffset((o) => o - 1)}
+              disabled={atStart}
+              aria-label="Vorige maand"
+            >
+              <ChevronLeftIcon aria-hidden="true" />
+            </button>
+            <div className="month-nav__label">
+              <span className="portfolio-stat-label">{formatMonthLabel(selectedMonthKey)}</span>
+              {isCurrentMonth && <span className="month-nav__current">nu</span>}
+            </div>
+            <button
+              className="month-nav__btn"
+              onClick={() => setMonthOffset((o) => o + 1)}
+              disabled={atEnd}
+              aria-label="Volgende maand"
+            >
+              <ChevronRightIcon aria-hidden="true" />
+            </button>
+          </div>
+          <div className="portfolio-stat-value">{formatCurrency(totalForMonth)}</div>
         </div>
       </div>
 
-      <PortfolioChart items={activeItems} />
+      <PortfolioChart items={activeForMonth} />
 
       <div className="portfolio-items">
-        {items.map((r) => (
-          <div key={r.id} className={`portfolio-item${r.hasExpired ? ' portfolio-item--expired' : ''}${r.hasNotStartedYet ? ' portfolio-item--upcoming' : ''}`}>
+        {items.map((r) => {
+          const status = itemStatusForMonth(r, selectedMonthKey);
+          return (
+          <div key={r.id} className={`portfolio-item${status === 'expired' ? ' portfolio-item--expired' : ''}${status === 'upcoming' ? ' portfolio-item--upcoming' : ''}`}>
             <div className="portfolio-item-info">
               <span className="portfolio-item-label">
                 {r.label}
-                {r.isOngoing && <span className="badge-ongoing">Lopend</span>}
-                {r.hasExpired && <span className="badge-expired">Verlopen</span>}
-                {r.hasNotStartedYet && <span className="badge-upcoming">Toekomstig</span>}
+                {status === 'active' && r.isOngoing && <span className="badge-ongoing">Lopend</span>}
+                {status === 'expired' && <span className="badge-expired">Verlopen</span>}
+                {status === 'upcoming' && <span className="badge-upcoming">Toekomstig</span>}
               </span>
               <span className="portfolio-item-meta">
                 {INTERVAL_LABELS[r.interval]}
@@ -74,7 +142,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
               </span>
             </div>
             <div className="portfolio-item-amount">
-              {formatCurrency(r.interestThisMonth)}/mnd
+              {formatCurrency(r.calendarMonthProjection.get(selectedMonthKey) ?? 0)}
             </div>
             <button
               className="btn-icon"
@@ -85,9 +153,9 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
               <XMarkIcon aria-hidden="true" />
             </button>
           </div>
-        ))}
+          );
+        })}
       </div>
-      </div>
-    </div>
+    </section>
   );
 }

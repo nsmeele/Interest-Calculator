@@ -3,7 +3,7 @@ import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
 import { type CashFlow, expandCashFlows } from './CashFlow';
 import type { RateChange } from './RateChange';
-import { addMonthsToISO, todayISO, isBeforeDate, getNextQuarterStart, getNextMonthStart, daysBetween, endOfMonthISO, toMonthKey } from '../utils/date';
+import { addMonthsToISO, todayISO, isBeforeDate, getNextQuarterStart, getNextMonthStart, toMonthKey, daysBetween } from '../utils/date';
 import { calculateDailyInterest } from '../utils/dailyInterest';
 
 export interface PeriodResult {
@@ -162,25 +162,24 @@ export class BankAccount {
 
     for (let i = 0; i < this.periods.length; i++) {
       const period = this.periods[i];
-      const periodStart = i === 0 ? this.startDate : this.periods[i - 1].endDate;
+      const periodStart = i === 0 ? this.startDate : this.periods[i - 1].endDate!;
       const periodEnd = period.endDate;
-
-      if (!periodStart || !periodEnd) continue;
+      if (!periodEnd) continue;
 
       const totalDays = daysBetween(periodStart, periodEnd);
       if (totalDays <= 0) continue;
 
       let cursor = periodStart;
-      while (isBeforeDate(cursor, periodEnd)) {
-        const monthEnd = endOfMonthISO(cursor);
-        const segmentEnd = isBeforeDate(monthEnd, periodEnd) ? monthEnd : periodEnd;
-        const segmentDays = daysBetween(cursor, segmentEnd) + (segmentEnd === periodEnd ? 0 : 1);
-        const share = period.interestEarned * (segmentDays / totalDays);
+      while (cursor < periodEnd) {
+        const nextMonth = getNextMonthStart(cursor);
+        const sliceEnd = nextMonth < periodEnd ? nextMonth : periodEnd;
+        const sliceDays = daysBetween(cursor, sliceEnd);
+        const share = (sliceDays / totalDays) * period.interestEarned;
 
         const key = toMonthKey(cursor);
         map.set(key, (map.get(key) ?? 0) + share);
 
-        cursor = getNextMonthStart(cursor);
+        cursor = sliceEnd;
       }
     }
 

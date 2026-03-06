@@ -14,15 +14,15 @@
 }
 
 .interval-option label {
-  @apply block px-3 py-3 text-sm font-medium text-navy-600 bg-navy-50 rounded-lg cursor-pointer text-center select-none transition-all duration-200 flex items-center justify-center border-[1.5px] border-solid border-navy-200 min-h-[44px];
+  @apply block px-3 py-3 text-sm font-medium text-navy-600 bg-navy-50 rounded-lg cursor-pointer text-center select-none transition-all duration-200 flex items-center justify-center border-[1.5px] border-solid border-navy-200 min-h-[44px] dark:text-navy-300 dark:bg-navy-800 dark:border-navy-600;
 }
 
 .interval-option label:hover {
-  @apply border-navy-300 bg-navy-100/50;
+  @apply border-navy-300 bg-navy-100/50 dark:border-navy-500 dark:bg-navy-700/50;
 }
 
 .interval-option input:checked + label {
-  @apply bg-navy-900 text-white border-navy-900 shadow-md;
+  @apply bg-navy-900 text-white border-navy-900 shadow-md dark:bg-copper-500 dark:text-navy-950 dark:border-copper-500;
 }
 
 .interval-option--wide {
@@ -32,4 +32,3 @@
 .interval-option--wide label {
   @apply col-span-2;
 }
-

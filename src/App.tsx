@@ -1,24 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import BankAccountsOverview from './components/BankAccountsOverview';
 import PortfolioSummary from './components/PortfolioSummary';
+import ThemeToggle from './components/ThemeToggle/ThemeToggle';
 import { useResultStorage } from './hooks/useResultStorage';
 import { usePortfolio } from './hooks/usePortfolio';
 import { useDataTransfer } from './hooks/useDataTransfer';
 import { useModal } from './context/ModalContext';
+import { useThemeProvider, ThemeContext } from './hooks/useTheme';
 import { AccountCalculator } from './calculator/AccountCalculator';
 import { BankAccountInput } from './models/BankAccountInput';
 import type { BankAccount } from './models/BankAccount';
 import type { CashFlow } from './models/CashFlow';
 import type { RateChange } from './models/RateChange';
 
-type RightPanelTab = 'results' | 'portfolio';
-
 export default function App() {
+  const themeCtx = useThemeProvider();
   const { results, addResult, updateResult, removeResult, clearResults, replaceResults, mergeResults } = useResultStorage();
   const { portfolioIds, togglePortfolio, clearPortfolio, replacePortfolio, mergePortfolio } = usePortfolio();
   const transfer = useDataTransfer(results, portfolioIds, replaceResults, mergeResults, replacePortfolio, mergePortfolio);
   const { openModal } = useModal();
-  const [rightTab, setRightTab] = useState<RightPanelTab>('results');
   const [showGuide, setShowGuide] = useState(false);
 
   const { pendingImport, handleConfirmImport, handleCancelImport } = transfer;
@@ -104,6 +104,7 @@ export default function App() {
   }
 
   return (
+    <ThemeContext.Provider value={themeCtx}>
     <div className="app-background">
       <div className="app-container">
         <header className="app-header">
@@ -131,6 +132,7 @@ export default function App() {
                 {showGuide ? 'Verberg uitleg' : 'Hoe werkt het?'}
                 <span className={`btn-guide-link__chevron${showGuide ? ' btn-guide-link__chevron--open' : ''}`} aria-hidden="true">&#8250;</span>
               </button>
+              <ThemeToggle />
             </div>
           </div>
 
@@ -202,52 +204,28 @@ export default function App() {
         </header>
 
         <main className="main-layout">
-          <div className="mobile-tabs">
-            <button
-              className={`mobile-tab${rightTab === 'results' ? ' mobile-tab--active' : ''}`}
-              onClick={() => setRightTab('results')}
-            >
-              Rekeningen
-              {results.length > 0 && (
-                <span className="mobile-tab-badge">{results.length}</span>
-              )}
-            </button>
-            {hasPortfolio && (
-              <button
-                className={`mobile-tab${rightTab === 'portfolio' ? ' mobile-tab--active' : ''}`}
-                onClick={() => setRightTab('portfolio')}
-              >
-                Portefeuille
-                <span className="mobile-tab-badge">
-                  {results.filter((r) => portfolioIds.has(r.id)).length}
-                </span>
-              </button>
-            )}
-          </div>
-          <div className={rightTab !== 'results' ? 'panel-hidden' : ''}>
-            <BankAccountsOverview
-              results={results}
-              onRemove={removeResult}
-              onClear={clearResults}
-              portfolioIds={portfolioIds}
-              onTogglePortfolio={togglePortfolio}
-              onEdit={handleEdit}
-              onNewAccount={handleNewAccount}
-              onUpdateCashFlows={handleUpdateCashFlows}
-              onUpdateRateChanges={handleUpdateRateChanges}
-              onExport={handleExportClick}
-              onImportFile={transfer.handleFileSelected}
-              importError={transfer.importError}
-            />
-          </div>
-          <div className={rightTab !== 'portfolio' ? 'panel-hidden' : ''}>
+          <BankAccountsOverview
+            results={results}
+            onRemove={removeResult}
+            onClear={clearResults}
+            portfolioIds={portfolioIds}
+            onTogglePortfolio={togglePortfolio}
+            onEdit={handleEdit}
+            onNewAccount={handleNewAccount}
+            onUpdateCashFlows={handleUpdateCashFlows}
+            onUpdateRateChanges={handleUpdateRateChanges}
+            onExport={handleExportClick}
+            onImportFile={transfer.handleFileSelected}
+            importError={transfer.importError}
+          />
+          {hasPortfolio && (
             <PortfolioSummary
               results={results}
               portfolioIds={portfolioIds}
               onToggle={togglePortfolio}
               onClear={clearPortfolio}
             />
-          </div>
+          )}
         </main>
 
         <footer className="app-disclaimer">
@@ -260,5 +238,6 @@ export default function App() {
         </footer>
       </div>
     </div>
+    </ThemeContext.Provider>
   );
 }

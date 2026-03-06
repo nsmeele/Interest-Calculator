@@ -2,7 +2,7 @@
 
 /* ─── RateChange Editor ─── */
 .rate-change-editor {
-  @apply py-4 px-3 border-t border-navy-200/40;
+  @apply py-4 px-3 border-t border-navy-200/40 dark:border-navy-700/40;
 }
 
 .rate-change-editor__header {
@@ -10,21 +10,21 @@
 }
 
 .rate-change-editor__header h3 {
-  @apply font-body text-[0.6875rem] font-semibold text-navy-500 uppercase tracking-[0.07em];
+  @apply font-body text-[0.6875rem] font-semibold text-navy-500 uppercase tracking-[0.07em] dark:text-navy-400;
 }
 
 .rate-change-editor__add-btn {
   @apply inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg
          text-copper-600 bg-copper-100/60 border-none cursor-pointer font-body
-         transition-all duration-200 hover:bg-copper-200/80 active:scale-[0.97];
+         transition-all duration-200 hover:bg-copper-200/80 active:scale-[0.97] dark:text-copper-400 dark:bg-copper-500/15 dark:hover:bg-copper-500/25;
 }
 
 .rate-change-editor__add-btn--active {
-  @apply text-navy-500 bg-navy-100;
+  @apply text-navy-500 bg-navy-100 dark:text-navy-400 dark:bg-navy-800;
 }
 
 .rate-change-editor__form {
-  @apply mb-4 p-3 rounded-lg bg-navy-100/40 animate-[expandReveal_0.25s_ease];
+  @apply mb-4 p-3 rounded-lg bg-navy-100/40 animate-[expandReveal_0.25s_ease] dark:bg-navy-800/40;
 }
 
 .rate-change-editor__fields {
@@ -42,7 +42,7 @@
 .rate-change-editor__submit {
   @apply px-4 py-2 text-xs font-semibold rounded-lg cursor-pointer border-none font-body
          text-white bg-navy-800 transition-all duration-200
-         hover:bg-navy-700 active:scale-[0.97];
+         hover:bg-navy-700 active:scale-[0.97] dark:bg-copper-500 dark:text-navy-950 dark:hover:bg-copper-400;
 }
 
 .rate-change-editor__list {
@@ -55,7 +55,7 @@
 
 .rate-change-item {
   @apply flex items-center gap-2 py-2 px-1 border-b border-navy-100
-         transition-colors duration-150 hover:bg-copper-500/[0.03];
+         transition-colors duration-150 hover:bg-copper-500/[0.03] dark:border-navy-700 dark:hover:bg-copper-500/[0.06];
 }
 
 .rate-change-item:last-child {
@@ -63,12 +63,12 @@
 }
 
 .rate-change-item__date {
-  @apply text-xs text-navy-500 font-medium tabular-nums whitespace-nowrap;
+  @apply text-xs text-navy-500 font-medium tabular-nums whitespace-nowrap dark:text-navy-400;
   min-width: 5rem;
 }
 
 .rate-change-item__rate {
-  @apply flex-1 text-sm font-bold text-navy-700 tabular-nums;
+  @apply flex-1 text-sm font-bold text-navy-700 tabular-nums dark:text-navy-200;
 }
 
 @media (min-width: 640px) {

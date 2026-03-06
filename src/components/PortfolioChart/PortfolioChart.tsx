@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import type { BankAccount } from '../../models/BankAccount';
 import { buildPortfolioChartData } from '../../utils/interest';
 import { formatCurrency } from '../../utils/format';
+import { useTheme } from '../../hooks/useTheme';
 import './PortfolioChart.css';
 
 interface ChartTooltipProps {
@@ -22,11 +23,18 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   );
 }
 
+const chartColors = {
+  light: { grid: '#dce6f5', tick: '#4a7cc4', axis: '#dce6f5', stroke: '#c8956c', fillStart: 'rgba(200,149,108,0.3)', fillEnd: 'rgba(200,149,108,0.03)' },
+  dark:  { grid: '#163058', tick: '#7ba3db', axis: '#163058', stroke: '#d4a87e', fillStart: 'rgba(212,168,126,0.35)', fillEnd: 'rgba(212,168,126,0.03)' },
+};
+
 interface PortfolioChartProps {
   items: BankAccount[];
 }
 
 export default function PortfolioChart({ items }: PortfolioChartProps) {
+  const { theme } = useTheme();
+  const colors = chartColors[theme];
   const data = useMemo(() => buildPortfolioChartData(items), [items]);
 
   if (data.length === 0) return null;
@@ -41,20 +49,20 @@ export default function PortfolioChart({ items }: PortfolioChartProps) {
           <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
             <defs>
               <linearGradient id="copperGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#c8956c" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="#c8956c" stopOpacity={0.03} />
+                <stop offset="0%" stopColor={colors.stroke} stopOpacity={0.3} />
+                <stop offset="100%" stopColor={colors.stroke} stopOpacity={0.03} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#dce6f5" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: '#4a7cc4' }}
+              tick={{ fontSize: 10, fill: colors.tick }}
               tickLine={false}
-              axisLine={{ stroke: '#dce6f5' }}
+              axisLine={{ stroke: colors.axis }}
               interval={tickInterval}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: '#4a7cc4' }}
+              tick={{ fontSize: 10, fill: colors.tick }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(v: number) => `€${Math.round(v)}`}
@@ -63,7 +71,7 @@ export default function PortfolioChart({ items }: PortfolioChartProps) {
             <Area
               type="monotone"
               dataKey="interest"
-              stroke="#c8956c"
+              stroke={colors.stroke}
               strokeWidth={2}
               fill="url(#copperGradient)"
               animationDuration={600}

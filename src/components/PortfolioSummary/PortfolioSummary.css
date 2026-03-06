@@ -1,36 +1,50 @@
 @reference "../../style.css";
 
 /* ─── Portfolio ─── */
-.portfolio {
-  @apply mt-6 border-l-4 border-l-copper-500 animate-[slideInUp_0.35s_ease_both];
-}
 
 .portfolio-stats {
   @apply grid grid-cols-1 gap-3 mb-4;
 }
 
 .portfolio-stat {
-  @apply p-3.5 rounded-lg text-center bg-navy-100/50 transition-all duration-200 hover:-translate-y-px hover:shadow-sm;
+  @apply p-3.5 text-center transition-colors duration-200;
 }
 
 .portfolio-stat--highlight {
-  @apply bg-linear-to-br from-copper-100 to-copper-200;
+  @apply border-l-2 border-copper-400;
 }
 
-.portfolio-stat--highlight:hover {
-  @apply shadow-md;
+/* ─── Month Navigation ─── */
+.month-nav {
+  @apply flex items-center justify-center gap-2;
+}
+
+.month-nav__btn {
+  @apply inline-flex items-center justify-center w-7 h-7 p-0 text-sm bg-transparent border-none rounded-md cursor-pointer text-navy-400 transition-all duration-200 hover:text-copper-600 hover:bg-copper-100/50 active:scale-90 disabled:opacity-20 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-navy-400 dark:hover:text-copper-400 dark:hover:bg-copper-500/15;
+}
+
+.month-nav__label {
+  @apply flex items-center gap-1.5 min-w-[10rem] justify-center;
+}
+
+.month-nav__label .portfolio-stat-label {
+  @apply mb-0 capitalize;
+}
+
+.month-nav__current {
+  @apply text-[0.5625rem] font-bold uppercase tracking-wide text-copper-500 bg-copper-100 rounded-full px-1.5 py-px dark:text-copper-400 dark:bg-copper-500/15;
 }
 
 .portfolio-stat-label {
-  @apply font-semibold text-navy-500 uppercase mb-1 text-[0.6875rem] tracking-[0.07em];
+  @apply font-semibold text-navy-500 uppercase mb-1 text-[0.6875rem] tracking-[0.07em] dark:text-navy-400;
 }
 
 .portfolio-stat-value {
-  @apply text-lg font-bold text-navy-900 tabular-nums;
+  @apply text-lg font-bold text-navy-900 tabular-nums dark:text-navy-50;
 }
 
 .portfolio-stat--highlight .portfolio-stat-value {
-  @apply text-copper-600;
+  @apply text-copper-600 dark:text-copper-400;
 }
 
 .portfolio-items {
@@ -38,7 +52,7 @@
 }
 
 .portfolio-item {
-  @apply flex items-center gap-3 px-3 py-3 rounded-lg bg-navy-100/30 transition-all duration-200 hover:bg-navy-100/60;
+  @apply flex items-center gap-3 px-0 py-3 border-b border-navy-100 transition-colors duration-200 hover:bg-navy-50 dark:border-navy-700 dark:hover:bg-navy-800/50;
 }
 
 .portfolio-item-info {
@@ -46,11 +60,11 @@
 }
 
 .portfolio-item-label {
-  @apply font-semibold text-sm text-navy-800;
+  @apply font-semibold text-sm text-navy-800 dark:text-navy-100;
 }
 
 .portfolio-item-meta {
-  @apply text-xs text-navy-500 ml-2;
+  @apply text-xs text-navy-500 ml-2 dark:text-navy-400;
 }
 
 .portfolio-item--expired {
@@ -66,7 +80,7 @@
 }
 
 .badge-upcoming {
-  @apply inline-block text-[0.625rem] font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-navy-600 bg-navy-100 ml-2 align-middle;
+  @apply inline-block text-[0.625rem] font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-navy-600 bg-navy-100 ml-2 align-middle dark:text-navy-300 dark:bg-navy-700;
 }
 
 .badge-ongoing {
@@ -74,13 +88,10 @@
 }
 
 .portfolio-item-amount {
-  @apply font-bold text-sm whitespace-nowrap text-copper-600 tabular-nums;
+  @apply font-bold text-sm whitespace-nowrap text-copper-600 tabular-nums dark:text-copper-400;
 }
 
 @media (min-width: 640px) {
-  .portfolio {
-    @apply mt-8;
-  }
   .portfolio-stats {
     @apply grid-cols-3 gap-4 mb-5;
   }

@@ -1,5 +1,24 @@
 @reference "../../style.css";
 
+/* ─── Chart Theme Variables ─── */
+:root {
+  --chart-grid: #dce6f5;
+  --chart-tick: #4a7cc4;
+  --chart-axis: #dce6f5;
+  --chart-stroke: #c8956c;
+  --chart-fill-start: rgba(200, 149, 108, 0.3);
+  --chart-fill-end: rgba(200, 149, 108, 0.03);
+}
+
+[data-theme="dark"] {
+  --chart-grid: #163058;
+  --chart-tick: #7ba3db;
+  --chart-axis: #163058;
+  --chart-stroke: #d4a87e;
+  --chart-fill-start: rgba(212, 168, 126, 0.35);
+  --chart-fill-end: rgba(212, 168, 126, 0.03);
+}
+
 /* ─── Portfolio Chart ─── */
 .portfolio-chart {
   @apply my-4 -mx-1;
