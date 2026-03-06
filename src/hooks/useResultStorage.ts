@@ -1,60 +1,50 @@
 import { useState, useCallback } from 'react';
 import { InterestCalculationResult } from '../models/InterestCalculationResult';
-import type { PeriodResult } from '../models/InterestCalculationResult';
-import type { PayoutInterval } from '../enums/PayoutInterval';
-import type { RenteType } from '../enums/RenteType';
+import type { ExportedResult } from '../models/ExportFile';
+import { toExportedResult } from '../transfer/dataSerializer';
+import { InterestCalculationInput } from '../models/InterestCalculationInput';
+import { InterestCalculator } from '../calculator/InterestCalculator';
 
 const STORAGE_KEY = 'interest-calculator-results';
 
-interface StoredResult {
-  id: string;
-  timestamp: number;
-  startBedrag: number;
-  jaarRentePercentage: number;
-  looptijdMaanden: number;
-  interval: PayoutInterval;
-  renteType: RenteType;
-  startDatum?: string;
-  perioden: PeriodResult[];
+const calc = new InterestCalculator();
+
+function reconstructResult(item: ExportedResult): InterestCalculationResult {
+  const cashFlows = item.cashFlows ?? [];
+  const isOngoing = item.isOngoing ?? false;
+  let result: InterestCalculationResult;
+
+  if (cashFlows.length > 0 && item.startDate) {
+    const input = new InterestCalculationInput(
+      item.startAmount, item.annualInterestRate, item.durationMonths,
+      item.interval, item.interestType, item.startDate, cashFlows, isOngoing,
+    );
+    result = calc.calculate(input);
+  } else {
+    result = new InterestCalculationResult(
+      item.startAmount, item.annualInterestRate, item.durationMonths,
+      item.interval, item.interestType, item.startDate, item.periods,
+      cashFlows, isOngoing,
+    );
+  }
+
+  Object.assign(result, { id: item.id, timestamp: item.timestamp });
+  return result;
 }
 
 function loadFromStorage(): InterestCalculationResult[] {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return [];
-
-    const parsed: StoredResult[] = JSON.parse(data);
-    return parsed.map((item) => {
-      const result = new InterestCalculationResult(
-        item.startBedrag,
-        item.jaarRentePercentage,
-        item.looptijdMaanden,
-        item.interval,
-        item.renteType,
-        item.startDatum,
-        item.perioden,
-      );
-      Object.assign(result, { id: item.id, timestamp: item.timestamp });
-      return result;
-    });
+    const parsed: ExportedResult[] = JSON.parse(data);
+    return parsed.map(reconstructResult);
   } catch {
     return [];
   }
 }
 
 function saveToStorage(results: InterestCalculationResult[]): void {
-  const data: StoredResult[] = results.map((r) => ({
-    id: r.id,
-    timestamp: r.timestamp,
-    startBedrag: r.startBedrag,
-    jaarRentePercentage: r.jaarRentePercentage,
-    looptijdMaanden: r.looptijdMaanden,
-    interval: r.interval,
-    renteType: r.renteType,
-    startDatum: r.startDatum,
-    perioden: r.perioden,
-  }));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(results.map(toExportedResult)));
 }
 
 export function useResultStorage() {
@@ -93,5 +83,21 @@ export function useResultStorage() {
     setResults([]);
   }, []);
 
-  return { results, addResult, updateResult, removeResult, clearResults };
+  const replaceResults = useCallback((incoming: ExportedResult[]) => {
+    const reconstructed = incoming.map(reconstructResult);
+    saveToStorage(reconstructed);
+    setResults(reconstructed);
+  }, []);
+
+  const mergeResults = useCallback((incoming: ExportedResult[]) => {
+    setResults((prev) => {
+      const existingIds = new Set(prev.map((r) => r.id));
+      const newItems = incoming.filter((r) => !existingIds.has(r.id)).map(reconstructResult);
+      const merged = [...prev, ...newItems];
+      saveToStorage(merged);
+      return merged;
+    });
+  }, []);
+
+  return { results, addResult, updateResult, removeResult, clearResults, replaceResults, mergeResults };
 }

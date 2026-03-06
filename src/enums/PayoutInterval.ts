@@ -1,28 +1,28 @@
 export enum PayoutInterval {
-  Dagelijks = 'dagelijks',
-  Maandelijks = 'maandelijks',
-  PerKwartaal = 'per_kwartaal',
-  PerHalfJaar = 'per_half_jaar',
-  PerJaar = 'per_jaar',
-  Deposito = 'deposito',
+  Daily = 'daily',
+  Monthly = 'monthly',
+  Quarterly = 'quarterly',
+  SemiAnnually = 'semi_annually',
+  Annually = 'annually',
+  AtMaturity = 'at_maturity',
 }
 
 export const INTERVAL_LABELS: Record<PayoutInterval, string> = {
-  [PayoutInterval.Dagelijks]: 'Dagelijks',
-  [PayoutInterval.Maandelijks]: 'Maandelijks',
-  [PayoutInterval.PerKwartaal]: 'Per kwartaal',
-  [PayoutInterval.PerHalfJaar]: 'Per half jaar',
-  [PayoutInterval.PerJaar]: 'Per jaar',
-  [PayoutInterval.Deposito]: 'Deposito (einde looptijd)',
+  [PayoutInterval.Daily]: 'Dagelijks',
+  [PayoutInterval.Monthly]: 'Maandelijks',
+  [PayoutInterval.Quarterly]: 'Per kwartaal',
+  [PayoutInterval.SemiAnnually]: 'Per half jaar',
+  [PayoutInterval.Annually]: 'Per jaar',
+  [PayoutInterval.AtMaturity]: 'Einde looptijd',
 };
 
 export function getPeriodsPerYear(interval: PayoutInterval): number {
   switch (interval) {
-    case PayoutInterval.Dagelijks: return 365;
-    case PayoutInterval.Maandelijks: return 12;
-    case PayoutInterval.PerKwartaal: return 4;
-    case PayoutInterval.PerHalfJaar: return 2;
-    case PayoutInterval.PerJaar: return 1;
-    case PayoutInterval.Deposito: return 1;
+    case PayoutInterval.Daily: return 365;
+    case PayoutInterval.Monthly: return 12;
+    case PayoutInterval.Quarterly: return 4;
+    case PayoutInterval.SemiAnnually: return 2;
+    case PayoutInterval.Annually: return 1;
+    case PayoutInterval.AtMaturity: return 1;
   }
 }

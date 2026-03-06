@@ -1,13 +1,16 @@
 import { PayoutInterval } from '../enums/PayoutInterval';
-import { RenteType } from '../enums/RenteType';
+import { InterestType } from '../enums/InterestType';
+import { type CashFlow, expandCashFlows } from './CashFlow';
+import { addMonthsToISO, todayISO, isBeforeDate } from '../utils/date';
 
 export interface PeriodResult {
-  periode: number;
-  periodeLabel: string;
-  beginSaldo: number;
-  renteOpbrengst: number;
-  uitbetaald: number;
-  eindSaldo: number;
+  period: number;
+  periodLabel: string;
+  startBalance: number;
+  interestEarned: number;
+  disbursed: number;
+  endBalance: number;
+  deposited: number;
 }
 
 export class InterestCalculationResult {
@@ -15,60 +18,62 @@ export class InterestCalculationResult {
   public readonly timestamp: number;
 
   constructor(
-    public readonly startBedrag: number,
-    public readonly jaarRentePercentage: number,
-    public readonly looptijdMaanden: number,
+    public readonly startAmount: number,
+    public readonly annualInterestRate: number,
+    public readonly durationMonths: number,
     public readonly interval: PayoutInterval,
-    public readonly renteType: RenteType,
-    public readonly startDatum: string | undefined,
-    public readonly perioden: PeriodResult[],
+    public readonly interestType: InterestType,
+    public readonly startDate: string | undefined,
+    public readonly periods: PeriodResult[],
+    public readonly cashFlows: CashFlow[] = [],
+    public readonly isOngoing: boolean = false,
   ) {
     this.id = crypto.randomUUID();
     this.timestamp = Date.now();
   }
 
-  get totaleRente(): number {
-    return this.perioden.reduce((sum, p) => sum + p.renteOpbrengst, 0);
+  get totalInterest(): number {
+    return this.periods.reduce((sum, p) => sum + p.interestEarned, 0);
   }
 
-  get eindBedrag(): number {
-    if (this.perioden.length === 0) return this.startBedrag;
-    return this.perioden[this.perioden.length - 1].eindSaldo;
+  get endAmount(): number {
+    if (this.periods.length === 0) return this.startAmount;
+    return this.periods[this.periods.length - 1].endBalance;
   }
 
-  get totaalUitbetaald(): number {
-    return this.perioden.reduce((sum, p) => sum + p.uitbetaald, 0);
+  get totalDisbursed(): number {
+    return this.periods.reduce((sum, p) => sum + p.disbursed, 0);
   }
 
-  get eindDatum(): string | undefined {
-    if (!this.startDatum) return undefined;
-    const d = new Date(this.startDatum + 'T00:00:00');
-    d.setMonth(d.getMonth() + this.looptijdMaanden);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
+  get totalDeposited(): number {
+    return this.periods.reduce((sum, p) => sum + (p.deposited ?? 0), 0);
   }
 
-  get isNogNietGestart(): boolean {
-    if (!this.startDatum) return false;
-    const today = new Date();
-    const y = today.getFullYear();
-    const m = String(today.getMonth() + 1).padStart(2, '0');
-    const d = String(today.getDate()).padStart(2, '0');
-    return this.startDatum > `${y}-${m}-${d}`;
+  get currentBalance(): number {
+    if (this.cashFlows.length === 0) return this.startAmount;
+    if (!this.startDate) {
+      return this.startAmount + this.cashFlows.reduce((sum, cf) => sum + cf.amount, 0);
+    }
+    const endISO = addMonthsToISO(this.startDate, this.durationMonths);
+    return this.startAmount + expandCashFlows(this.cashFlows, endISO).reduce((sum, cf) => sum + cf.amount, 0);
   }
 
-  get isVerlopen(): boolean {
-    if (!this.eindDatum) return false;
-    const today = new Date();
-    const y = today.getFullYear();
-    const m = String(today.getMonth() + 1).padStart(2, '0');
-    const d = String(today.getDate()).padStart(2, '0');
-    return this.eindDatum < `${y}-${m}-${d}`;
+  get endDate(): string | undefined {
+    if (this.isOngoing || !this.startDate) return undefined;
+    return addMonthsToISO(this.startDate, this.durationMonths);
+  }
+
+  get hasNotStartedYet(): boolean {
+    if (!this.startDate) return false;
+    return !isBeforeDate(this.startDate, todayISO());
+  }
+
+  get hasExpired(): boolean {
+    if (this.isOngoing || !this.endDate) return false;
+    return isBeforeDate(this.endDate, todayISO());
   }
 
   get label(): string {
-    return `€${this.startBedrag.toLocaleString('nl-NL')} @ ${this.jaarRentePercentage}%`;
+    return `€${this.startAmount.toLocaleString('nl-NL')} @ ${this.annualInterestRate}%`;
   }
 }

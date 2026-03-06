@@ -37,5 +37,19 @@ export function usePortfolio() {
     setPortfolioIds(new Set());
   }, []);
 
-  return { portfolioIds, togglePortfolio, clearPortfolio };
+  const replacePortfolio = useCallback((ids: string[]) => {
+    const next = new Set(ids);
+    savePortfolio(next);
+    setPortfolioIds(next);
+  }, []);
+
+  const mergePortfolio = useCallback((ids: string[]) => {
+    setPortfolioIds((prev) => {
+      const next = new Set([...prev, ...ids]);
+      savePortfolio(next);
+      return next;
+    });
+  }, []);
+
+  return { portfolioIds, togglePortfolio, clearPortfolio, replacePortfolio, mergePortfolio };
 }

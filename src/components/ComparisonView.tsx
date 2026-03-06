@@ -1,8 +1,10 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useRef } from 'react';
 import type { InterestCalculationResult } from '../models/InterestCalculationResult';
+import type { CashFlow } from '../models/CashFlow';
 import { INTERVAL_LABELS } from '../enums/PayoutInterval';
-import { RENTE_TYPE_LABELS } from '../enums/RenteType';
-import { formatCurrency, formatLooptijdKort, formatDate } from '../utils/format';
+import { INTEREST_TYPE_LABELS } from '../enums/InterestType';
+import { formatCurrency, formatDurationShort, formatDate } from '../utils/format';
+import CashFlowEditor from './CashFlowEditor';
 
 interface ComparisonViewProps {
   results: InterestCalculationResult[];
@@ -11,58 +13,103 @@ interface ComparisonViewProps {
   portfolioIds: Set<string>;
   onTogglePortfolio: (id: string) => void;
   onEdit: (result: InterestCalculationResult) => void;
+  onUpdateCashFlows: (id: string, cashFlows: CashFlow[]) => void;
+  onExport: () => void;
+  onImportFile: (file: File) => Promise<void>;
+  importError: string | null;
 }
 
-export default function ComparisonView({ results, onRemove, onClear, portfolioIds, onTogglePortfolio, onEdit }: ComparisonViewProps) {
+export default function ComparisonView({ results, onRemove, onClear, portfolioIds, onTogglePortfolio, onEdit, onUpdateCashFlows, onExport, onImportFile, importError }: ComparisonViewProps) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      onImportFile(file);
+      e.target.value = '';
+    }
+  }
 
   if (results.length === 0) {
     return (
       <div className="empty-state">
-        <div className="empty-state-icon">&#x1f4ca;</div>
+        <div className="empty-state-icon">+</div>
         <h3>Nog geen berekeningen</h3>
-        <p>Vul het formulier in om renteberekeningen te vergelijken.</p>
+        <p>Maak je eerste berekening aan via het formulier. Je kunt meerdere rekeningen naast elkaar vergelijken.</p>
       </div>
     );
   }
 
-  const bestRenteId = results.length >= 2
-    ? results.reduce((best, r) => r.totaleRente > best.totaleRente ? r : best).id
+  const sorted = [...results].sort((a, b) => {
+    if (!a.endDate && !b.endDate) return 0;
+    if (!a.endDate) return 1;
+    if (!b.endDate) return -1;
+    return a.endDate.localeCompare(b.endDate);
+  });
+
+  const bestInterestId = results.length >= 2
+    ? results.reduce((best, r) => r.totalInterest > best.totalInterest ? r : best).id
     : null;
 
   return (
     <div className="results-section">
-      <div className="results-header">
-        <h2>
-          Rekeningen
-          <span className="results-count">{results.length}</span>
-        </h2>
-        <button className="btn-danger" onClick={onClear}>
-          Alles wissen
-        </button>
-      </div>
+      <div className="card">
+        <div className="card-header">
+          <div className="results-header">
+            <div>
+              <h2>
+                Overzicht
+                <span className="results-count">{results.length}</span>
+              </h2>
+            </div>
+            <div className="results-header__actions">
+              <button className="btn-transfer" onClick={onExport} aria-label="Exporteren">
+                Exporteren
+              </button>
+              <button className="btn-transfer" onClick={() => fileInputRef.current?.click()} aria-label="Importeren">
+                Importeren
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                className="sr-only"
+                onChange={handleFileChange}
+                aria-hidden="true"
+                tabIndex={-1}
+              />
+              <button className="btn-danger" onClick={onClear}>
+                Alles wissen
+              </button>
+            </div>
+          </div>
+          {importError && (
+            <p className="data-transfer__error" role="alert">{importError}</p>
+          )}
+        </div>
 
-      <div className="comparison-table-wrapper">
-        <table className="comparison-table">
+        <div className="comparison-table-wrapper-inner">
+          <table className="comparison-table">
           <thead>
             <tr>
               <th></th>
-              <th>Scenario</th>
+              <th>Rente</th>
               <th>Type</th>
-              <th>Interval</th>
+              <th>Uitbetaling</th>
               <th>Looptijd</th>
-              <th>Startdatum</th>
-              <th>Einddatum</th>
-              <th>Startbedrag</th>
-              <th>Totale rente</th>
-              <th>Eindbedrag</th>
+              <th>Van</th>
+              <th>Tot</th>
+              <th>Saldo</th>
+              <th>Rente-opbrengst</th>
+              <th>Totaal</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {results.map((r) => {
+            {sorted.map((r) => {
               const isOpen = openId === r.id;
-              const isBest = r.id === bestRenteId;
+              const isBest = r.id === bestInterestId;
 
               return (
                 <Fragment key={r.id}>
@@ -75,37 +122,41 @@ export default function ComparisonView({ results, onRemove, onClear, portfolioId
                         &#9660;
                       </span>
                     </td>
-                    <td>{r.jaarRentePercentage}%</td>
-                    <td>{RENTE_TYPE_LABELS[r.renteType]}</td>
+                    <td>{r.annualInterestRate}%</td>
+                    <td>{INTEREST_TYPE_LABELS[r.interestType]}</td>
                     <td>{INTERVAL_LABELS[r.interval]}</td>
-                    <td>{formatLooptijdKort(r.looptijdMaanden)}</td>
-                    <td>{r.startDatum ? formatDate(r.startDatum) : '—'}</td>
-                    <td>{r.eindDatum ? formatDate(r.eindDatum) : '—'}</td>
-                    <td className="amount">{formatCurrency(r.startBedrag)}</td>
-                    <td className={`amount${isBest ? ' highlight-best' : ''}`}>
-                      {formatCurrency(r.totaleRente)}
-                      {isBest && ' \u2605'}
+                    <td>{r.isOngoing ? 'Lopend' : formatDurationShort(r.durationMonths)}</td>
+                    <td>{r.startDate ? formatDate(r.startDate) : '—'}</td>
+                    <td>{r.endDate ? formatDate(r.endDate) : '—'}</td>
+                    <td className="amount">
+                      {formatCurrency(r.currentBalance)}
                     </td>
-                    <td className="amount">{formatCurrency(r.eindBedrag)}</td>
+                    <td className={`amount${isBest ? ' highlight-best' : ''}`}>
+                      {formatCurrency(r.totalInterest)}
+                    </td>
+                    <td className="amount">{formatCurrency(r.endAmount)}</td>
                     <td className="comparison-actions" onClick={(e) => e.stopPropagation()}>
                       <button
                         className="btn-icon"
                         title="Bewerken"
                         onClick={() => onEdit(r)}
+                        aria-label="Bewerken"
                       >
                         &#9998;
                       </button>
                       <button
                         className={`btn-portfolio${portfolioIds.has(r.id) ? ' btn-portfolio--active' : ''}`}
-                        title={portfolioIds.has(r.id) ? 'Verwijder uit portfolio' : 'Toevoegen aan portfolio'}
+                        title={portfolioIds.has(r.id) ? 'Verwijder uit portefeuille' : 'Toevoegen aan portefeuille'}
                         onClick={() => onTogglePortfolio(r.id)}
+                        aria-label={portfolioIds.has(r.id) ? 'Verwijder uit portefeuille' : 'Toevoegen aan portefeuille'}
                       >
                         {portfolioIds.has(r.id) ? '\u2605' : '\u2606'}
                       </button>
                       <button
                         className="btn-icon"
-                        title="Verwijder"
+                        title="Verwijderen"
                         onClick={() => onRemove(r.id)}
+                        aria-label="Verwijderen"
                       >
                         &times;
                       </button>
@@ -120,24 +171,34 @@ export default function ComparisonView({ results, onRemove, onClear, portfolioId
                               <tr>
                                 <th>Periode</th>
                                 <th>Beginsaldo</th>
+                                {r.totalDeposited !== 0 && <th>Gestort</th>}
                                 <th>Rente</th>
                                 <th>Uitbetaald</th>
                                 <th>Eindsaldo</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {r.perioden.map((p) => (
-                                <tr key={p.periode}>
-                                  <td>{p.periodeLabel}</td>
-                                  <td>{formatCurrency(p.beginSaldo)}</td>
-                                  <td>{formatCurrency(p.renteOpbrengst)}</td>
-                                  <td>{formatCurrency(p.uitbetaald)}</td>
-                                  <td>{formatCurrency(p.eindSaldo)}</td>
+                              {r.periods.map((p) => (
+                                <tr key={p.period}>
+                                  <td>{p.periodLabel}</td>
+                                  <td>{formatCurrency(p.startBalance)}</td>
+                                  {r.totalDeposited !== 0 && (
+                                    <td className={p.deposited > 0 ? 'text-success' : p.deposited < 0 ? 'text-danger' : ''}>
+                                      {p.deposited !== 0 ? formatCurrency(p.deposited) : '—'}
+                                    </td>
+                                  )}
+                                  <td>{formatCurrency(p.interestEarned)}</td>
+                                  <td>{formatCurrency(p.disbursed)}</td>
+                                  <td>{formatCurrency(p.endBalance)}</td>
                                 </tr>
                               ))}
                             </tbody>
                           </table>
                         </div>
+                        <CashFlowEditor
+                          cashFlows={r.cashFlows}
+                          onUpdate={(cfs) => onUpdateCashFlows(r.id, cfs)}
+                        />
                       </td>
                     </tr>
                   )}
@@ -146,6 +207,7 @@ export default function ComparisonView({ results, onRemove, onClear, portfolioId
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

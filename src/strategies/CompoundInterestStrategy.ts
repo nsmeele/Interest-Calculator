@@ -1,47 +1,57 @@
-import type { IInterestStrategy } from '../interfaces/IInterestStrategy';
+import type { IInterestStrategy, BalanceAdjustments } from '../interfaces/IInterestStrategy';
 import type { InterestCalculationInput } from '../models/InterestCalculationInput';
 import type { PeriodResult } from '../models/InterestCalculationResult';
 import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
 
 export class CompoundInterestStrategy implements IInterestStrategy {
-  calculate(input: InterestCalculationInput): PeriodResult[] {
-    if (input.interval === PayoutInterval.Deposito) {
-      const looptijdJaren = input.looptijdMaanden / 12;
-      const renteOpbrengst = input.startBedrag * (Math.pow(1 + input.jaarRentePercentage / 100, looptijdJaren) - 1);
+  calculate(input: InterestCalculationInput, adjustments: BalanceAdjustments = {}): PeriodResult[] {
+    if (input.interval === PayoutInterval.AtMaturity && !hasAdjustments(adjustments)) {
+      const durationYears = input.durationMonths / 12;
+      const interestEarned = input.startAmount * (Math.pow(1 + input.annualInterestRate / 100, durationYears) - 1);
 
       return [{
-        periode: 1,
-        periodeLabel: 'Einde looptijd',
-        beginSaldo: input.startBedrag,
-        renteOpbrengst,
-        uitbetaald: renteOpbrengst,
-        eindSaldo: input.startBedrag + renteOpbrengst,
+        period: 1,
+        periodLabel: 'Einde looptijd',
+        startBalance: input.startAmount,
+        interestEarned,
+        disbursed: interestEarned,
+        endBalance: input.startAmount + interestEarned,
+        deposited: 0,
       }];
     }
 
-    const periodenPerJaar = getPeriodsPerYear(input.interval);
-    const renteFractie = input.jaarRentePercentage / 100 / periodenPerJaar;
-    const totaalPerioden = Math.floor(input.looptijdMaanden / 12 * periodenPerJaar);
-    const perioden: PeriodResult[] = [];
+    const periodsPerYear = input.interval === PayoutInterval.AtMaturity ? 12 : getPeriodsPerYear(input.interval);
+    const interestFraction = input.annualInterestRate / 100 / periodsPerYear;
+    const totalPeriods = Math.floor(input.durationMonths / 12 * periodsPerYear);
+    const periods: PeriodResult[] = [];
 
-    let huidigSaldo = input.startBedrag;
+    let currentBalance = input.startAmount;
 
-    for (let i = 1; i <= totaalPerioden; i++) {
-      const renteOpbrengst = huidigSaldo * renteFractie;
-      const nieuwSaldo = huidigSaldo + renteOpbrengst;
+    for (let i = 1; i <= totalPeriods; i++) {
+      const adjustment = adjustments[i] ?? 0;
+      const deposited = Math.max(-currentBalance, adjustment);
+      currentBalance = Math.max(0, currentBalance + deposited);
 
-      perioden.push({
-        periode: i,
-        periodeLabel: `Periode ${i}`,
-        beginSaldo: huidigSaldo,
-        renteOpbrengst,
-        uitbetaald: renteOpbrengst,
-        eindSaldo: nieuwSaldo,
+      const interestEarned = currentBalance * interestFraction;
+      const newBalance = currentBalance + interestEarned;
+
+      periods.push({
+        period: i,
+        periodLabel: `Periode ${i}`,
+        startBalance: currentBalance,
+        interestEarned,
+        disbursed: interestEarned,
+        endBalance: newBalance,
+        deposited,
       });
 
-      huidigSaldo = nieuwSaldo;
+      currentBalance = newBalance;
     }
 
-    return perioden;
+    return periods;
   }
+}
+
+function hasAdjustments(adj: BalanceAdjustments): boolean {
+  return Object.keys(adj).length > 0;
 }

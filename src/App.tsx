@@ -2,16 +2,22 @@ import { useState } from 'react';
 import CalculatorForm from './components/CalculatorForm';
 import ComparisonView from './components/ComparisonView';
 import PortfolioSummary from './components/PortfolioSummary';
+import ImportModal from './components/ImportModal';
 import { useResultStorage } from './hooks/useResultStorage';
 import { usePortfolio } from './hooks/usePortfolio';
+import { useDataTransfer } from './hooks/useDataTransfer';
+import { InterestCalculator } from './calculator/InterestCalculator';
+import { InterestCalculationInput } from './models/InterestCalculationInput';
 import type { InterestCalculationResult } from './models/InterestCalculationResult';
+import type { CashFlow } from './models/CashFlow';
 
 type MobileTab = 'form' | 'results' | 'portfolio';
 type RightPanelTab = 'results' | 'portfolio';
 
 export default function App() {
-  const { results, addResult, updateResult, removeResult, clearResults } = useResultStorage();
-  const { portfolioIds, togglePortfolio, clearPortfolio } = usePortfolio();
+  const { results, addResult, updateResult, removeResult, clearResults, replaceResults, mergeResults } = useResultStorage();
+  const { portfolioIds, togglePortfolio, clearPortfolio, replacePortfolio, mergePortfolio } = usePortfolio();
+  const transfer = useDataTransfer(results, portfolioIds, replaceResults, mergeResults, replacePortfolio, mergePortfolio);
   const [editingResult, setEditingResult] = useState<InterestCalculationResult | null>(null);
   const [activeTab, setActiveTab] = useState<MobileTab>('form');
   const [rightTab, setRightTab] = useState<RightPanelTab>('results');
@@ -33,13 +39,39 @@ export default function App() {
     setActiveTab('form');
   }
 
+  function handleUpdateCashFlows(id: string, cashFlows: CashFlow[]) {
+    const existing = results.find((r) => r.id === id);
+    if (!existing) return;
+
+    const calc = new InterestCalculator();
+    const input = new InterestCalculationInput(
+      existing.startAmount,
+      existing.annualInterestRate,
+      existing.durationMonths,
+      existing.interval,
+      existing.interestType,
+      existing.startDate,
+      cashFlows,
+      existing.isOngoing,
+    );
+    const recalculated = calc.calculate(input);
+    updateResult(id, recalculated);
+  }
+
   return (
     <div className="app-background">
+      {transfer.pendingImport && (
+        <ImportModal
+          preview={transfer.pendingImport}
+          onConfirm={transfer.handleConfirmImport}
+          onCancel={transfer.handleCancelImport}
+        />
+      )}
       <div className="app-container">
         <header className="app-header">
           <div className="header-accent" />
-          <h1>Rente Calculator</h1>
-          <p>Vergelijk renteberekeningen met verschillende uitbetalingsintervallen</p>
+          <h1>MoneyGrip</h1>
+          <p>Bereken en vergelijk je rente-opbrengsten. Voeg meerdere spaarrekeningen toe en zie in een oogopslag wat je verdient.</p>
         </header>
 
         <div className="mobile-tabs mobile-tabs--top">
@@ -47,13 +79,13 @@ export default function App() {
             className={`mobile-tab${activeTab === 'form' ? ' mobile-tab--active' : ''}`}
             onClick={() => setActiveTab('form')}
           >
-            Berekening
+            Invoer
           </button>
           <button
             className={`mobile-tab${activeTab === 'results' ? ' mobile-tab--active' : ''}`}
             onClick={() => setActiveTab('results')}
           >
-            Rekeningen
+            Overzicht
             {results.length > 0 && (
               <span className="mobile-tab-badge">{results.length}</span>
             )}
@@ -63,7 +95,7 @@ export default function App() {
               className={`mobile-tab${activeTab === 'portfolio' ? ' mobile-tab--active' : ''}`}
               onClick={() => setActiveTab('portfolio')}
             >
-              Portfolio
+              Portefeuille
               <span className="mobile-tab-badge">
                 {results.filter((r) => portfolioIds.has(r.id)).length}
               </span>
@@ -85,7 +117,7 @@ export default function App() {
                 className={`mobile-tab${rightTab === 'results' ? ' mobile-tab--active' : ''}`}
                 onClick={() => setRightTab('results')}
               >
-                Rekeningen
+                Overzicht
                 {results.length > 0 && (
                   <span className="mobile-tab-badge">{results.length}</span>
                 )}
@@ -110,6 +142,10 @@ export default function App() {
                 portfolioIds={portfolioIds}
                 onTogglePortfolio={togglePortfolio}
                 onEdit={handleEdit}
+                onUpdateCashFlows={handleUpdateCashFlows}
+                onExport={transfer.handleExport}
+                onImportFile={transfer.handleFileSelected}
+                importError={transfer.importError}
               />
             </div>
             <div className={`${activeTab === 'results' ? 'mobile-hidden' : ''}${rightTab !== 'portfolio' ? ' desktop-hidden' : ''}`}>

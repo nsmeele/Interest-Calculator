@@ -1,21 +1,24 @@
 import { PayoutInterval } from '../enums/PayoutInterval';
-import { RenteType } from '../enums/RenteType';
+import { InterestType } from '../enums/InterestType';
+import type { CashFlow } from './CashFlow';
 
 export class InterestCalculationInput {
   constructor(
-    public readonly startBedrag: number,
-    public readonly jaarRentePercentage: number,
-    public readonly looptijdMaanden: number,
+    public readonly startAmount: number,
+    public readonly annualInterestRate: number,
+    public readonly durationMonths: number,
     public readonly interval: PayoutInterval,
-    public readonly renteType: RenteType,
-    public readonly startDatum?: string,
+    public readonly interestType: InterestType,
+    public readonly startDate?: string,
+    public readonly cashFlows: CashFlow[] = [],
+    public readonly isOngoing: boolean = false,
   ) {}
 
-  get looptijdJaren(): number {
-    return this.looptijdMaanden / 12;
+  get durationYears(): number {
+    return this.durationMonths / 12;
   }
 
   get label(): string {
-    return `€${this.startBedrag.toLocaleString('nl-NL')} @ ${this.jaarRentePercentage}%`;
+    return `€${this.startAmount.toLocaleString('nl-NL')} @ ${this.annualInterestRate}%`;
   }
 }
