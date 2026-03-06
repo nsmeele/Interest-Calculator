@@ -4,13 +4,16 @@ import { AccountCalculator } from '../calculator/AccountCalculator';
 import { BankAccountInput } from '../models/BankAccountInput';
 import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
+import { DayCountConvention } from '../enums/DayCountConvention';
 import type { CashFlow } from '../models/CashFlow';
+import type { RateChange } from '../models/RateChange';
 
+const ACT_365 = DayCountConvention.ACT_365;
 const dailyRate = (rate: number) => rate / 100 / 365;
 
 describe('calculateDailyInterest', () => {
   it('calculates interest without cash flows (full period)', () => {
-    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, [], 5);
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, [], 5, ACT_365);
     const expected = 10000 * dailyRate(5) * 31;
     expect(result.interestEarned).toBeCloseTo(expected, 6);
     expect(result.endBalance).toBe(10000);
@@ -20,7 +23,7 @@ describe('calculateDailyInterest', () => {
   it('calculates less interest for a mid-period deposit', () => {
     // Deposit on day 15 of a 31-day month
     const cashFlows = [{ date: '2025-01-16', amount: 5000 }];
-    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5);
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5, ACT_365);
 
     // 15 days at 10000, 16 days at 15000
     const expected = 10000 * dailyRate(5) * 15 + 15000 * dailyRate(5) * 16;
@@ -31,7 +34,7 @@ describe('calculateDailyInterest', () => {
 
   it('handles a withdrawal', () => {
     const cashFlows = [{ date: '2025-01-16', amount: -3000 }];
-    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5);
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5, ACT_365);
 
     const expected = 10000 * dailyRate(5) * 15 + 7000 * dailyRate(5) * 16;
     expect(result.interestEarned).toBeCloseTo(expected, 6);
@@ -41,7 +44,7 @@ describe('calculateDailyInterest', () => {
 
   it('clamps withdrawal so balance does not go below 0', () => {
     const cashFlows = [{ date: '2025-01-16', amount: -20000 }];
-    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5);
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5, ACT_365);
 
     // Clamped to -10000, balance becomes 0
     const expected = 10000 * dailyRate(5) * 15 + 0 * dailyRate(5) * 16;
@@ -55,7 +58,7 @@ describe('calculateDailyInterest', () => {
       { date: '2025-01-21', amount: -2000 },
       { date: '2025-01-11', amount: 5000 },
     ];
-    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5);
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5, ACT_365);
 
     // 10 days at 10000, 10 days at 15000, 11 days at 13000
     const expected =
@@ -72,10 +75,52 @@ describe('calculateDailyInterest', () => {
       { date: '2024-12-15', amount: 5000 },
       { date: '2025-02-15', amount: 5000 },
     ];
-    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5);
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5, ACT_365);
     const expected = 10000 * dailyRate(5) * 31;
     expect(result.interestEarned).toBeCloseTo(expected, 6);
     expect(result.totalDeposited).toBe(0);
+  });
+});
+
+describe('calculateDailyInterest with rate changes', () => {
+  it('applies a rate change mid-period', () => {
+    // Rate changes from 5% to 3% on Jan 16
+    const rateChanges: RateChange[] = [
+      { id: '1', date: '2025-01-16', annualInterestRate: 3 },
+    ];
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, [], 5, ACT_365, rateChanges);
+
+    // 15 days at 5%, 16 days at 3%
+    const expected = 10000 * dailyRate(5) * 15 + 10000 * dailyRate(3) * 16;
+    expect(result.interestEarned).toBeCloseTo(expected, 6);
+    expect(result.endBalance).toBe(10000);
+  });
+
+  it('combines rate changes with cash flows', () => {
+    const rateChanges: RateChange[] = [
+      { id: '1', date: '2025-01-16', annualInterestRate: 3 },
+    ];
+    const cashFlows = [{ date: '2025-01-11', amount: 5000 }];
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, cashFlows, 5, ACT_365, rateChanges);
+
+    // 10 days at 10000@5%, 5 days at 15000@5%, 16 days at 15000@3%
+    const expected =
+      10000 * dailyRate(5) * 10 +
+      15000 * dailyRate(5) * 5 +
+      15000 * dailyRate(3) * 16;
+    expect(result.interestEarned).toBeCloseTo(expected, 6);
+    expect(result.endBalance).toBe(15000);
+  });
+
+  it('uses base rate when no rate change applies yet', () => {
+    const rateChanges: RateChange[] = [
+      { id: '1', date: '2025-02-15', annualInterestRate: 3 },
+    ];
+    const result = calculateDailyInterest('2025-01-01', '2025-02-01', 10000, [], 5, ACT_365, rateChanges);
+
+    // Entire period at 5% (rate change is after period)
+    const expected = 10000 * dailyRate(5) * 31;
+    expect(result.interestEarned).toBeCloseTo(expected, 6);
   });
 });
 

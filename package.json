@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.2.1",
     "date-fns": "^4.1.0",
     "react": "^19.2.0",

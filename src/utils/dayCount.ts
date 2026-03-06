@@ -1,5 +1,5 @@
 import { DayCountConvention } from '../enums/DayCountConvention';
-import { parseDate, daysBetween } from './date';
+import { parseDate, daysBetween, getNextMonthStart } from './date';
 
 function isLeapYear(year: number): boolean {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -7,6 +7,10 @@ function isLeapYear(year: number): boolean {
 
 function daysInYear(year: number): number {
   return isLeapYear(year) ? 366 : 365;
+}
+
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month + 1, 0).getDate();
 }
 
 function days30_360(start: Date, end: Date): number {
@@ -41,8 +45,29 @@ function actActFraction(startISO: string, endISO: string): number {
   return fraction;
 }
 
+function nom12Fraction(startISO: string, endISO: string): number {
+  if (startISO >= endISO) return 0;
+
+  let fraction = 0;
+  let cursor = startISO;
+
+  while (cursor < endISO) {
+    const d = parseDate(cursor);
+    const monthDays = daysInMonth(d.getFullYear(), d.getMonth());
+    const monthEnd = getNextMonthStart(cursor);
+    const segmentEnd = monthEnd < endISO ? monthEnd : endISO;
+    const segmentDays = daysBetween(cursor, segmentEnd);
+    fraction += (segmentDays / monthDays) / 12;
+    cursor = segmentEnd;
+  }
+
+  return fraction;
+}
+
 export function yearFraction(startISO: string, endISO: string, convention: DayCountConvention): number {
   switch (convention) {
+    case DayCountConvention.NOM_12:
+      return nom12Fraction(startISO, endISO);
     case DayCountConvention.ACT_365:
       return daysBetween(startISO, endISO) / 365;
     case DayCountConvention.ACT_ACT:

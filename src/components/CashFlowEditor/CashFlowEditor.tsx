@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { CashFlow } from '../../models/CashFlow';
 import { formatCurrency, formatDate } from '../../utils/format';
 import './CashFlowEditor.css';
@@ -64,7 +65,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate }: CashFlowEditorPr
           className={`cashflow-editor__add-btn${isAdding ? ' cashflow-editor__add-btn--active' : ''}`}
           onClick={() => { setIsAdding(!isAdding); if (isAdding) resetForm(); }}
         >
-          {isAdding ? 'Annuleren' : '+ Toevoegen'}
+          {isAdding ? 'Annuleren' : <><PlusIcon aria-hidden="true" /> Toevoegen</>}
         </button>
       </div>
 
@@ -186,7 +187,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate }: CashFlowEditorPr
                 onClick={() => handleRemove(cf.id)}
                 aria-label={`Verwijder transactie ${cf.description}`}
               >
-                &times;
+                <XMarkIcon aria-hidden="true" />
               </button>
             </div>
           ))}

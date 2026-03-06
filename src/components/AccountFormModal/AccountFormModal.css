@@ -1,0 +1,11 @@
+@reference "../../style.css";
+
+/* ─── Account Form Modal ─── */
+.modal__panel--form {
+  @apply max-w-2xl;
+}
+
+.account-form-modal__body {
+  @apply px-6 pb-6 overflow-y-auto;
+  max-height: calc(100dvh - 120px);
+}

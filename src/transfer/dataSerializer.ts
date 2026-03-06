@@ -16,6 +16,8 @@ export function toExportedResult(r: BankAccount): ExportedResult {
     cashFlows: r.cashFlows,
     isOngoing: r.isOngoing,
     dayCount: r.dayCount,
+    rateChanges: r.rateChanges.length > 0 ? r.rateChanges : undefined,
+    isVariableRate: r.isVariableRate || undefined,
   };
 }
 

@@ -2,6 +2,7 @@ import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
 import type { CashFlow } from './CashFlow';
+import type { RateChange } from './RateChange';
 
 export class BankAccountInput {
   constructor(
@@ -13,7 +14,9 @@ export class BankAccountInput {
     public readonly startDate?: string,
     public readonly cashFlows: CashFlow[] = [],
     public readonly isOngoing: boolean = false,
-    public readonly dayCount: DayCountConvention = DayCountConvention.ACT_ACT,
+    public readonly dayCount: DayCountConvention = DayCountConvention.NOM_12,
+    public readonly rateChanges: RateChange[] = [],
+    public readonly isVariableRate: boolean = false,
   ) {}
 
   get durationYears(): number {

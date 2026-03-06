@@ -3,6 +3,7 @@ import type { InterestType } from '../enums/InterestType';
 import type { DayCountConvention } from '../enums/DayCountConvention';
 import type { PeriodResult } from './BankAccount';
 import type { CashFlow } from './CashFlow';
+import type { RateChange } from './RateChange';
 
 export const EXPORT_FORMAT_VERSION = 1;
 
@@ -19,6 +20,8 @@ export interface ExportedResult {
   cashFlows?: CashFlow[];
   isOngoing?: boolean;
   dayCount?: DayCountConvention;
+  rateChanges?: RateChange[];
+  isVariableRate?: boolean;
 }
 
 export interface ExportFile {

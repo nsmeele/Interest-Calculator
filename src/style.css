@@ -41,6 +41,10 @@
   @apply m-0 p-0 box-border;
 }
 
+:where(button, a, span, label, td, div, p) > svg {
+  @apply w-[1em] h-[1em] shrink-0;
+}
+
 body {
   @apply font-body bg-navy-50 text-navy-900 leading-relaxed min-h-screen antialiased;
 }
@@ -70,40 +74,164 @@ body {
   @apply pt-8 pb-6 mb-6 border-b border-navy-200/70;
 }
 
-.app-header h1 {
+.header-accent {
+  @apply inline-block w-8 h-[3px] mb-3 rounded-full bg-linear-to-r from-copper-500 to-copper-300;
+}
+
+/* ─── Hero Top ─── */
+.hero-top {
+  @apply flex flex-col gap-5;
+}
+
+.hero-top__text h1 {
   @apply font-display text-[1.75rem] font-semibold text-navy-900 leading-tight tracking-[-0.03em];
 }
 
-.app-header p {
-  @apply text-navy-500 mt-1.5 text-[0.9375rem] leading-relaxed;
+.app-header__tagline {
+  @apply font-display text-base text-copper-600 mt-1 font-medium italic leading-snug;
 }
 
-.header-accent {
-  @apply inline-block w-8 h-[3px] mb-3 rounded-full bg-linear-to-r from-copper-500 to-copper-300;
+.hero-top__actions {
+  @apply flex items-center gap-4;
+}
+
+.btn-start {
+  @apply inline-flex items-center px-5 py-2.5 text-sm font-semibold rounded-lg cursor-pointer border-none text-white font-body tracking-[0.01em] bg-linear-to-br from-navy-800 to-navy-900 transition-all duration-200;
+}
+
+.btn-start:hover {
+  @apply bg-linear-to-br from-navy-700 to-navy-800 shadow-md;
+}
+
+.btn-start:active {
+  @apply scale-[0.98] opacity-90;
+}
+
+.btn-guide-link {
+  @apply inline-flex items-center gap-1 text-sm font-medium cursor-pointer border-none bg-transparent font-body text-navy-400 transition-colors duration-200 p-0;
+}
+
+.btn-guide-link:hover {
+  @apply text-copper-600;
+}
+
+.btn-guide-link__chevron {
+  @apply inline-block text-base leading-none transition-transform duration-200;
+  transform: rotate(0deg);
+}
+
+.btn-guide-link__chevron--open {
+  transform: rotate(90deg);
+}
+
+/* ─── Usage Guide (collapsible) ─── */
+.usage-guide {
+  @apply mt-6 pt-6 border-t border-navy-200/60 animate-[fadeInUp_0.3s_ease_both];
+}
+
+.usage-guide__layout {
+  @apply grid gap-8;
+}
+
+.usage-guide__heading {
+  @apply font-display text-sm font-semibold text-navy-800 uppercase tracking-[0.06em] mb-4;
+}
+
+/* ─── Feature List ─── */
+.feature-list {
+  @apply list-none grid gap-2;
+}
+
+.feature-list__item {
+  @apply flex items-center gap-2.5 pl-3 py-1.5 border-l-2 border-copper-300/70 transition-colors duration-150;
+}
+
+.feature-list__item:hover {
+  @apply border-copper-500 bg-copper-100/30;
+}
+
+.feature-list__label {
+  @apply text-[0.8125rem] text-navy-600 leading-snug;
+}
+
+/* ─── Steps ─── */
+.usage-guide__steps {
+  @apply list-none grid gap-3;
+}
+
+.usage-guide__step {
+  @apply flex items-start gap-3;
+}
+
+.usage-guide__number {
+  @apply flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full text-[0.625rem] font-bold text-copper-600 bg-copper-100 border border-copper-200/60;
+}
+
+.usage-guide__step strong {
+  @apply text-[0.8125rem] font-semibold text-navy-800 block leading-snug;
+}
+
+.usage-guide__detail {
+  @apply text-xs text-navy-400 leading-relaxed block mt-0.5;
 }
 
 @media (min-width: 640px) {
   .app-header {
     @apply pt-10 pb-8 mb-8;
   }
-  .app-header h1 {
+  .hero-top {
+    @apply flex-row items-end justify-between;
+  }
+  .hero-top__text h1 {
     @apply text-3xl;
+  }
+  .app-header__tagline {
+    @apply text-lg;
+  }
+  .header-accent {
+    @apply mb-2;
+  }
+  .usage-guide__layout {
+    @apply grid-cols-2;
+  }
+  .feature-list {
+    @apply grid-cols-2;
   }
 }
 
 @media (min-width: 960px) {
   .app-header {
-    @apply pt-12 pb-10 mb-12;
+    @apply pt-12 pb-8 mb-10;
   }
-  .app-header h1 {
+  .hero-top__text h1 {
     @apply text-4xl;
   }
+  .app-header__tagline {
+    @apply text-xl;
+  }
   .header-accent {
-    @apply w-10 mb-4;
+    @apply w-10 mb-3;
   }
 }
 
-/* ─── Mobile Tab Bar ─── */
+/* ─── Disclaimer Footer ─── */
+.app-disclaimer {
+  @apply mt-12 pt-6 pb-8 border-t border-navy-200/50;
+}
+
+.app-disclaimer p {
+  @apply text-xs text-navy-400 leading-relaxed max-w-[720px] mb-3;
+}
+
+.app-disclaimer p:last-child {
+  @apply mb-0;
+}
+
+.app-disclaimer strong {
+  @apply font-semibold text-navy-500;
+}
+
+/* ─── Tab Bar ─── */
 .mobile-tabs {
   @apply flex gap-1 mb-6 p-1 rounded-xl bg-navy-100/80 backdrop-blur-sm;
 }
@@ -124,55 +252,18 @@ body {
   @apply bg-copper-100;
 }
 
-@media (min-width: 960px) {
-  .mobile-tabs--top {
-    @apply hidden;
-  }
-}
-
-.mobile-tabs--panel {
-  @apply hidden;
-}
-
-@media (min-width: 960px) {
-  .mobile-tabs--panel {
-    @apply flex gap-1 mb-6 p-1 rounded-xl bg-navy-100/80 backdrop-blur-sm;
-  }
-}
-
 /* ─── Main Grid ─── */
 .main-layout {
   @apply pb-8;
 }
 
-.main-panel {
-  @apply block;
-}
-
-.main-panel--hidden {
-  @apply hidden;
-}
-
-.mobile-hidden {
+.panel-hidden {
   @apply hidden;
 }
 
 @media (min-width: 960px) {
   .main-layout {
-    @apply grid gap-12 items-start pb-20 grid-cols-[400px_minmax(0,1fr)];
-  }
-
-  .main-panel,
-  .main-panel--hidden {
-    @apply block;
-  }
-
-  .mobile-hidden {
-    @apply block;
-  }
-
-  .desktop-hidden {
-    @apply hidden;
+    @apply pb-20;
   }
 }
 
@@ -359,6 +450,7 @@ body {
   @apply inline-flex items-center justify-center w-9 h-9 p-0 bg-transparent border-none rounded-lg cursor-pointer text-navy-400 text-sm transition-all duration-200 hover:text-copper-500 hover:bg-copper-100 active:scale-90;
 }
 
+
 .btn-portfolio--active {
   @apply text-copper-500;
 }
@@ -382,6 +474,39 @@ body {
 
 .results-count {
   @apply inline-flex items-center justify-center min-w-6 h-6 px-2 text-xs font-bold rounded-full ml-2 text-copper-600 bg-copper-100;
+}
+
+.results-hint {
+  @apply text-xs text-navy-400 mt-1 leading-relaxed;
+}
+
+/* ─── Popover ─── */
+.popover-anchor {
+  @apply relative inline-flex items-center ml-1.5 text-navy-400 cursor-help;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.popover-anchor--th {
+  @apply text-navy-300 ml-1;
+}
+
+.popover-anchor__icon {
+  @apply w-3.5 h-3.5 shrink-0;
+}
+
+.popover-anchor__content {
+  @apply absolute left-1/2 bottom-full -translate-x-1/2 mb-2 px-3 py-2 text-xs font-normal text-left text-navy-100 leading-relaxed bg-navy-800 rounded-lg shadow-lg w-52 pointer-events-none opacity-0 transition-opacity duration-150 z-10 normal-case tracking-normal;
+}
+
+.popover-anchor__content::after {
+  @apply absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent;
+  content: '';
+  border-top-color: var(--color-navy-800);
+}
+
+.popover-anchor:hover .popover-anchor__content,
+.popover-anchor:focus .popover-anchor__content {
+  @apply opacity-100 pointer-events-auto;
 }
 
 /* ─── Screen Reader Only ─── */

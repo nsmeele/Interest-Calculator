@@ -10,7 +10,7 @@ export function calculateAtMaturityAccrual(
   annualRate: number,
   interestType: InterestType,
   schedule: PeriodScheduleEntry[],
-  dayCount: DayCountConvention = DayCountConvention.ACT_ACT,
+  dayCount: DayCountConvention = DayCountConvention.NOM_12,
 ): PeriodResult[] {
   const rate = annualRate / 100;
   const periods: PeriodResult[] = [];

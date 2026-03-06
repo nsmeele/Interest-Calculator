@@ -33,34 +33,3 @@
   @apply col-span-2;
 }
 
-/* ─── Popover ─── */
-.popover-anchor {
-  @apply relative inline-flex items-center ml-1.5 text-navy-400 cursor-help;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.popover-anchor__icon {
-  @apply w-3.5 h-3.5 shrink-0;
-}
-
-.popover-anchor__content {
-  @apply absolute left-1/2 bottom-full -translate-x-1/2 mb-2 px-3 py-2 text-xs font-normal text-left text-navy-100 leading-relaxed bg-navy-800 rounded-lg shadow-lg w-52 pointer-events-none opacity-0 transition-opacity duration-150 z-10;
-}
-
-.popover-anchor__content::after {
-  @apply absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent;
-  content: '';
-  border-top-color: var(--color-navy-800);
-}
-
-.popover-anchor:hover .popover-anchor__content,
-.popover-anchor:focus .popover-anchor__content {
-  @apply opacity-100 pointer-events-auto;
-}
-
-/* ─── Sticky Form (desktop only) ─── */
-@media (min-width: 960px) {
-  .form-sticky {
-    @apply sticky top-6;
-  }
-}

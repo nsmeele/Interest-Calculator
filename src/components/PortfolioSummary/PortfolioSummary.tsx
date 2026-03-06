@@ -1,3 +1,4 @@
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import type { BankAccount } from '../../models/BankAccount';
 import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
 import { formatCurrency } from '../../utils/format';
@@ -30,6 +31,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
               Portefeuille
               <span className="results-count">{items.length}</span>
             </h2>
+            <p className="results-hint">Bekijk het totaalplaatje van je geselecteerde rekeningen: hoeveel je hebt ingelegd, wat je totaal aan rente verdient en wat je deze maand aan rente ontvangt.</p>
           </div>
           <button className="btn-danger" onClick={onClear}>
             Leegmaken
@@ -80,7 +82,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
               onClick={() => onToggle(r.id)}
               aria-label="Verwijder uit portefeuille"
             >
-              &times;
+              <XMarkIcon aria-hidden="true" />
             </button>
           </div>
         ))}

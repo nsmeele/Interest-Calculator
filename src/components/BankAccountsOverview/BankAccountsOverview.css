@@ -5,8 +5,8 @@
   @apply text-center py-12 px-6 bg-navy-50 rounded-2xl border-2 border-dashed border-navy-200 animate-[fadeInUp_0.5s_ease_both];
 }
 
-.empty-state-icon {
-  @apply text-4xl mb-3 opacity-30;
+.empty-state__icon {
+  @apply w-10 h-10 mx-auto mb-3 text-navy-300;
 }
 
 .empty-state h3 {
@@ -17,12 +17,16 @@
   @apply text-navy-400 text-sm max-w-xs mx-auto leading-relaxed;
 }
 
+.empty-state__btn {
+  @apply w-auto mt-5;
+}
+
 @media (min-width: 640px) {
   .empty-state {
     @apply py-16 px-8;
   }
-  .empty-state-icon {
-    @apply text-5xl mb-4;
+  .empty-state__icon {
+    @apply w-12 h-12 mb-4;
   }
   .empty-state h3 {
     @apply text-lg mb-2;
@@ -31,6 +35,20 @@
     @apply text-[0.9375rem] max-w-sm;
   }
 }
+
+/* ─── New Account Button ─── */
+.btn-new-account {
+  @apply inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold rounded-lg cursor-pointer font-body text-white bg-navy-800 border-[1.5px] border-solid border-transparent min-h-[40px] transition-all duration-200;
+}
+
+.btn-new-account:hover {
+  @apply bg-navy-700;
+}
+
+.btn-new-account:active {
+  @apply scale-[0.97];
+}
+
 
 /* ─── Comparison Table ─── */
 .comparison-table-wrapper-inner {
@@ -127,7 +145,7 @@
 
 /* ─── Period Table ─── */
 .period-table-wrapper {
-  @apply overflow-x-auto animate-[expandReveal_0.3s_ease];
+  @apply overflow-x-auto animate-[expandReveal_0.3s_ease] max-w-2xl;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -175,6 +193,36 @@
 
 .period-table tbody tr:last-child td {
   @apply border-b-0;
+}
+
+/* ─── Period Editors ─── */
+.period-editors {
+  @apply flex flex-col gap-0;
+}
+
+@media (min-width: 640px) {
+  .period-editors {
+    @apply flex-row gap-4;
+  }
+
+  .period-editors > * {
+    @apply flex-1 min-w-0;
+  }
+}
+
+/* ─── Column Info Popover ─── */
+.column-info__popover {
+  @apply fixed px-3 py-2 text-xs font-normal text-left text-navy-100 leading-relaxed bg-navy-800 rounded-lg shadow-lg w-52 z-50 normal-case tracking-normal pointer-events-none;
+  transform: translate(-50%, -100%);
+  animation: fadeIn 0.15s ease;
+}
+
+.column-info__popover::after {
+  @apply absolute left-1/2 border-4 border-transparent;
+  top: 100%;
+  transform: translateX(-50%);
+  content: '';
+  border-top-color: var(--color-navy-800);
 }
 
 /* ─── Data Transfer Error ─── */

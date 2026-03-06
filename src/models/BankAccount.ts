@@ -2,7 +2,9 @@ import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
 import { type CashFlow, expandCashFlows } from './CashFlow';
+import type { RateChange } from './RateChange';
 import { addMonthsToISO, todayISO, isBeforeDate, getNextQuarterStart, getNextMonthStart, daysBetween, endOfMonthISO, toMonthKey } from '../utils/date';
+import { calculateDailyInterest } from '../utils/dailyInterest';
 
 export interface PeriodResult {
   period: number;
@@ -29,7 +31,9 @@ export class BankAccount {
     public readonly periods: PeriodResult[],
     public readonly cashFlows: CashFlow[] = [],
     public readonly isOngoing: boolean = false,
-    public readonly dayCount: DayCountConvention = DayCountConvention.ACT_ACT,
+    public readonly dayCount: DayCountConvention = DayCountConvention.NOM_12,
+    public readonly rateChanges: RateChange[] = [],
+    public readonly isVariableRate: boolean = false,
   ) {
     this.id = crypto.randomUUID();
     this.timestamp = Date.now();
@@ -116,6 +120,36 @@ export class BankAccount {
     }
     if (this.endDate && !isBeforeDate(payoutDate, this.endDate)) return this.endDate;
     return payoutDate;
+  }
+
+  get accruedInterest(): number {
+    if (this.periods.length === 0 || !this.startDate) return 0;
+
+    const today = todayISO();
+
+    for (let i = 0; i < this.periods.length; i++) {
+      const periodStart = i === 0 ? this.startDate : this.periods[i - 1].endDate;
+      const periodEnd = this.periods[i].endDate;
+
+      if (!periodStart || !periodEnd) continue;
+      if (isBeforeDate(today, periodStart)) return 0;
+
+      if (!isBeforeDate(today, periodEnd)) continue;
+
+      // Today falls within this period — calculate exact accrued interest
+      const endISO = addMonthsToISO(this.startDate, this.durationMonths);
+      const expanded = expandCashFlows(this.cashFlows, endISO)
+        .filter(cf => cf.date >= periodStart && cf.date < today);
+
+      const { interestEarned } = calculateDailyInterest(
+        periodStart, today, this.periods[i].startBalance,
+        expanded, this.annualInterestRate, this.dayCount, this.rateChanges,
+      );
+      return interestEarned;
+    }
+
+    // Past all periods
+    return 0;
   }
 
   get label(): string {

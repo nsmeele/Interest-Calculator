@@ -3,7 +3,9 @@ import { AccountCalculator } from '../calculator/AccountCalculator';
 import { BankAccountInput } from '../models/BankAccountInput';
 import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
+import { DayCountConvention } from '../enums/DayCountConvention';
 import type { CashFlow } from '../models/CashFlow';
+import type { RateChange } from '../models/RateChange';
 
 const calculator = new AccountCalculator();
 
@@ -111,7 +113,7 @@ describe('AccountCalculator', () => {
     });
 
     it('pro-rates interest for partial periods based on ACT/ACT year fraction', () => {
-      const input = new BankAccountInput(10000, 5, 3, PayoutInterval.Monthly, InterestType.Compound, '2025-01-15');
+      const input = new BankAccountInput(10000, 5, 3, PayoutInterval.Monthly, InterestType.Compound, '2025-01-15', [], false, DayCountConvention.ACT_ACT);
       const result = calculator.calculate(input);
 
       // First period: Jan 15 → Feb 1 = 17 days in 2025 (non-leap, 365 days)
@@ -135,8 +137,7 @@ describe('AccountCalculator', () => {
       expect(result.periods).toHaveLength(24);
     });
 
-    it('every period pays interest based on ACT/ACT year fraction', () => {
-      // With ACT/ACT, monthly interest varies per month (28-31 days / 365 or 366)
+    it('every period pays interest based on NOM/12 year fraction', () => {
       const totalInterest = result.periods.reduce((sum, p) => sum + p.interestEarned, 0);
       expect(totalInterest).toBeCloseTo(1000 * 0.075 * 2, 1); // ~€150 over 2 years
     });
@@ -147,8 +148,8 @@ describe('AccountCalculator', () => {
       }
     });
 
-    it('pro-rates first and last period when starting mid-month', () => {
-      const midMonthInput = new BankAccountInput(1000, 7.5, 24, PayoutInterval.Monthly, InterestType.Simple, '2026-01-15');
+    it('pro-rates first and last period when starting mid-month (ACT/ACT)', () => {
+      const midMonthInput = new BankAccountInput(1000, 7.5, 24, PayoutInterval.Monthly, InterestType.Simple, '2026-01-15', [], false, DayCountConvention.ACT_ACT);
       const midResult = calculator.calculate(midMonthInput);
 
       // First period: Jan 15 → Feb 1 = 17 days, in a 365-day year
@@ -179,7 +180,7 @@ describe('AccountCalculator', () => {
     });
 
     it('pro-rates interest for partial periods based on ACT/ACT year fraction', () => {
-      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.Quarterly, InterestType.Compound, '2025-02-15');
+      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.Quarterly, InterestType.Compound, '2025-02-15', [], false, DayCountConvention.ACT_ACT);
       const result = calculator.calculate(input);
 
       // First period: Feb 15 → Apr 1 = 45 days in 2025 (non-leap, 365 days)
@@ -203,6 +204,112 @@ describe('AccountCalculator', () => {
       const result = calculator.calculate(input);
 
       expect(result.periods).toHaveLength(4);
+    });
+  });
+
+  describe('variable rate', () => {
+    it('reduces total interest when rate drops mid-term', () => {
+      const rateChanges: RateChange[] = [
+        { id: '1', date: '2025-07-01', annualInterestRate: 3 },
+      ];
+      const withChange = new BankAccountInput(10000, 5, 12, PayoutInterval.Monthly, InterestType.Compound, '2025-01-01', [], false, undefined, rateChanges);
+      const without = new BankAccountInput(10000, 5, 12, PayoutInterval.Monthly, InterestType.Compound, '2025-01-01');
+
+      const resultWith = calculator.calculate(withChange);
+      const resultWithout = calculator.calculate(without);
+
+      expect(resultWith.totalInterest).toBeLessThan(resultWithout.totalInterest);
+    });
+
+    it('increases total interest when rate goes up mid-term', () => {
+      const rateChanges: RateChange[] = [
+        { id: '1', date: '2025-07-01', annualInterestRate: 8 },
+      ];
+      const withChange = new BankAccountInput(10000, 5, 12, PayoutInterval.Monthly, InterestType.Compound, '2025-01-01', [], false, undefined, rateChanges);
+      const without = new BankAccountInput(10000, 5, 12, PayoutInterval.Monthly, InterestType.Compound, '2025-01-01');
+
+      const resultWith = calculator.calculate(withChange);
+      const resultWithout = calculator.calculate(without);
+
+      expect(resultWith.totalInterest).toBeGreaterThan(resultWithout.totalInterest);
+    });
+
+    it('works with quarterly payout and rate change', () => {
+      const rateChanges: RateChange[] = [
+        { id: '1', date: '2025-05-01', annualInterestRate: 2 },
+      ];
+      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.Quarterly, InterestType.Compound, '2025-01-01', [], false, undefined, rateChanges);
+      const result = calculator.calculate(input);
+
+      // Q1 (Jan-Mar) fully at 5%, Q2 (Apr-Jun) partially at 5% then at 2%
+      // So Q2 interest should be less than Q1
+      expect(result.periods[1].interestEarned).toBeLessThan(result.periods[0].interestEarned);
+    });
+
+    it('routes at-maturity with rate changes through schedule path', () => {
+      const rateChanges: RateChange[] = [
+        { id: '1', date: '2025-07-01', annualInterestRate: 3 },
+      ];
+      const withChange = new BankAccountInput(10000, 5, 12, PayoutInterval.AtMaturity, InterestType.Compound, '2025-01-01', [], false, undefined, rateChanges);
+      const without = new BankAccountInput(10000, 5, 12, PayoutInterval.AtMaturity, InterestType.Compound, '2025-01-01');
+
+      const resultWith = calculator.calculate(withChange);
+      const resultWithout = calculator.calculate(without);
+
+      // Lower rate for half the year = less total interest
+      expect(resultWith.totalInterest).toBeLessThan(resultWithout.totalInterest);
+    });
+
+    it('defers disbursement to final period for at-maturity with rate changes', () => {
+      const rateChanges: RateChange[] = [
+        { id: '1', date: '2025-07-01', annualInterestRate: 3 },
+      ];
+      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.AtMaturity, InterestType.Compound, '2025-01-01', [], false, undefined, rateChanges);
+      const result = calculator.calculate(input);
+
+      // All periods except last should have disbursed = 0
+      for (let i = 0; i < result.periods.length - 1; i++) {
+        expect(result.periods[i].disbursed).toBe(0);
+      }
+      // Last period should have the total accumulated interest
+      const last = result.periods[result.periods.length - 1];
+      expect(last.disbursed).toBeCloseTo(result.totalInterest, 6);
+      expect(last.periodLabel).toBe('Einde looptijd');
+    });
+
+    it('preserves rate changes through recalculation', () => {
+      const rateChanges: RateChange[] = [
+        { id: '1', date: '2025-04-01', annualInterestRate: 4 },
+      ];
+      const initial = new BankAccountInput(10000, 5, 6, PayoutInterval.Monthly, InterestType.Compound, '2025-01-01', [], false, undefined, rateChanges);
+      const result = calculator.calculate(initial);
+
+      expect(result.rateChanges).toEqual(rateChanges);
+      expect(result.rateChanges).toHaveLength(1);
+    });
+  });
+
+  describe('NOM/12 with intra-month cash flows', () => {
+    it('calculates monthly interest using weighted average balance / 12', () => {
+      // 2.5% NOM/12, Feb 2026 (28 days), multiple cash flows within the month
+      // Segments: 4d@7512, 5d@7312, 5d@7212, 10d@7062, 4d@9062
+      const cashFlows: CashFlow[] = [
+        { id: '1', date: '2026-02-01', amount: 12, description: 'Rente' },
+        { id: '2', date: '2026-02-01', amount: -500, description: 'Opname' },
+        { id: '3', date: '2026-02-05', amount: -200, description: 'Opname' },
+        { id: '4', date: '2026-02-10', amount: -100, description: 'Opname' },
+        { id: '5', date: '2026-02-15', amount: -150, description: 'Opname' },
+        { id: '6', date: '2026-02-25', amount: 2000, description: 'Storting' },
+        { id: '7', date: '2026-03-02', amount: 1000, description: 'Storting' },
+      ];
+      const input = new BankAccountInput(
+        8000, 2.5, 2, PayoutInterval.Monthly, InterestType.Compound,
+        '2026-02-01', cashFlows, true, DayCountConvention.NOM_12,
+      );
+      const result = calculator.calculate(input);
+
+      // weighted_avg_balance * rate / 12 = 7512*4/28 + 7312*5/28 + 7212*5/28 + 7062*10/28 + 9062*4/28
+      expect(result.periods[0].interestEarned).toBeCloseTo(15.59, 1);
     });
   });
 
@@ -318,6 +425,26 @@ describe('AccountCalculator', () => {
 
       expect(result.currentBalance).toBe(3908);
       expect(result.currentBalance).not.toBe(result.startAmount);
+    });
+
+    it('applies rate changes to an ongoing account', () => {
+      const rateChanges: RateChange[] = [
+        { id: '1', date: '2025-03-01', annualInterestRate: 3 },
+      ];
+      const input = new BankAccountInput(
+        10000, 5, 6, PayoutInterval.Monthly, InterestType.Compound,
+        '2025-01-01', [], true, undefined, rateChanges,
+      );
+      const result = calculator.calculate(input);
+
+      // First two periods (Jan, Feb) should be at 5%
+      // From March onwards should be at 3%, meaning less interest
+      const janInterest = result.periods[0].interestEarned;
+      const marInterest = result.periods[2].interestEarned;
+
+      // March has lower rate, so interest should be lower (even though compound slightly increases balance)
+      expect(marInterest).toBeLessThan(janInterest);
+      expect(result.rateChanges).toEqual(rateChanges);
     });
 
     it('applies a recurring cash flow across all matching periods', () => {

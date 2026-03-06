@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { PayoutInterval, INTERVAL_LABELS } from '../../enums/PayoutInterval';
 import { InterestType, INTEREST_TYPE_LABELS } from '../../enums/InterestType';
 import { DayCountConvention, DAY_COUNT_LABELS, DAY_COUNT_DESCRIPTIONS } from '../../enums/DayCountConvention';
@@ -29,12 +30,13 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isOngoing, setIsOngoing] = useState(true);
-  const [dayCount, setDayCount] = useState<DayCountConvention>(DayCountConvention.ACT_ACT);
+  const [dayCount, setDayCount] = useState<DayCountConvention>(DayCountConvention.NOM_12);
+  const [isVariableRate, setIsVariableRate] = useState(false);
 
   const prevEditingId = useState<string | null>(null);
   if (editingResult && editingResult.id !== prevEditingId[0]) {
     prevEditingId[1](editingResult.id);
-    setStartAmount(editingResult.startAmount.toString());
+    setStartAmount(editingResult.startAmount.toString().replace('.', ','));
     setInterestRate(editingResult.annualInterestRate.toString());
     setYears(Math.floor(editingResult.durationMonths / 12).toString());
     setMonths((editingResult.durationMonths % 12).toString());
@@ -44,6 +46,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
     setEndDate(editingResult.endDate ?? '');
     setIsOngoing(editingResult.isOngoing);
     setDayCount(editingResult.dayCount);
+    setIsVariableRate(editingResult.isVariableRate);
   }
   if (!editingResult && prevEditingId[0] !== null) {
     prevEditingId[1](null);
@@ -103,19 +106,12 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
       ? Math.max(1, Math.ceil(daysBetween(startDate, endOfMonthISO(todayISO())) / 30.44))
       : hasDurationFromDates ? durationFromDates : parseInt(years) * 12 + parseInt(months || '0');
 
-    const input = new BankAccountInput(amount, rate, durationMonths, interval, interestType, startDate || undefined, editingResult?.cashFlows ?? [], isOngoing, dayCount);
+    const input = new BankAccountInput(amount, rate, durationMonths, interval, interestType, startDate || undefined, editingResult?.cashFlows ?? [], isOngoing, dayCount, isVariableRate ? (editingResult?.rateChanges ?? []) : [], isVariableRate);
     const result = calculator.calculate(input);
     onResult(result);
   }
 
   return (
-    <div className="form-sticky">
-      <div className="card">
-        <div className="card-header">
-          <h2>{editingResult ? 'Rekening aanpassen' : 'Nieuwe rekening'}</h2>
-          <p>{editingResult ? 'Pas de waarden aan en klik op bijwerken.' : 'Vul de gegevens van je spaarrekening in.'}</p>
-        </div>
-        <div className="card-body">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label className="form-label" htmlFor="startAmount">Inleg</label>
@@ -234,6 +230,21 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
             </div>
 
             <div className="form-group">
+              <div className="form-checkbox">
+                <input
+                  type="checkbox"
+                  id="isVariableRate"
+                  checked={isVariableRate}
+                  onChange={(e) => setIsVariableRate(e.target.checked)}
+                />
+                <label htmlFor="isVariableRate">
+                  Variabele rente
+                  <span className="form-hint">Rentewijzigingen kun je toevoegen in het overzicht.</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="form-group">
               <label className="form-label">Rentetype</label>
               <div className="interval-grid">
                 {interestTypes.map((rt) => (
@@ -297,7 +308,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                     <label htmlFor={`daycount-${dc}`}>
                       {DAY_COUNT_LABELS[dc]}
                       <span className="popover-anchor" tabIndex={0} role="button" aria-label={`Info over ${DAY_COUNT_LABELS[dc]}`} onClick={(e) => e.preventDefault()}>
-                        <svg className="popover-anchor__icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.5"/><text x="8" y="11.5" textAnchor="middle" fontSize="9" fontWeight="600" fill="currentColor">i</text></svg>
+                        <InformationCircleIcon className="popover-anchor__icon" aria-hidden="true" />
                         <span className="popover-anchor__content">{DAY_COUNT_DESCRIPTIONS[dc]}</span>
                       </span>
                     </label>
@@ -309,14 +320,11 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
             <button type="submit" className="btn-primary">
               {editingResult ? 'Bijwerken' : 'Bereken'}
             </button>
-            {editingResult && onCancelEdit && (
+            {onCancelEdit && (
               <button type="button" className="btn-secondary" onClick={onCancelEdit}>
                 Annuleren
               </button>
             )}
           </form>
-        </div>
-      </div>
-    </div>
   );
 }

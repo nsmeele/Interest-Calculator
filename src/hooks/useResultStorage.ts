@@ -14,7 +14,9 @@ const calc = new AccountCalculator();
 function reconstructResult(item: ExportedResult): BankAccount {
   const cashFlows = item.cashFlows ?? [];
   const isOngoing = item.isOngoing ?? false;
-  const dayCount = item.dayCount ?? DayCountConvention.ACT_ACT;
+  const dayCount = item.dayCount ?? DayCountConvention.NOM_12;
+  const rateChanges = item.rateChanges ?? [];
+  const isVariableRate = item.isVariableRate ?? rateChanges.length > 0;
   let result: BankAccount;
 
   const durationMonths = isOngoing && item.startDate
@@ -23,19 +25,20 @@ function reconstructResult(item: ExportedResult): BankAccount {
 
   const shouldRecalculate = (isOngoing && item.startDate)
     || (cashFlows.length > 0 && item.startDate)
+    || (rateChanges.length > 0 && item.startDate)
     || (import.meta.env.DEV && item.startDate);
 
   if (shouldRecalculate) {
     const input = new BankAccountInput(
       item.startAmount, item.annualInterestRate, durationMonths,
-      item.interval, item.interestType, item.startDate, cashFlows, isOngoing, dayCount,
+      item.interval, item.interestType, item.startDate, cashFlows, isOngoing, dayCount, rateChanges, isVariableRate,
     );
     result = calc.calculate(input);
   } else {
     result = new BankAccount(
       item.startAmount, item.annualInterestRate, durationMonths,
       item.interval, item.interestType, item.startDate, item.periods,
-      cashFlows, isOngoing, dayCount,
+      cashFlows, isOngoing, dayCount, rateChanges, isVariableRate,
     );
   }
 

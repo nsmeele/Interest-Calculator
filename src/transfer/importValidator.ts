@@ -58,6 +58,17 @@ function validateCashFlow(value: unknown, index: number): string | null {
   return null;
 }
 
+function validateRateChange(value: unknown, index: number): string | null {
+  if (!isObject(value)) return `Rentewijziging ${index + 1}: geen geldig object.`;
+  const rc = value as Record<string, unknown>;
+
+  if (!isNonEmptyString(rc.id)) return `Rentewijziging ${index + 1}: 'id' ontbreekt.`;
+  if (typeof rc.date !== 'string' || !ISO_DATE_REGEX.test(rc.date)) return `Rentewijziging ${index + 1}: 'date' is geen geldige datum (YYYY-MM-DD).`;
+  if (!isFiniteNumber(rc.annualInterestRate) || rc.annualInterestRate < 0) return `Rentewijziging ${index + 1}: 'annualInterestRate' moet >= 0 zijn.`;
+
+  return null;
+}
+
 function validateExportedResult(value: unknown, index: number): string | null {
   if (!isObject(value)) return `Rekening ${index + 1}: geen geldig object.`;
   const r = value as Record<string, unknown>;
@@ -97,6 +108,14 @@ function validateExportedResult(value: unknown, index: number): string | null {
 
   if (r.isOngoing !== undefined && typeof r.isOngoing !== 'boolean') {
     return `Rekening ${index + 1}: 'isOngoing' moet een boolean zijn.`;
+  }
+
+  if (r.rateChanges !== undefined) {
+    if (!Array.isArray(r.rateChanges)) return `Rekening ${index + 1}: 'rateChanges' moet een array zijn.`;
+    for (let i = 0; i < r.rateChanges.length; i++) {
+      const err = validateRateChange(r.rateChanges[i], i);
+      if (err) return `Rekening ${index + 1} > ${err}`;
+    }
   }
 
   return null;

@@ -54,7 +54,8 @@ export function calculatePeriods(
   periodCashFlows: PeriodCashFlows | undefined,
   compound: boolean,
 ): PeriodResult[] {
-  const periodsPerYear = input.interval === PayoutInterval.AtMaturity ? 12 : getPeriodsPerYear(input.interval);
+  const isAtMaturity = input.interval === PayoutInterval.AtMaturity;
+  const periodsPerYear = isAtMaturity ? 12 : getPeriodsPerYear(input.interval);
   const monthsPerPeriod = 12 / periodsPerYear;
   const totalPeriods = Math.floor(input.durationMonths / 12 * periodsPerYear);
   const rate = input.annualInterestRate / 100;
@@ -67,8 +68,10 @@ export function calculatePeriods(
     const periodStartDate = input.startDate ? addMonthsToISO(input.startDate, (i - 1) * monthsPerPeriod) : undefined;
     const periodEndDate = input.startDate ? addMonthsToISO(input.startDate, i * monthsPerPeriod) : undefined;
 
-    if (cashFlowsForPeriod?.length && periodStartDate && periodEndDate) {
-      const result = calculateDailyInterest(periodStartDate, periodEndDate, balance, cashFlowsForPeriod, input.annualInterestRate, input.dayCount);
+    const hasRateChanges = input.rateChanges.length > 0;
+
+    if ((cashFlowsForPeriod?.length || hasRateChanges) && periodStartDate && periodEndDate) {
+      const result = calculateDailyInterest(periodStartDate, periodEndDate, balance, cashFlowsForPeriod ?? [], input.annualInterestRate, input.dayCount, input.rateChanges);
       const endBalance = compound ? result.endBalance + result.interestEarned : result.endBalance;
 
       periods.push({
@@ -109,7 +112,20 @@ export function calculatePeriods(
     }
   }
 
+  if (isAtMaturity) deferDisbursement(periods);
   return periods;
+}
+
+function deferDisbursement(periods: PeriodResult[]): void {
+  let total = 0;
+  for (const p of periods) {
+    total += p.interestEarned;
+    p.disbursed = 0;
+  }
+  if (periods.length > 0) {
+    periods[periods.length - 1].disbursed = total;
+    periods[periods.length - 1].periodLabel = 'Einde looptijd';
+  }
 }
 
 export function calculatePeriodsWithSchedule(
@@ -119,6 +135,7 @@ export function calculatePeriodsWithSchedule(
   periodCashFlows: PeriodCashFlows | undefined,
   compound: boolean,
 ): PeriodResult[] {
+  const isAtMaturity = input.interval === PayoutInterval.AtMaturity;
   const rate = input.annualInterestRate / 100;
   const periods: PeriodResult[] = [];
   let balance = input.startAmount;
@@ -128,8 +145,10 @@ export function calculatePeriodsWithSchedule(
     const periodIndex = i + 1;
     const cashFlowsForPeriod = periodCashFlows?.[periodIndex];
 
-    if (cashFlowsForPeriod?.length) {
-      const result = calculateDailyInterest(entry.startDate, entry.endDate, balance, cashFlowsForPeriod, input.annualInterestRate, input.dayCount);
+    const hasRateChanges = input.rateChanges.length > 0;
+
+    if (cashFlowsForPeriod?.length || hasRateChanges) {
+      const result = calculateDailyInterest(entry.startDate, entry.endDate, balance, cashFlowsForPeriod ?? [], input.annualInterestRate, input.dayCount, input.rateChanges);
       const endBalance = compound ? result.endBalance + result.interestEarned : result.endBalance;
 
       periods.push({
@@ -168,5 +187,6 @@ export function calculatePeriodsWithSchedule(
     }
   }
 
+  if (isAtMaturity) deferDisbursement(periods);
   return periods;
 }
