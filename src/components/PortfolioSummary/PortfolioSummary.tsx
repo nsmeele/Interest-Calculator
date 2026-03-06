@@ -1,7 +1,6 @@
 import type { BankAccount } from '../../models/BankAccount';
 import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
 import { formatCurrency } from '../../utils/format';
-import { interestPerMonth } from '../../utils/interest';
 import PortfolioChart from '../PortfolioChart';
 import './PortfolioSummary.css';
 
@@ -20,7 +19,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
   const activeItems = items.filter((r) => !r.hasExpired && !r.hasNotStartedYet);
   const totalInvested = activeItems.reduce((sum, r) => sum + r.startAmount + Math.max(0, r.totalDeposited), 0);
   const totalInterest = items.reduce((sum, r) => sum + r.totalInterest, 0);
-  const totalPerMonth = activeItems.reduce((sum, r) => sum + interestPerMonth(r), 0);
+  const totalPerMonth = activeItems.reduce((sum, r) => sum + r.interestThisMonth, 0);
 
   return (
     <div className="card portfolio">
@@ -73,7 +72,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
               </span>
             </div>
             <div className="portfolio-item-amount">
-              {formatCurrency(interestPerMonth(r))}/mnd
+              {formatCurrency(r.interestThisMonth)}/mnd
             </div>
             <button
               className="btn-icon"

@@ -62,3 +62,8 @@ export function getNextMonthStart(iso: string): string {
 export function endOfMonthISO(iso: string): string {
   return toISO(lastDayOfMonth(parseISO(iso)));
 }
+
+export function toMonthKey(iso: string): string {
+  const d = parseISO(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}

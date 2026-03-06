@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { interestPerMonth, buildPortfolioChartData } from '../utils/interest';
+import { buildPortfolioChartData } from '../utils/interest';
 import { BankAccount } from '../models/BankAccount';
 import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
+import { addMonthsToISO } from '../utils/date';
 import type { PeriodResult } from '../models/BankAccount';
 
 function makeResult(overrides: {
@@ -14,6 +15,7 @@ function makeResult(overrides: {
   periods?: PeriodResult[];
 } = {}): BankAccount {
   const durationMonths = overrides.durationMonths ?? 12;
+  const startDate = overrides.startDate;
   const periods = overrides.periods ?? Array.from({ length: durationMonths }, (_, i) => ({
     period: i + 1,
     periodLabel: `Periode ${i + 1}`,
@@ -22,6 +24,7 @@ function makeResult(overrides: {
     disbursed: 50,
     endBalance: 10000,
     deposited: 0,
+    endDate: startDate ? addMonthsToISO(startDate, i + 1) : undefined,
   }));
 
   return new BankAccount(
@@ -55,7 +58,7 @@ describe('interestPerMonth', () => {
     });
     const result = makeResult({ startDate, periods });
     // Should return the interest of the period covering today
-    expect(interestPerMonth(result)).toBe(50);
+    expect(result.interestThisMonth).toBe(50);
   });
 
   it('returns 0 for expired account', () => {
@@ -65,12 +68,12 @@ describe('interestPerMonth', () => {
       endDate: '2020-02-01',
     }];
     const result = makeResult({ startDate: '2020-01-01', durationMonths: 1, periods });
-    expect(interestPerMonth(result)).toBe(0);
+    expect(result.interestThisMonth).toBe(0);
   });
 
   it('returns 0 for 0 duration', () => {
     const result = makeResult({ durationMonths: 0, periods: [] });
-    expect(interestPerMonth(result)).toBe(0);
+    expect(result.interestThisMonth).toBe(0);
   });
 });
 
@@ -89,6 +92,7 @@ describe('buildPortfolioChartData', () => {
       disbursed: 50,
       endBalance: 10000,
       deposited: 0,
+      endDate: addMonthsToISO('2025-01-01', i + 1),
     })) });
     const data = buildPortfolioChartData([result]);
     expect(data).toHaveLength(6);
@@ -99,9 +103,11 @@ describe('buildPortfolioChartData', () => {
   it('combines multiple items on the same months', () => {
     const a = makeResult({ startDate: '2025-01-01', durationMonths: 3, periods: Array.from({ length: 3 }, (_, i) => ({
       period: i + 1, periodLabel: '', startBalance: 10000, interestEarned: 100, disbursed: 100, endBalance: 10000, deposited: 0,
+      endDate: addMonthsToISO('2025-01-01', i + 1),
     })) });
     const b = makeResult({ startDate: '2025-01-01', durationMonths: 3, periods: Array.from({ length: 3 }, (_, i) => ({
       period: i + 1, periodLabel: '', startBalance: 5000, interestEarned: 25, disbursed: 25, endBalance: 5000, deposited: 0,
+      endDate: addMonthsToISO('2025-01-01', i + 1),
     })) });
     const data = buildPortfolioChartData([a, b]);
     expect(data).toHaveLength(3);
@@ -111,9 +117,11 @@ describe('buildPortfolioChartData', () => {
   it('fills gaps between non-overlapping items', () => {
     const a = makeResult({ startDate: '2025-01-01', durationMonths: 2, periods: Array.from({ length: 2 }, (_, i) => ({
       period: i + 1, periodLabel: '', startBalance: 10000, interestEarned: 50, disbursed: 50, endBalance: 10000, deposited: 0,
+      endDate: addMonthsToISO('2025-01-01', i + 1),
     })) });
     const b = makeResult({ startDate: '2025-05-01', durationMonths: 2, periods: Array.from({ length: 2 }, (_, i) => ({
       period: i + 1, periodLabel: '', startBalance: 10000, interestEarned: 50, disbursed: 50, endBalance: 10000, deposited: 0,
+      endDate: addMonthsToISO('2025-05-01', i + 1),
     })) });
     const data = buildPortfolioChartData([a, b]);
     expect(data).toHaveLength(6);
@@ -124,6 +132,7 @@ describe('buildPortfolioChartData', () => {
   it('labels use Dutch month abbreviations', () => {
     const result = makeResult({ startDate: '2025-01-01', durationMonths: 1, periods: [{
       period: 1, periodLabel: '', startBalance: 10000, interestEarned: 50, disbursed: 50, endBalance: 10000, deposited: 0,
+      endDate: '2025-02-01',
     }] });
     const data = buildPortfolioChartData([result]);
     expect(data[0].label).toContain("'25");

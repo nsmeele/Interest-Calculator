@@ -2,7 +2,7 @@ import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
 import { type CashFlow, expandCashFlows } from './CashFlow';
-import { addMonthsToISO, todayISO, isBeforeDate, getNextQuarterStart, getNextMonthStart } from '../utils/date';
+import { addMonthsToISO, todayISO, isBeforeDate, getNextQuarterStart, getNextMonthStart, daysBetween, endOfMonthISO, toMonthKey } from '../utils/date';
 
 export interface PeriodResult {
   period: number;
@@ -119,6 +119,43 @@ export class BankAccount {
   }
 
   get label(): string {
-    return `€${this.startAmount.toLocaleString('nl-NL')} @ ${this.annualInterestRate}%`;
+    return `€${this.currentBalance.toLocaleString('nl-NL')} @ ${this.annualInterestRate}%`;
+  }
+
+  get calendarMonthProjection(): Map<string, number> {
+    const map = new Map<string, number>();
+    if (!this.startDate || this.periods.length === 0) return map;
+
+    for (let i = 0; i < this.periods.length; i++) {
+      const period = this.periods[i];
+      const periodStart = i === 0 ? this.startDate : this.periods[i - 1].endDate;
+      const periodEnd = period.endDate;
+
+      if (!periodStart || !periodEnd) continue;
+
+      const totalDays = daysBetween(periodStart, periodEnd);
+      if (totalDays <= 0) continue;
+
+      let cursor = periodStart;
+      while (isBeforeDate(cursor, periodEnd)) {
+        const monthEnd = endOfMonthISO(cursor);
+        const segmentEnd = isBeforeDate(monthEnd, periodEnd) ? monthEnd : periodEnd;
+        const segmentDays = daysBetween(cursor, segmentEnd) + (segmentEnd === periodEnd ? 0 : 1);
+        const share = period.interestEarned * (segmentDays / totalDays);
+
+        const key = toMonthKey(cursor);
+        map.set(key, (map.get(key) ?? 0) + share);
+
+        cursor = getNextMonthStart(cursor);
+      }
+    }
+
+    return map;
+  }
+
+  get interestThisMonth(): number {
+    if (this.periods.length === 0 || this.hasExpired || this.hasNotStartedYet) return 0;
+    const key = toMonthKey(todayISO());
+    return this.calendarMonthProjection.get(key) ?? 0;
   }
 }
