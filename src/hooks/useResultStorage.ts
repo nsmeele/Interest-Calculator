@@ -4,7 +4,7 @@ import type { ExportedResult } from '../models/ExportFile';
 import { toExportedResult } from '../transfer/dataSerializer';
 import { BankAccountInput } from '../models/BankAccountInput';
 import { AccountCalculator } from '../calculator/AccountCalculator';
-import { monthsBetween, todayISO } from '../utils/date';
+import { daysBetween, todayISO, endOfMonthISO } from '../utils/date';
 
 const STORAGE_KEY = 'bank-account-results';
 
@@ -16,10 +16,14 @@ function reconstructResult(item: ExportedResult): BankAccount {
   let result: BankAccount;
 
   const durationMonths = isOngoing && item.startDate
-    ? Math.max(1, monthsBetween(item.startDate, todayISO()))
+    ? Math.max(1, Math.ceil(daysBetween(item.startDate, endOfMonthISO(todayISO())) / 30.44))
     : item.durationMonths;
 
-  if ((cashFlows.length > 0 && item.startDate) || (isOngoing && item.startDate)) {
+  const shouldRecalculate = (isOngoing && item.startDate)
+    || (cashFlows.length > 0 && item.startDate)
+    || (import.meta.env.DEV && item.startDate);
+
+  if (shouldRecalculate) {
     const input = new BankAccountInput(
       item.startAmount, item.annualInterestRate, durationMonths,
       item.interval, item.interestType, item.startDate, cashFlows, isOngoing,

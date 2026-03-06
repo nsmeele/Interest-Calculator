@@ -41,10 +41,18 @@ describe('CompoundInterestStrategy', () => {
     expect(totalInterest).toBeCloseTo(expected, 2);
   });
 
-  it('produces single period for AtMaturity without adjustments', () => {
+  it('produces monthly accrual periods for AtMaturity without adjustments', () => {
     const result = strategy.calculate(makeInput({ interval: PayoutInterval.AtMaturity }));
-    expect(result).toHaveLength(1);
-    expect(result[0].periodLabel).toBe('Einde looptijd');
+    expect(result).toHaveLength(12);
+    expect(result[11].periodLabel).toBe('Einde looptijd');
+    expect(result[0].periodLabel).toBe('Maand 1');
+    // Only the last period disburses
+    expect(result[0].disbursed).toBe(0);
+    expect(result[11].disbursed).toBeCloseTo(result.reduce((s, p) => s + p.interestEarned, 0), 2);
+    // Total interest matches compound formula
+    const totalInterest = result.reduce((s, p) => s + p.interestEarned, 0);
+    const expected = 10000 * (Math.pow(1 + 0.05, 1) - 1);
+    expect(totalInterest).toBeCloseTo(expected, 2);
   });
 
   it('produces 4 periods for quarterly over 1 year', () => {

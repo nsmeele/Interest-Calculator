@@ -6,7 +6,7 @@ import { INTEREST_TYPE_LABELS } from '../enums/InterestType';
 import { formatCurrency, formatDurationShort, formatDate } from '../utils/format';
 import CashFlowEditor from './CashFlowEditor';
 
-interface ComparisonViewProps {
+interface BankAccountsOverviewProps {
   results: BankAccount[];
   onRemove: (id: string) => void;
   onClear: () => void;
@@ -19,7 +19,7 @@ interface ComparisonViewProps {
   importError: string | null;
 }
 
-export default function ComparisonView({ results, onRemove, onClear, portfolioIds, onTogglePortfolio, onEdit, onUpdateCashFlows, onExport, onImportFile, importError }: ComparisonViewProps) {
+export default function BankAccountsOverview({ results, onRemove, onClear, portfolioIds, onTogglePortfolio, onEdit, onUpdateCashFlows, onExport, onImportFile, importError }: BankAccountsOverviewProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -101,6 +101,7 @@ export default function ComparisonView({ results, onRemove, onClear, portfolioId
               <th>Van</th>
               <th>Tot</th>
               <th>Saldo</th>
+              <th>Uitbetaald</th>
               <th>Rente-opbrengst</th>
               <th>Totaal</th>
               <th></th>
@@ -130,6 +131,9 @@ export default function ComparisonView({ results, onRemove, onClear, portfolioId
                     <td>{r.endDate ? formatDate(r.endDate) : '—'}</td>
                     <td className="amount">
                       {formatCurrency(r.currentBalance)}
+                    </td>
+                    <td className="amount">
+                      {formatCurrency(r.disbursedToDate)}
                     </td>
                     <td className={`amount${isBest ? ' highlight-best' : ''}`}>
                       {formatCurrency(r.totalInterest)}
@@ -167,7 +171,7 @@ export default function ComparisonView({ results, onRemove, onClear, portfolioId
                   </tr>
                   {isOpen && (
                     <tr className="period-detail-row">
-                      <td colSpan={11}>
+                      <td colSpan={12}>
                         <div className="period-table-wrapper">
                           <table className="period-table">
                             <thead>

@@ -1,10 +1,13 @@
 import type { BankAccount } from '../models/BankAccount';
 import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
-import { getYear, getMonth } from './date';
+import { getYear, getMonth, todayISO, daysBetween } from './date';
 
 export function interestPerMonth(result: BankAccount): number {
-  if (result.durationMonths === 0) return 0;
-  return result.totalInterest / result.durationMonths;
+  if (result.periods.length === 0 || result.hasExpired || result.hasNotStartedYet) return 0;
+  const today = todayISO();
+  const [y, m] = today.split('-').map(Number);
+  const key = toMonthKey(y, m - 1);
+  return projectToCalendarMonths(result).get(key) ?? 0;
 }
 
 function toMonthKey(year: number, month: number): string {
@@ -24,11 +27,26 @@ function projectToCalendarMonths(result: BankAccount): Map<string, number> {
   const startMonth = getMonth(result.startDate);
 
   if (result.interval === PayoutInterval.AtMaturity || result.interval === PayoutInterval.Daily) {
-    const monthlyShare = result.totalInterest / result.durationMonths;
-    for (let i = 0; i < result.durationMonths; i++) {
-      const [y, m] = addMonths(startYear, startMonth, i);
-      const key = toMonthKey(y, m);
-      map.set(key, (map.get(key) ?? 0) + monthlyShare);
+    const endDate = result.periods[result.periods.length - 1]?.endDate;
+    if (!endDate) return map;
+
+    const totalDays = daysBetween(result.startDate, endDate);
+    if (totalDays <= 0) return map;
+
+    let cursor = result.startDate;
+    while (cursor < endDate) {
+      const [cy, cm] = cursor.split('-').map(Number);
+      const monthEnd = `${cy}-${String(cm).padStart(2, '0')}-${String(new Date(cy, cm, 0).getDate()).padStart(2, '0')}`;
+      const segmentEnd = monthEnd < endDate ? monthEnd : endDate;
+      const segmentDays = daysBetween(cursor, segmentEnd) + (segmentEnd === endDate ? 0 : 1);
+      const share = result.totalInterest * (segmentDays / totalDays);
+
+      const key = toMonthKey(cy, cm - 1);
+      map.set(key, (map.get(key) ?? 0) + share);
+
+      // Move to 1st of next month
+      const [ny, nm] = cm < 12 ? [cy, cm + 1] : [cy + 1, 1];
+      cursor = `${ny}-${String(nm).padStart(2, '0')}-01`;
     }
     return map;
   }

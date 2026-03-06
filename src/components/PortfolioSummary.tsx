@@ -48,7 +48,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
           <div className="portfolio-stat-value">{formatCurrency(totalInterest)}</div>
         </div>
         <div className="portfolio-stat portfolio-stat--highlight">
-          <div className="portfolio-stat-label">Gem. per maand</div>
+          <div className="portfolio-stat-label">Deze maand</div>
           <div className="portfolio-stat-value">{formatCurrency(totalPerMonth)}</div>
         </div>
       </div>
@@ -67,6 +67,8 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
               </span>
               <span className="portfolio-item-meta">
                 {INTERVAL_LABELS[r.interval]}
+                {r.startDate && <> &middot; {r.startDate}</>}
+                {r.cashFlows.length > 0 && <> &middot; {r.cashFlows.length} transactie{r.cashFlows.length !== 1 ? 's' : ''}</>}
               </span>
             </div>
             <div className="portfolio-item-amount">

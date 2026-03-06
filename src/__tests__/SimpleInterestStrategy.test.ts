@@ -49,10 +49,19 @@ describe('SimpleInterestStrategy', () => {
     expect(totalInterest).toBeCloseTo(expected, 2);
   });
 
-  it('produces single period for AtMaturity without adjustments', () => {
+  it('produces monthly accrual periods for AtMaturity without adjustments', () => {
     const result = strategy.calculate(makeInput({ interval: PayoutInterval.AtMaturity }));
-    expect(result).toHaveLength(1);
-    expect(result[0].interestEarned).toBeCloseTo(10000 * 0.05, 2);
+    expect(result).toHaveLength(12);
+    expect(result[11].periodLabel).toBe('Einde looptijd');
+    expect(result[0].periodLabel).toBe('Maand 1');
+    // Each month accrues the same interest
+    const monthlyInterest = 10000 * 0.05 / 12;
+    for (const p of result) {
+      expect(p.interestEarned).toBeCloseTo(monthlyInterest, 2);
+    }
+    // Only the last period disburses
+    expect(result[0].disbursed).toBe(0);
+    expect(result[11].disbursed).toBeCloseTo(10000 * 0.05, 2);
   });
 
   it('adjusts principal on deposit', () => {

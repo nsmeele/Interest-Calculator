@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AccountForm from './components/AccountForm';
-import ComparisonView from './components/ComparisonView';
+import BankAccountsOverview from './components/BankAccountsOverview.tsx';
 import PortfolioSummary from './components/PortfolioSummary';
 import ImportModal from './components/ImportModal';
 import { useResultStorage } from './hooks/useResultStorage';
@@ -135,7 +135,7 @@ export default function App() {
               )}
             </div>
             <div className={`${activeTab === 'portfolio' ? 'mobile-hidden' : ''}${rightTab !== 'results' ? ' desktop-hidden' : ''}`}>
-              <ComparisonView
+              <BankAccountsOverview
                 results={results}
                 onRemove={removeResult}
                 onClear={clearResults}

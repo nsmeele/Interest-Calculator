@@ -4,7 +4,7 @@ import { InterestType, INTEREST_TYPE_LABELS } from '../enums/InterestType';
 import { BankAccountInput } from '../models/BankAccountInput';
 import { AccountCalculator } from '../calculator/AccountCalculator';
 import type { BankAccount } from '../models/BankAccount';
-import { monthsBetween, todayISO } from '../utils/date';
+import { monthsBetween, daysBetween, todayISO, endOfMonthISO } from '../utils/date';
 
 interface AccountFormProps {
   onResult: (result: BankAccount) => void;
@@ -95,7 +95,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
     const amount = parseFloat(startAmount.replace(/\./g, '').replace(',', '.'));
     const rate = parseFloat(interestRate.replace(',', '.'));
     const durationMonths = isOngoing
-      ? Math.max(1, monthsBetween(startDate, todayISO()))
+      ? Math.max(1, Math.ceil(daysBetween(startDate, endOfMonthISO(todayISO())) / 30.44))
       : hasDurationFromDates ? durationFromDates : parseInt(years) * 12 + parseInt(months || '0');
 
     const input = new BankAccountInput(amount, rate, durationMonths, interval, interestType, startDate || undefined, editingResult?.cashFlows ?? [], isOngoing);

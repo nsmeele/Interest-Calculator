@@ -36,9 +36,36 @@ function makeResult(overrides: {
 }
 
 describe('interestPerMonth', () => {
-  it('returns totalInterest / durationMonths', () => {
-    const result = makeResult();
-    expect(interestPerMonth(result)).toBeCloseTo(600 / 12, 2);
+  it('returns current period interest for active account', () => {
+    const today = new Date();
+    const startDate = `${today.getFullYear()}-01-01`;
+    const periods = Array.from({ length: 12 }, (_, i) => {
+      const endMonth = i + 2 > 12 ? 1 : i + 2;
+      const endYear = i + 2 > 12 ? today.getFullYear() + 1 : today.getFullYear();
+      return {
+        period: i + 1,
+        periodLabel: `Periode ${i + 1}`,
+        startBalance: 10000,
+        interestEarned: 50,
+        disbursed: 50,
+        endBalance: 10000,
+        deposited: 0,
+        endDate: `${endYear}-${String(endMonth).padStart(2, '0')}-01`,
+      };
+    });
+    const result = makeResult({ startDate, periods });
+    // Should return the interest of the period covering today
+    expect(interestPerMonth(result)).toBe(50);
+  });
+
+  it('returns 0 for expired account', () => {
+    const periods = [{
+      period: 1, periodLabel: 'Periode 1', startBalance: 10000,
+      interestEarned: 50, disbursed: 50, endBalance: 10000, deposited: 0,
+      endDate: '2020-02-01',
+    }];
+    const result = makeResult({ startDate: '2020-01-01', durationMonths: 1, periods });
+    expect(interestPerMonth(result)).toBe(0);
   });
 
   it('returns 0 for 0 duration', () => {

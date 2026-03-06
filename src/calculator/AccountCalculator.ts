@@ -1,10 +1,10 @@
 import type { IAccountCalculator } from '../interfaces/IAccountCalculator';
 import type { BankAccountInput } from '../models/BankAccountInput';
-import type { BalanceAdjustments, PeriodScheduleEntry } from '../interfaces/IInterestStrategy';
+import type { BalanceAdjustments, PeriodScheduleEntry, PeriodCashFlows } from '../interfaces/IInterestStrategy';
 import { BankAccount } from '../models/BankAccount';
 import { InterestStrategyFactory } from '../factories/InterestStrategyFactory';
 import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
-import { expandCashFlows } from '../models/CashFlow';
+import { expandCashFlows, type ExpandedCashFlow } from '../models/CashFlow';
 import { addMonthsToISO, monthsBetween, getNextQuarterStart, getNextMonthStart, isBeforeDate } from '../utils/date';
 
 export class AccountCalculator implements IAccountCalculator {
@@ -12,7 +12,8 @@ export class AccountCalculator implements IAccountCalculator {
     const strategy = InterestStrategyFactory.create(input.interestType);
     const schedule = this.buildSchedule(input);
     const adjustments = this.buildAdjustments(input, schedule);
-    const periods = strategy.calculate(input, adjustments, schedule);
+    const periodCashFlows = this.buildPeriodCashFlows(input, schedule);
+    const periods = strategy.calculate(input, adjustments, schedule, periodCashFlows);
 
     return new BankAccount(
       input.startAmount,
@@ -57,6 +58,7 @@ export class AccountCalculator implements IAccountCalculator {
     switch (interval) {
       case PayoutInterval.Monthly: return getNextMonthStart;
       case PayoutInterval.Quarterly: return getNextQuarterStart;
+      case PayoutInterval.AtMaturity: return getNextMonthStart;
       default: return undefined;
     }
   }
@@ -109,5 +111,52 @@ export class AccountCalculator implements IAccountCalculator {
     }
 
     return adjustments;
+  }
+
+  private buildPeriodCashFlows(input: BankAccountInput, schedule?: PeriodScheduleEntry[]): PeriodCashFlows | undefined {
+    if (input.cashFlows.length === 0 || !input.startDate) return undefined;
+
+    const endISO = addMonthsToISO(input.startDate, input.durationMonths);
+    const expanded = expandCashFlows(input.cashFlows, endISO);
+    if (expanded.length === 0) return undefined;
+
+    if (schedule) {
+      return this.mapCashFlowsToSchedulePeriods(expanded, schedule);
+    }
+
+    const periodsPerYear = (input.interval === PayoutInterval.AtMaturity && expanded.length > 0) ? 12 : getPeriodsPerYear(input.interval);
+    const monthsPerPeriod = 12 / periodsPerYear;
+
+    const result: PeriodCashFlows = {};
+
+    for (const cf of expanded) {
+      const monthOffset = monthsBetween(input.startDate, cf.date);
+      if (monthOffset < 0 || monthOffset >= input.durationMonths) continue;
+
+      const periodIndex = Math.floor(monthOffset / monthsPerPeriod) + 1;
+      (result[periodIndex] ??= []).push(cf);
+    }
+
+    return Object.keys(result).length > 0 ? result : undefined;
+  }
+
+  private mapCashFlowsToSchedulePeriods(
+    expanded: ExpandedCashFlow[],
+    schedule: PeriodScheduleEntry[],
+  ): PeriodCashFlows | undefined {
+    const result: PeriodCashFlows = {};
+
+    for (const cf of expanded) {
+      for (let i = 0; i < schedule.length; i++) {
+        const { startDate, endDate } = schedule[i];
+        if (cf.date >= startDate && cf.date < endDate) {
+          const periodIndex = i + 1;
+          (result[periodIndex] ??= []).push(cf);
+          break;
+        }
+      }
+    }
+
+    return Object.keys(result).length > 0 ? result : undefined;
   }
 }

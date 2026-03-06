@@ -1,4 +1,4 @@
-import { parseISO, differenceInMonths, differenceInDays, addMonths as dfnsAddMonths, format, isBefore } from 'date-fns';
+import { parseISO, differenceInMonths, differenceInDays, addMonths as dfnsAddMonths, lastDayOfMonth, format, isBefore } from 'date-fns';
 
 export function parseDate(iso: string): Date {
   return parseISO(iso);
@@ -57,4 +57,8 @@ export function getNextQuarterStart(iso: string): string {
 export function getNextMonthStart(iso: string): string {
   const date = parseISO(iso);
   return toISO(new Date(date.getFullYear(), date.getMonth() + 1, 1));
+}
+
+export function endOfMonthISO(iso: string): string {
+  return toISO(lastDayOfMonth(parseISO(iso)));
 }

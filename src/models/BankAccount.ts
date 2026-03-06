@@ -11,6 +11,7 @@ export interface PeriodResult {
   disbursed: number;
   endBalance: number;
   deposited: number;
+  endDate?: string;
 }
 
 export class BankAccount {
@@ -45,6 +46,13 @@ export class BankAccount {
     return this.periods.reduce((sum, p) => sum + p.disbursed, 0);
   }
 
+  get disbursedToDate(): number {
+    const today = todayISO();
+    return this.periods
+      .filter(p => p.endDate && !isBeforeDate(today, p.endDate))
+      .reduce((sum, p) => sum + p.disbursed, 0);
+  }
+
   get totalDeposited(): number {
     return this.periods.reduce((sum, p) => sum + (p.deposited ?? 0), 0);
   }
@@ -74,7 +82,15 @@ export class BankAccount {
   }
 
   get nextPayoutDate(): string | undefined {
-    if (!this.startDate || this.hasExpired || this.hasNotStartedYet) return undefined;
+    if (!this.startDate || this.hasExpired) return undefined;
+
+    if (this.hasNotStartedYet) {
+      if (this.interval === PayoutInterval.AtMaturity) return this.endDate;
+      if (this.interval === PayoutInterval.Monthly) return getNextMonthStart(this.startDate);
+      if (this.interval === PayoutInterval.Quarterly) return getNextQuarterStart(this.startDate);
+      const monthsPerPeriod = 12 / getPeriodsPerYear(this.interval);
+      return addMonthsToISO(this.startDate, monthsPerPeriod);
+    }
     if (this.interval === PayoutInterval.AtMaturity) return this.endDate;
 
     const today = todayISO();
