@@ -1,5 +1,6 @@
 import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
+import { DayCountConvention } from '../enums/DayCountConvention';
 import { type CashFlow, expandCashFlows } from './CashFlow';
 import { addMonthsToISO, todayISO, isBeforeDate, getNextQuarterStart, getNextMonthStart } from '../utils/date';
 
@@ -28,6 +29,7 @@ export class BankAccount {
     public readonly periods: PeriodResult[],
     public readonly cashFlows: CashFlow[] = [],
     public readonly isOngoing: boolean = false,
+    public readonly dayCount: DayCountConvention = DayCountConvention.ACT_ACT,
   ) {
     this.id = crypto.randomUUID();
     this.timestamp = Date.now();

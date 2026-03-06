@@ -2,8 +2,9 @@ import type { BalanceAdjustments, PeriodScheduleEntry, PeriodCashFlows } from '.
 import type { BankAccountInput } from '../models/BankAccountInput';
 import type { PeriodResult } from '../models/BankAccount';
 import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
-import { addMonthsToISO, daysBetween } from './date';
+import { addMonthsToISO } from './date';
 import { calculateDailyInterest } from './dailyInterest';
+import { yearFraction } from './dayCount';
 
 export function hasAdjustments(adj: BalanceAdjustments): boolean {
   return Object.keys(adj).length > 0;
@@ -55,8 +56,8 @@ export function calculatePeriods(
 ): PeriodResult[] {
   const periodsPerYear = input.interval === PayoutInterval.AtMaturity ? 12 : getPeriodsPerYear(input.interval);
   const monthsPerPeriod = 12 / periodsPerYear;
-  const interestFraction = input.annualInterestRate / 100 / periodsPerYear;
   const totalPeriods = Math.floor(input.durationMonths / 12 * periodsPerYear);
+  const rate = input.annualInterestRate / 100;
   const periods: PeriodResult[] = [];
 
   let balance = input.startAmount;
@@ -67,7 +68,7 @@ export function calculatePeriods(
     const periodEndDate = input.startDate ? addMonthsToISO(input.startDate, i * monthsPerPeriod) : undefined;
 
     if (cashFlowsForPeriod?.length && periodStartDate && periodEndDate) {
-      const result = calculateDailyInterest(periodStartDate, periodEndDate, balance, cashFlowsForPeriod, input.annualInterestRate);
+      const result = calculateDailyInterest(periodStartDate, periodEndDate, balance, cashFlowsForPeriod, input.annualInterestRate, input.dayCount);
       const endBalance = compound ? result.endBalance + result.interestEarned : result.endBalance;
 
       periods.push({
@@ -87,7 +88,10 @@ export function calculatePeriods(
       const deposited = Math.max(-balance, adjustment);
       balance = Math.max(0, balance + deposited);
 
-      const interestEarned = balance * interestFraction;
+      const interestFraction = periodStartDate && periodEndDate
+        ? yearFraction(periodStartDate, periodEndDate, input.dayCount)
+        : 1 / periodsPerYear;
+      const interestEarned = balance * rate * interestFraction;
       const endBalance = compound ? balance + interestEarned : balance;
 
       periods.push({
@@ -115,9 +119,7 @@ export function calculatePeriodsWithSchedule(
   periodCashFlows: PeriodCashFlows | undefined,
   compound: boolean,
 ): PeriodResult[] {
-  const periodsPerYear = getPeriodsPerYear(input.interval);
-  const interestFraction = input.annualInterestRate / 100 / periodsPerYear;
-  const standardPeriodDays = 365 / periodsPerYear;
+  const rate = input.annualInterestRate / 100;
   const periods: PeriodResult[] = [];
   let balance = input.startAmount;
 
@@ -127,7 +129,7 @@ export function calculatePeriodsWithSchedule(
     const cashFlowsForPeriod = periodCashFlows?.[periodIndex];
 
     if (cashFlowsForPeriod?.length) {
-      const result = calculateDailyInterest(entry.startDate, entry.endDate, balance, cashFlowsForPeriod, input.annualInterestRate);
+      const result = calculateDailyInterest(entry.startDate, entry.endDate, balance, cashFlowsForPeriod, input.annualInterestRate, input.dayCount);
       const endBalance = compound ? result.endBalance + result.interestEarned : result.endBalance;
 
       periods.push({
@@ -147,10 +149,8 @@ export function calculatePeriodsWithSchedule(
       const deposited = Math.max(-balance, adjustment);
       balance = Math.max(0, balance + deposited);
 
-      const isFullPeriod = entry.startDate.endsWith('-01') && entry.endDate.endsWith('-01');
-      const actualDays = daysBetween(entry.startDate, entry.endDate);
-      const periodFraction = isFullPeriod ? 1 : actualDays / standardPeriodDays;
-      const interestEarned = balance * interestFraction * periodFraction;
+      const periodFraction = yearFraction(entry.startDate, entry.endDate, input.dayCount);
+      const interestEarned = balance * rate * periodFraction;
       const endBalance = compound ? balance + interestEarned : balance;
 
       periods.push({

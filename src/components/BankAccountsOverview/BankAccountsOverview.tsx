@@ -1,10 +1,11 @@
 import { Fragment, useState, useRef } from 'react';
-import type { BankAccount } from '../models/BankAccount';
-import type { CashFlow } from '../models/CashFlow';
-import { INTERVAL_LABELS } from '../enums/PayoutInterval';
-import { INTEREST_TYPE_LABELS } from '../enums/InterestType';
-import { formatCurrency, formatDurationShort, formatDate } from '../utils/format';
-import CashFlowEditor from './CashFlowEditor';
+import type { BankAccount } from '../../models/BankAccount';
+import type { CashFlow } from '../../models/CashFlow';
+import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
+import { INTEREST_TYPE_LABELS } from '../../enums/InterestType';
+import { formatCurrency, formatDurationShort, formatDate } from '../../utils/format';
+import CashFlowEditor from '../CashFlowEditor';
+import './BankAccountsOverview.css';
 
 interface BankAccountsOverviewProps {
   results: BankAccount[];
@@ -185,9 +186,16 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                               </tr>
                             </thead>
                             <tbody>
-                              {r.periods.map((p) => (
+                              {r.periods.map((p, idx) => {
+                                const periodStart = idx === 0 ? r.startDate : r.periods[idx - 1].endDate;
+                                return (
                                 <tr key={p.period}>
-                                  <td>{p.periodLabel}</td>
+                                  <td>
+                                    {p.periodLabel}
+                                    {periodStart && p.endDate && (
+                                      <span className="period-table__date">{formatDate(periodStart)} – {formatDate(p.endDate)}</span>
+                                    )}
+                                  </td>
                                   <td>{formatCurrency(p.startBalance)}</td>
                                   {r.totalDeposited !== 0 && (
                                     <td className={p.deposited > 0 ? 'text-success' : p.deposited < 0 ? 'text-danger' : ''}>
@@ -198,7 +206,8 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                                   <td>{formatCurrency(p.disbursed)}</td>
                                   <td>{formatCurrency(p.endBalance)}</td>
                                 </tr>
-                              ))}
+                                );
+                              })}
                             </tbody>
                           </table>
                         </div>

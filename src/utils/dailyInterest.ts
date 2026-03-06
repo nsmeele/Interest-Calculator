@@ -1,5 +1,6 @@
 import type { ExpandedCashFlow } from '../models/CashFlow';
-import { daysBetween } from './date';
+import { DayCountConvention } from '../enums/DayCountConvention';
+import { yearFraction } from './dayCount';
 
 export interface DailyInterestResult {
   interestEarned: number;
@@ -13,8 +14,9 @@ export function calculateDailyInterest(
   startBalance: number,
   cashFlows: ExpandedCashFlow[],
   annualRate: number,
+  dayCount: DayCountConvention = DayCountConvention.ACT_ACT,
 ): DailyInterestResult {
-  const dailyRate = annualRate / 100 / 365;
+  const rate = annualRate / 100;
   const sorted = [...cashFlows].sort((a, b) => a.date.localeCompare(b.date));
 
   let balance = startBalance;
@@ -25,8 +27,7 @@ export function calculateDailyInterest(
   for (const cf of sorted) {
     if (cf.date < periodStart || cf.date >= periodEnd) continue;
 
-    const days = daysBetween(segmentStart, cf.date);
-    interestEarned += balance * dailyRate * days;
+    interestEarned += balance * rate * yearFraction(segmentStart, cf.date, dayCount);
 
     const clamped = Math.max(-balance, cf.amount);
     balance = Math.max(0, balance + clamped);
@@ -34,8 +35,7 @@ export function calculateDailyInterest(
     segmentStart = cf.date;
   }
 
-  const remainingDays = daysBetween(segmentStart, periodEnd);
-  interestEarned += balance * dailyRate * remainingDays;
+  interestEarned += balance * rate * yearFraction(segmentStart, periodEnd, dayCount);
 
   return { interestEarned, totalDeposited, endBalance: balance };
 }

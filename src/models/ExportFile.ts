@@ -1,5 +1,6 @@
 import type { PayoutInterval } from '../enums/PayoutInterval';
 import type { InterestType } from '../enums/InterestType';
+import type { DayCountConvention } from '../enums/DayCountConvention';
 import type { PeriodResult } from './BankAccount';
 import type { CashFlow } from './CashFlow';
 
@@ -17,6 +18,7 @@ export interface ExportedResult {
   periods: PeriodResult[];
   cashFlows?: CashFlow[];
   isOngoing?: boolean;
+  dayCount?: DayCountConvention;
 }
 
 export interface ExportFile {

@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { PayoutInterval, INTERVAL_LABELS } from '../enums/PayoutInterval';
-import { InterestType, INTEREST_TYPE_LABELS } from '../enums/InterestType';
-import { BankAccountInput } from '../models/BankAccountInput';
-import { AccountCalculator } from '../calculator/AccountCalculator';
-import type { BankAccount } from '../models/BankAccount';
-import { monthsBetween, daysBetween, todayISO, endOfMonthISO } from '../utils/date';
+import { PayoutInterval, INTERVAL_LABELS } from '../../enums/PayoutInterval';
+import { InterestType, INTEREST_TYPE_LABELS } from '../../enums/InterestType';
+import { DayCountConvention, DAY_COUNT_LABELS, DAY_COUNT_DESCRIPTIONS } from '../../enums/DayCountConvention';
+import { BankAccountInput } from '../../models/BankAccountInput';
+import { AccountCalculator } from '../../calculator/AccountCalculator';
+import type { BankAccount } from '../../models/BankAccount';
+import { monthsBetween, daysBetween, todayISO, endOfMonthISO } from '../../utils/date';
+import './AccountForm.css';
 
 interface AccountFormProps {
   onResult: (result: BankAccount) => void;
@@ -15,6 +17,7 @@ interface AccountFormProps {
 const calculator = new AccountCalculator();
 const intervals = Object.values(PayoutInterval);
 const interestTypes = Object.values(InterestType);
+const dayCountOptions = Object.values(DayCountConvention);
 
 export default function AccountForm({ onResult, editingResult, onCancelEdit }: AccountFormProps) {
   const [startAmount, setStartAmount] = useState('10000');
@@ -26,6 +29,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isOngoing, setIsOngoing] = useState(true);
+  const [dayCount, setDayCount] = useState<DayCountConvention>(DayCountConvention.ACT_ACT);
 
   const prevEditingId = useState<string | null>(null);
   if (editingResult && editingResult.id !== prevEditingId[0]) {
@@ -39,6 +43,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
     setStartDate(editingResult.startDate ?? '');
     setEndDate(editingResult.endDate ?? '');
     setIsOngoing(editingResult.isOngoing);
+    setDayCount(editingResult.dayCount);
   }
   if (!editingResult && prevEditingId[0] !== null) {
     prevEditingId[1](null);
@@ -98,7 +103,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
       ? Math.max(1, Math.ceil(daysBetween(startDate, endOfMonthISO(todayISO())) / 30.44))
       : hasDurationFromDates ? durationFromDates : parseInt(years) * 12 + parseInt(months || '0');
 
-    const input = new BankAccountInput(amount, rate, durationMonths, interval, interestType, startDate || undefined, editingResult?.cashFlows ?? [], isOngoing);
+    const input = new BankAccountInput(amount, rate, durationMonths, interval, interestType, startDate || undefined, editingResult?.cashFlows ?? [], isOngoing, dayCount);
     const result = calculator.calculate(input);
     onResult(result);
   }
@@ -267,6 +272,34 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                     />
                     <label htmlFor={`interval-${iv}`}>
                       {INTERVAL_LABELS[iv]}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">
+                Dagtellingconventie
+                <span className="form-hint">Voor een nauwkeurige berekening: kies de conventie die je bank hanteert. Dit staat in het productinformatieblad (PIB) onder 'Renteberekening'.</span>
+              </label>
+              <div className="interval-grid">
+                {dayCountOptions.map((dc) => (
+                  <div key={dc} className="interval-option">
+                    <input
+                      type="radio"
+                      name="dayCount"
+                      id={`daycount-${dc}`}
+                      value={dc}
+                      checked={dayCount === dc}
+                      onChange={() => setDayCount(dc)}
+                    />
+                    <label htmlFor={`daycount-${dc}`}>
+                      {DAY_COUNT_LABELS[dc]}
+                      <span className="popover-anchor" tabIndex={0} role="button" aria-label={`Info over ${DAY_COUNT_LABELS[dc]}`} onClick={(e) => e.preventDefault()}>
+                        <svg className="popover-anchor__icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.5"/><text x="8" y="11.5" textAnchor="middle" fontSize="9" fontWeight="600" fill="currentColor">i</text></svg>
+                        <span className="popover-anchor__content">{DAY_COUNT_DESCRIPTIONS[dc]}</span>
+                      </span>
                     </label>
                   </div>
                 ))}

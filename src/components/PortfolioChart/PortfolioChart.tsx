@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import type { BankAccount } from '../models/BankAccount';
-import { buildPortfolioChartData } from '../utils/interest';
-import { formatCurrency } from '../utils/format';
+import type { BankAccount } from '../../models/BankAccount';
+import { buildPortfolioChartData } from '../../utils/interest';
+import { formatCurrency } from '../../utils/format';
+import './PortfolioChart.css';
 
 interface ChartTooltipProps {
   active?: boolean;

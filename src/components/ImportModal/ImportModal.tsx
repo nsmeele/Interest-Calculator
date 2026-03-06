@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import type { ImportPreview, ImportMode } from '../hooks/useDataTransfer';
+import type { ImportPreview, ImportMode } from '../../hooks/useDataTransfer';
+import './ImportModal.css';
 
 interface ImportModalProps {
   preview: ImportPreview;

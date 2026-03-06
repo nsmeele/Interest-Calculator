@@ -15,6 +15,7 @@ export function toExportedResult(r: BankAccount): ExportedResult {
     periods: r.periods,
     cashFlows: r.cashFlows,
     isOngoing: r.isOngoing,
+    dayCount: r.dayCount,
   };
 }
 

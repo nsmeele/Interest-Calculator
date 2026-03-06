@@ -110,14 +110,13 @@ describe('AccountCalculator', () => {
       expect(result.periods).toHaveLength(12);
     });
 
-    it('pro-rates interest for partial periods based on actual days', () => {
+    it('pro-rates interest for partial periods based on ACT/ACT year fraction', () => {
       const input = new BankAccountInput(10000, 5, 3, PayoutInterval.Monthly, InterestType.Compound, '2025-01-15');
       const result = calculator.calculate(input);
 
-      // First period: Jan 15 → Feb 1 = 17 days, standard month = 365/12 ≈ 30.42 days
-      const fullMonthInterest = 10000 * 0.05 / 12;
-      const firstPeriodFraction = 17 / (365 / 12);
-      expect(result.periods[0].interestEarned).toBeCloseTo(fullMonthInterest * firstPeriodFraction, 2);
+      // First period: Jan 15 → Feb 1 = 17 days in 2025 (non-leap, 365 days)
+      const expectedFraction = 17 / 365;
+      expect(result.periods[0].interestEarned).toBeCloseTo(10000 * 0.05 * expectedFraction, 2);
     });
 
     it('works without startDate (falls back to equal periods)', () => {
@@ -131,16 +130,15 @@ describe('AccountCalculator', () => {
   describe('vastgoed: 1000 euro, 24 maanden, 7,50%, maandelijks enkelvoudig', () => {
     const input = new BankAccountInput(1000, 7.5, 24, PayoutInterval.Monthly, InterestType.Simple, '2026-01-01');
     const result = calculator.calculate(input);
-    const monthlyInterest = 1000 * 0.075 / 12; // €6.25
 
     it('produces 24 periods', () => {
       expect(result.periods).toHaveLength(24);
     });
 
-    it('every period pays exactly €6.25', () => {
-      for (const p of result.periods) {
-        expect(p.interestEarned).toBeCloseTo(monthlyInterest, 2);
-      }
+    it('every period pays interest based on ACT/ACT year fraction', () => {
+      // With ACT/ACT, monthly interest varies per month (28-31 days / 365 or 366)
+      const totalInterest = result.periods.reduce((sum, p) => sum + p.interestEarned, 0);
+      expect(totalInterest).toBeCloseTo(1000 * 0.075 * 2, 1); // ~€150 over 2 years
     });
 
     it('balance stays at €1000 (interest is paid out, not reinvested)', () => {
@@ -153,19 +151,14 @@ describe('AccountCalculator', () => {
       const midMonthInput = new BankAccountInput(1000, 7.5, 24, PayoutInterval.Monthly, InterestType.Simple, '2026-01-15');
       const midResult = calculator.calculate(midMonthInput);
 
-      const fullMonthInterest = 1000 * 0.075 / 12;
-      const standardDays = 365 / 12;
+      // First period: Jan 15 → Feb 1 = 17 days, in a 365-day year
+      const firstExpected = 1000 * 0.075 * (17 / 365);
+      expect(midResult.periods[0].interestEarned).toBeCloseTo(firstExpected, 2);
 
-      // First period: Jan 15 → Feb 1 = 17 days (partial)
-      expect(midResult.periods[0].interestEarned).toBeCloseTo(fullMonthInterest * (17 / standardDays), 2);
-
-      // Middle periods: full months, exact €6.25
-      expect(midResult.periods[1].interestEarned).toBeCloseTo(fullMonthInterest, 2);
-      expect(midResult.periods[2].interestEarned).toBeCloseTo(fullMonthInterest, 2);
-
-      // Last period: Jan 1 → Jan 15 = 14 days (partial)
+      // Last period: Jan 1 2028 → Jan 15 2028 = 14 days (2028 is a leap year)
       const last = midResult.periods[midResult.periods.length - 1];
-      expect(last.interestEarned).toBeCloseTo(fullMonthInterest * (14 / standardDays), 2);
+      const lastExpected = 1000 * 0.075 * (14 / 366);
+      expect(last.interestEarned).toBeCloseTo(lastExpected, 2);
     });
   });
 
@@ -185,14 +178,13 @@ describe('AccountCalculator', () => {
       expect(result.periods).toHaveLength(4);
     });
 
-    it('pro-rates interest for partial periods based on actual days', () => {
+    it('pro-rates interest for partial periods based on ACT/ACT year fraction', () => {
       const input = new BankAccountInput(10000, 5, 12, PayoutInterval.Quarterly, InterestType.Compound, '2025-02-15');
       const result = calculator.calculate(input);
 
-      // First period: Feb 15 → Apr 1 = 45 days, standard quarter = 365/4 = 91.25 days
-      const fullQuarterInterest = 10000 * 0.05 / 4;
-      const firstPeriodFraction = 45 / (365 / 4);
-      expect(result.periods[0].interestEarned).toBeCloseTo(fullQuarterInterest * firstPeriodFraction, 2);
+      // First period: Feb 15 → Apr 1 = 45 days in 2025 (non-leap, 365 days)
+      const expectedFraction = 45 / 365;
+      expect(result.periods[0].interestEarned).toBeCloseTo(10000 * 0.05 * expectedFraction, 2);
     });
 
     it('maps cash flow to correct fixed-date period', () => {

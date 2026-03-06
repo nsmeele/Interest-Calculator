@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import type { CashFlow } from '../models/CashFlow';
-import { formatCurrency, formatDate } from '../utils/format';
+import type { CashFlow } from '../../models/CashFlow';
+import { formatCurrency, formatDate } from '../../utils/format';
+import './CashFlowEditor.css';
 
 const RECURRING_OPTIONS = [
   { value: 1, label: 'Maandelijks' },

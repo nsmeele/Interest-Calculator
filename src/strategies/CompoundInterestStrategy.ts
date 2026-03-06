@@ -8,7 +8,7 @@ import { hasAdjustments, calculateAtMaturityNoSchedule, calculatePeriods, calcul
 export class CompoundInterestStrategy implements IInterestStrategy {
   calculate(input: BankAccountInput, adjustments: BalanceAdjustments = {}, schedule?: PeriodScheduleEntry[], periodCashFlows?: PeriodCashFlows): PeriodResult[] {
     if (schedule && input.interval === PayoutInterval.AtMaturity && !hasAdjustments(adjustments)) {
-      return calculateAtMaturityAccrual(input.startAmount, input.annualInterestRate, input.interestType, schedule);
+      return calculateAtMaturityAccrual(input.startAmount, input.annualInterestRate, input.interestType, schedule, input.dayCount);
     }
 
     if (input.interval === PayoutInterval.AtMaturity && !hasAdjustments(adjustments)) {

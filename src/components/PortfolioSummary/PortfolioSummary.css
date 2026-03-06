@@ -1,0 +1,93 @@
+@reference "../../style.css";
+
+/* ─── Portfolio ─── */
+.portfolio {
+  @apply mt-6 border-l-4 border-l-copper-500 animate-[slideInUp_0.35s_ease_both];
+}
+
+.portfolio-stats {
+  @apply grid grid-cols-1 gap-3 mb-4;
+}
+
+.portfolio-stat {
+  @apply p-3.5 rounded-lg text-center bg-navy-100/50 transition-all duration-200 hover:-translate-y-px hover:shadow-sm;
+}
+
+.portfolio-stat--highlight {
+  @apply bg-linear-to-br from-copper-100 to-copper-200;
+}
+
+.portfolio-stat--highlight:hover {
+  @apply shadow-md;
+}
+
+.portfolio-stat-label {
+  @apply font-semibold text-navy-500 uppercase mb-1 text-[0.6875rem] tracking-[0.07em];
+}
+
+.portfolio-stat-value {
+  @apply text-lg font-bold text-navy-900 tabular-nums;
+}
+
+.portfolio-stat--highlight .portfolio-stat-value {
+  @apply text-copper-600;
+}
+
+.portfolio-items {
+  @apply flex flex-col gap-2;
+}
+
+.portfolio-item {
+  @apply flex items-center gap-3 px-3 py-3 rounded-lg bg-navy-100/30 transition-all duration-200 hover:bg-navy-100/60;
+}
+
+.portfolio-item-info {
+  @apply flex-1 min-w-0;
+}
+
+.portfolio-item-label {
+  @apply font-semibold text-sm text-navy-800;
+}
+
+.portfolio-item-meta {
+  @apply text-xs text-navy-500 ml-2;
+}
+
+.portfolio-item--expired {
+  @apply opacity-50;
+}
+
+.badge-expired {
+  @apply inline-block text-[0.625rem] font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-danger bg-danger-light ml-2 align-middle;
+}
+
+.portfolio-item--upcoming {
+  @apply opacity-50;
+}
+
+.badge-upcoming {
+  @apply inline-block text-[0.625rem] font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-navy-600 bg-navy-100 ml-2 align-middle;
+}
+
+.badge-ongoing {
+  @apply inline-block text-[0.625rem] font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-success bg-success/10 ml-2 align-middle;
+}
+
+.portfolio-item-amount {
+  @apply font-bold text-sm whitespace-nowrap text-copper-600 tabular-nums;
+}
+
+@media (min-width: 640px) {
+  .portfolio {
+    @apply mt-8;
+  }
+  .portfolio-stats {
+    @apply grid-cols-3 gap-4 mb-5;
+  }
+  .portfolio-stat {
+    @apply p-4;
+  }
+  .portfolio-stat-value {
+    @apply text-xl;
+  }
+}

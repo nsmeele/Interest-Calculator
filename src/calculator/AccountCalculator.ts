@@ -5,7 +5,7 @@ import { BankAccount } from '../models/BankAccount';
 import { InterestStrategyFactory } from '../factories/InterestStrategyFactory';
 import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
 import { expandCashFlows, type ExpandedCashFlow } from '../models/CashFlow';
-import { addMonthsToISO, monthsBetween, getNextQuarterStart, getNextMonthStart, isBeforeDate } from '../utils/date';
+import { addMonthsToISO, monthsBetween, getNextQuarterStart, getNextMonthStart, isBeforeDate, todayISO } from '../utils/date';
 
 export class AccountCalculator implements IAccountCalculator {
   calculate(input: BankAccountInput): BankAccount {
@@ -25,6 +25,7 @@ export class AccountCalculator implements IAccountCalculator {
       periods,
       input.cashFlows,
       input.isOngoing,
+      input.dayCount,
     );
   }
 
@@ -32,7 +33,9 @@ export class AccountCalculator implements IAccountCalculator {
     const getNextBoundary = this.getNextBoundaryFn(input.interval);
     if (!input.startDate || !getNextBoundary) return undefined;
 
-    const endISO = addMonthsToISO(input.startDate, input.durationMonths);
+    const endISO = input.isOngoing
+      ? getNextBoundary(todayISO())
+      : addMonthsToISO(input.startDate, input.durationMonths);
     const schedule: PeriodScheduleEntry[] = [];
     let periodStart = input.startDate;
 
@@ -63,10 +66,16 @@ export class AccountCalculator implements IAccountCalculator {
     }
   }
 
+  private getEndISO(input: BankAccountInput): string {
+    const getNextBoundary = this.getNextBoundaryFn(input.interval);
+    if (input.isOngoing && getNextBoundary) return getNextBoundary(todayISO());
+    return addMonthsToISO(input.startDate!, input.durationMonths);
+  }
+
   private buildAdjustments(input: BankAccountInput, schedule?: PeriodScheduleEntry[]): BalanceAdjustments {
     if (input.cashFlows.length === 0 || !input.startDate) return {};
 
-    const endISO = addMonthsToISO(input.startDate, input.durationMonths);
+    const endISO = this.getEndISO(input);
     const expanded = expandCashFlows(input.cashFlows, endISO);
     const hasCashFlows = expanded.length > 0;
 
@@ -116,7 +125,7 @@ export class AccountCalculator implements IAccountCalculator {
   private buildPeriodCashFlows(input: BankAccountInput, schedule?: PeriodScheduleEntry[]): PeriodCashFlows | undefined {
     if (input.cashFlows.length === 0 || !input.startDate) return undefined;
 
-    const endISO = addMonthsToISO(input.startDate, input.durationMonths);
+    const endISO = this.getEndISO(input);
     const expanded = expandCashFlows(input.cashFlows, endISO);
     if (expanded.length === 0) return undefined;
 

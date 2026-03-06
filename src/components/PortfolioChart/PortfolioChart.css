@@ -1,0 +1,32 @@
+@reference "../../style.css";
+
+/* ─── Portfolio Chart ─── */
+.portfolio-chart {
+  @apply my-4 -mx-1;
+}
+
+.portfolio-chart__container {
+  @apply w-full h-[200px];
+}
+
+.portfolio-chart__tooltip {
+  @apply bg-navy-900 text-white text-xs rounded-lg px-3 py-2 border border-navy-700;
+  box-shadow: 0 4px 16px rgba(10, 22, 40, 0.25);
+}
+
+.portfolio-chart__tooltip-label {
+  @apply text-navy-300 mb-0.5 capitalize;
+}
+
+.portfolio-chart__tooltip-value {
+  @apply font-bold text-copper-300 tabular-nums;
+}
+
+@media (min-width: 640px) {
+  .portfolio-chart {
+    @apply my-5;
+  }
+  .portfolio-chart__container {
+    @apply h-[240px];
+  }
+}

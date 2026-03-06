@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AccountForm from './components/AccountForm';
-import BankAccountsOverview from './components/BankAccountsOverview.tsx';
+import BankAccountsOverview from './components/BankAccountsOverview';
 import PortfolioSummary from './components/PortfolioSummary';
 import ImportModal from './components/ImportModal';
 import { useResultStorage } from './hooks/useResultStorage';

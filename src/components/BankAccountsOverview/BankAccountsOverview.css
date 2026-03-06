@@ -1,0 +1,217 @@
+@reference "../../style.css";
+
+/* ─── Empty State ─── */
+.empty-state {
+  @apply text-center py-12 px-6 bg-navy-50 rounded-2xl border-2 border-dashed border-navy-200 animate-[fadeInUp_0.5s_ease_both];
+}
+
+.empty-state-icon {
+  @apply text-4xl mb-3 opacity-30;
+}
+
+.empty-state h3 {
+  @apply font-display text-base text-navy-700 mb-1.5;
+}
+
+.empty-state p {
+  @apply text-navy-400 text-sm max-w-xs mx-auto leading-relaxed;
+}
+
+@media (min-width: 640px) {
+  .empty-state {
+    @apply py-16 px-8;
+  }
+  .empty-state-icon {
+    @apply text-5xl mb-4;
+  }
+  .empty-state h3 {
+    @apply text-lg mb-2;
+  }
+  .empty-state p {
+    @apply text-[0.9375rem] max-w-sm;
+  }
+}
+
+/* ─── Comparison Table ─── */
+.comparison-table-wrapper-inner {
+  @apply overflow-x-auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.comparison-table {
+  @apply w-full bg-navy-50 text-[0.8125rem] border-collapse;
+}
+
+@media (min-width: 640px) {
+  .comparison-table {
+    @apply text-[0.9375rem];
+  }
+}
+
+.comparison-table thead {
+  @apply bg-navy-900 text-white;
+}
+
+.comparison-table th {
+  @apply px-3 py-3 text-left font-semibold uppercase whitespace-nowrap text-[0.6875rem] tracking-[0.07em];
+}
+
+.comparison-table th:first-child {
+  @apply rounded-tl-none;
+}
+
+.comparison-table th:last-child {
+  @apply rounded-tr-none;
+}
+
+@media (min-width: 640px) {
+  .comparison-table th {
+    @apply px-5 py-3.5 text-xs;
+  }
+}
+
+.comparison-table td {
+  @apply px-3 py-3 whitespace-nowrap border-b border-navy-100;
+}
+
+@media (min-width: 640px) {
+  .comparison-table td {
+    @apply px-5 py-3.5;
+  }
+}
+
+.comparison-table tbody tr {
+  @apply transition-colors duration-150;
+}
+
+.comparison-table tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+.comparison-table .amount {
+  @apply font-semibold tabular-nums;
+}
+
+.comparison-table .highlight-best {
+  @apply font-bold text-success;
+}
+
+.comparison-table .highlight-best-bg {
+  @apply bg-success-light;
+}
+
+.comparison-table .next-payout {
+  @apply block text-xs font-normal text-navy-400;
+}
+
+/* ─── Comparison Row ─── */
+.comparison-row {
+  @apply cursor-pointer select-none transition-colors duration-150 hover:bg-copper-500/[0.04];
+}
+
+.comparison-actions {
+  @apply flex items-center gap-0.5 sm:gap-1;
+}
+
+.comparison-chevron {
+  @apply inline-flex items-center justify-center w-5 h-5 text-[0.6rem] text-navy-400 transition-transform duration-200;
+}
+
+.comparison-chevron--open {
+  @apply rotate-180;
+}
+
+.period-detail-row td {
+  @apply p-0 border-b border-navy-100;
+}
+
+/* ─── Period Table ─── */
+.period-table-wrapper {
+  @apply overflow-x-auto animate-[expandReveal_0.3s_ease];
+  -webkit-overflow-scrolling: touch;
+}
+
+.period-table {
+  @apply w-full text-xs border-collapse;
+}
+
+@media (min-width: 640px) {
+  .period-table {
+    @apply text-[0.8125rem];
+  }
+}
+
+.period-table thead {
+  @apply bg-navy-50;
+}
+
+.period-table th {
+  @apply px-3 py-2 text-right font-semibold text-navy-600 uppercase text-[0.625rem] tracking-[0.06em] first:text-left;
+}
+
+@media (min-width: 640px) {
+  .period-table th {
+    @apply px-4 py-2.5 text-[0.6875rem];
+  }
+}
+
+.period-table td {
+  @apply px-3 py-2 text-right text-navy-700 border-b border-navy-100 tabular-nums first:text-left first:text-navy-500 first:font-medium;
+}
+
+@media (min-width: 640px) {
+  .period-table td {
+    @apply px-4 py-[9px];
+  }
+}
+
+.period-table__date {
+  @apply block text-[0.625rem] text-navy-400 font-normal;
+}
+
+.period-table tbody tr {
+  @apply transition-colors duration-150 hover:bg-copper-500/[0.04];
+}
+
+.period-table tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+/* ─── Data Transfer Error ─── */
+.data-transfer__error {
+  @apply text-xs text-danger font-medium mt-3 px-1;
+}
+
+/* ─── Transfer Button ─── */
+.btn-transfer {
+  @apply px-4 py-2.5 text-xs font-semibold rounded-lg cursor-pointer font-body text-navy-600 bg-navy-100 border-[1.5px] border-solid border-transparent min-h-[40px] transition-all duration-200;
+}
+
+.btn-transfer:hover {
+  @apply bg-navy-200 border-navy-200;
+}
+
+.btn-transfer:active {
+  @apply scale-[0.97];
+}
+
+/* ─── Scrollbar ─── */
+.period-table-wrapper::-webkit-scrollbar,
+.comparison-table-wrapper-inner::-webkit-scrollbar {
+  @apply h-1.5;
+}
+
+.period-table-wrapper::-webkit-scrollbar-track,
+.comparison-table-wrapper-inner::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.period-table-wrapper::-webkit-scrollbar-thumb,
+.comparison-table-wrapper-inner::-webkit-scrollbar-thumb {
+  @apply bg-navy-300/50 rounded-full;
+}
+
+.period-table-wrapper::-webkit-scrollbar-thumb:hover,
+.comparison-table-wrapper-inner::-webkit-scrollbar-thumb:hover {
+  @apply bg-navy-300;
+}

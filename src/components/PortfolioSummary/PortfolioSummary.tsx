@@ -1,8 +1,9 @@
-import type { BankAccount } from '../models/BankAccount';
-import { INTERVAL_LABELS } from '../enums/PayoutInterval';
-import { formatCurrency } from '../utils/format';
-import { interestPerMonth } from '../utils/interest';
-import PortfolioChart from './PortfolioChart';
+import type { BankAccount } from '../../models/BankAccount';
+import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
+import { formatCurrency } from '../../utils/format';
+import { interestPerMonth } from '../../utils/interest';
+import PortfolioChart from '../PortfolioChart';
+import './PortfolioSummary.css';
 
 interface PortfolioSummaryProps {
   results: BankAccount[];
