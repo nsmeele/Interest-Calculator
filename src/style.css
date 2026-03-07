@@ -100,6 +100,14 @@ body {
   @apply hidden w-px h-5 bg-navy-200/70 dark:bg-navy-700/60 sm:block;
 }
 
+.toolbar-icon-link {
+  @apply inline-flex items-center justify-center w-9 h-9 rounded-lg text-navy-400 transition-all duration-200 hover:text-copper-500 hover:bg-navy-100 active:scale-90 dark:text-navy-400 dark:hover:text-copper-400 dark:hover:bg-navy-800;
+}
+
+.toolbar-icon-link__icon {
+  @apply w-4.5 h-4.5;
+}
+
 .toolbar-dropdown {
   @apply relative;
 }
@@ -275,6 +283,7 @@ body {
 .app-disclaimer strong {
   @apply font-semibold text-navy-500 dark:text-navy-300;
 }
+
 
 /* ─── Section Header ─── */
 .section-header {

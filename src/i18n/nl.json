@@ -10,7 +10,7 @@
   },
   "guide": {
     "ariaLabel": "Uitleg en features",
-    "featuresHeading": "Wat kan MoneyGrip?",
+    "featuresHeading": "Wat kan Interest-Calculator?",
     "stepsHeading": "Hoe gebruik je het?",
     "feature1": "Enkelvoudige & samengestelde rente",
     "feature2": "Variabele rente met rentewijzigingen",
@@ -30,9 +30,11 @@
   },
   "footer": {
     "privacyLabel": "Privacy:",
-    "privacyText": "MoneyGrip werkt volledig in je browser. Je gegevens worden lokaal opgeslagen op je apparaat en worden nooit naar een server verstuurd. Er worden geen cookies geplaatst en er vindt geen tracking plaats. Let op: ge\u00ebxporteerde bestanden bevatten al je rekeninggegevens \u2014 bewaar deze op een veilige plek en deel ze niet onbedoeld.",
+    "privacyText": "Interest-Calculator werkt volledig in je browser. Je gegevens worden lokaal opgeslagen op je apparaat en worden nooit naar een server verstuurd. Er worden geen cookies geplaatst en er vindt geen tracking plaats. Let op: ge\u00ebxporteerde bestanden bevatten al je rekeninggegevens \u2014 bewaar deze op een veilige plek en deel ze niet onbedoeld.",
     "disclaimerLabel": "Disclaimer:",
-    "disclaimerText": "MoneyGrip is een hulpmiddel voor indicatieve renteberekeningen. Aan de weergegeven bedragen, berekeningen en overzichten kunnen geen rechten worden ontleend. Raadpleeg altijd je bank of financieel adviseur voor definitieve cijfers. De maker van deze applicatie is niet aansprakelijk voor eventuele onjuistheden of beslissingen op basis van deze berekeningen."
+    "disclaimerText": "Interest-Calculator is een hulpmiddel voor indicatieve renteberekeningen. Aan de weergegeven bedragen, berekeningen en overzichten kunnen geen rechten worden ontleend. Raadpleeg altijd je bank of financieel adviseur voor definitieve cijfers. De maker van deze applicatie is niet aansprakelijk voor eventuele onjuistheden of beslissingen op basis van deze berekeningen.",
+    "openSource": "Open source op GitHub",
+    "viewOnGitHub": "Bekijk op GitHub"
   },
   "accounts": {
     "ariaLabelEmpty": "Nog geen rekeningen",

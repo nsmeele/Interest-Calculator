@@ -1,4 +1,4 @@
-# MoneyGrip
+# Interest-Calculator
 
 ## Commands
 

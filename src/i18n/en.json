@@ -10,7 +10,7 @@
   },
   "guide": {
     "ariaLabel": "Guide and features",
-    "featuresHeading": "What can MoneyGrip do?",
+    "featuresHeading": "What can Interest-Calculator do?",
     "stepsHeading": "How to use it?",
     "feature1": "Simple & compound interest",
     "feature2": "Variable rate with rate changes",
@@ -30,9 +30,11 @@
   },
   "footer": {
     "privacyLabel": "Privacy:",
-    "privacyText": "MoneyGrip runs entirely in your browser. Your data is stored locally on your device and is never sent to a server. No cookies are placed and no tracking takes place. Note: exported files contain all your account data \u2014 store them in a safe place and do not share them unintentionally.",
+    "privacyText": "Interest-Calculator runs entirely in your browser. Your data is stored locally on your device and is never sent to a server. No cookies are placed and no tracking takes place. Note: exported files contain all your account data \u2014 store them in a safe place and do not share them unintentionally.",
     "disclaimerLabel": "Disclaimer:",
-    "disclaimerText": "MoneyGrip is a tool for indicative interest calculations. No rights can be derived from the displayed amounts, calculations, and overviews. Always consult your bank or financial advisor for definitive figures. The creator of this application is not liable for any inaccuracies or decisions based on these calculations."
+    "disclaimerText": "Interest-Calculator is a tool for indicative interest calculations. No rights can be derived from the displayed amounts, calculations, and overviews. Always consult your bank or financial advisor for definitive figures. The creator of this application is not liable for any inaccuracies or decisions based on these calculations.",
+    "openSource": "Open source on GitHub",
+    "viewOnGitHub": "View on GitHub"
   },
   "accounts": {
     "ariaLabelEmpty": "No accounts yet",
