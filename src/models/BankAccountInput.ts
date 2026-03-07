@@ -1,5 +1,4 @@
 import { PayoutInterval } from '../enums/PayoutInterval';
-import { CURRENCY_SYMBOLS, type Currency } from '../enums/Currency';
 import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
 import type { CashFlow } from './CashFlow';
@@ -23,10 +22,5 @@ export class BankAccountInput {
 
   get durationYears(): number {
     return this.durationMonths / 12;
-  }
-
-  get label(): string {
-    const symbol = this.currency ? (CURRENCY_SYMBOLS[this.currency as Currency] ?? this.currency) : '\u20AC';
-    return `${symbol}${this.startAmount.toLocaleString('nl-NL')} @ ${this.annualInterestRate}%`;
   }
 }

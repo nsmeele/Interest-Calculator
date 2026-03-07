@@ -10,6 +10,7 @@ import { useCurrency } from '../../hooks/useCurrency';
 import { SUPPORTED_CURRENCIES, CURRENCY_SYMBOLS, Currency } from '../../enums/Currency';
 import type { BankAccount } from '../../models/BankAccount';
 import { monthsBetween, daysBetween, todayISO, endOfMonthISO } from '../../utils/date';
+import { formatAmountInput, parseAmountInput, formatAmountDefault } from '../../utils/format';
 import './AccountForm.css';
 
 interface AccountFormProps {
@@ -26,8 +27,9 @@ const dayCountOptions = Object.values(DayCountConvention);
 export default function AccountForm({ onResult, editingResult, onCancelEdit }: AccountFormProps) {
   const { t } = useTranslation();
   const { currency: globalCurrency } = useCurrency();
-  const [startAmount, setStartAmount] = useState('10000');
   const [accountCurrency, setAccountCurrency] = useState<Currency | ''>('');
+  const activeCurrency = accountCurrency || globalCurrency;
+  const [startAmount, setStartAmount] = useState(formatAmountDefault(10000, globalCurrency));
   const [interestRate, setInterestRate] = useState('3.5');
   const [years, setYears] = useState('5');
   const [months, setMonths] = useState('0');
@@ -42,7 +44,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
   const prevEditingId = useState<string | null>(null);
   if (editingResult && editingResult.id !== prevEditingId[0]) {
     prevEditingId[1](editingResult.id);
-    setStartAmount(editingResult.startAmount.toString().replace('.', ','));
+    setStartAmount(formatAmountDefault(editingResult.startAmount, (editingResult.currency as Currency) || globalCurrency));
     setInterestRate(editingResult.annualInterestRate.toString());
     setYears(Math.floor(editingResult.durationMonths / 12).toString());
     setMonths((editingResult.durationMonths % 12).toString());
@@ -67,7 +69,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
   function validate() {
     const next: Record<string, string> = {};
 
-    const amount = parseFloat(startAmount.replace(/\./g, '').replace(',', '.'));
+    const amount = parseAmountInput(startAmount, activeCurrency);
     if (!startAmount.trim() || isNaN(amount)) {
       next.startAmount = t('form.errorInvalidAmount');
     } else if (amount <= 0) {
@@ -107,7 +109,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
-    const amount = parseFloat(startAmount.replace(/\./g, '').replace(',', '.'));
+    const amount = parseAmountInput(startAmount, activeCurrency);
     const rate = parseFloat(interestRate.replace(',', '.'));
     const durationMonths = isOngoing
       ? Math.max(1, Math.ceil(daysBetween(startDate, endOfMonthISO(todayISO())) / 30.44) + 12)
@@ -130,7 +132,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                   inputMode="decimal"
                   className={`form-input${errors.startAmount ? ' form-input--error' : ''}`}
                   value={startAmount}
-                  onChange={(e) => { setStartAmount(e.target.value); setErrors((p) => { const { startAmount: _, ...rest } = p; return rest; }); }}
+                  onChange={(e) => { setStartAmount(formatAmountInput(e.target.value, activeCurrency)); setErrors((p) => { const { startAmount: _, ...rest } = p; return rest; }); }}
                   placeholder="10.000"
                 />
               </div>

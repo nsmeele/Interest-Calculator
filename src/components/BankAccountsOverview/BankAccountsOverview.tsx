@@ -340,7 +340,7 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                             <dl className="period-summary__list">
                               <div className="period-summary__item">
                                 <dt>{t('accounts.deposit')}</dt>
-                                <dd>{formatCurrency(r.currentBalance, cur)}</dd>
+                                <dd>{formatCurrency(r.startAmount, cur)}</dd>
                               </div>
                               <div className="period-summary__item">
                                 <dt>{t('accounts.totalInterest')}</dt>

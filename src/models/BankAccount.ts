@@ -1,5 +1,5 @@
 import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
-import { CURRENCY_SYMBOLS, type Currency } from '../enums/Currency';
+
 import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
 import { type CashFlow, expandCashFlows } from './CashFlow';
@@ -7,9 +7,6 @@ import type { RateChange } from './RateChange';
 import { addMonthsToISO, todayISO, isBeforeDate, getNextQuarterStart, getNextMonthStart, toMonthKey, daysBetween } from '../utils/date';
 import { calculateDailyInterest } from '../utils/dailyInterest';
 
-function getCurrencySymbol(code: string): string {
-  return CURRENCY_SYMBOLS[code as Currency] ?? code;
-}
 
 export interface PeriodResult {
   period: number;
@@ -164,11 +161,6 @@ export class BankAccount {
     }
 
     return earned - this.disbursedToDate;
-  }
-
-  get label(): string {
-    const symbol = this.currency ? getCurrencySymbol(this.currency) : '\u20AC';
-    return `${symbol}${this.currentBalance.toLocaleString('nl-NL')} @ ${this.annualInterestRate}%`;
   }
 
   get calendarMonthProjection(): Map<string, number> {

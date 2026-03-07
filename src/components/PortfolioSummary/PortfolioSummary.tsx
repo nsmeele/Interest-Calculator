@@ -4,7 +4,7 @@ import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon, StarIcon
 import type { BankAccount } from '../../models/BankAccount';
 import { expandCashFlows } from '../../models/CashFlow';
 import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
-import { formatCurrency } from '../../utils/format';
+import { formatCurrency, formatAccountLabel } from '../../utils/format';
 import { useCurrency } from '../../hooks/useCurrency';
 import { toMonthKey, addMonthsToISO, todayISO, toISO, getNextMonthStart, endOfMonthISO, parseDate } from '../../utils/date';
 import { yearFraction } from '../../utils/dayCount';
@@ -274,7 +274,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle }: Po
             >
               <div className="portfolio-item-info">
                 <span className="portfolio-item-label">
-                  {r.label}
+                  {formatAccountLabel(r.currentBalance, r.annualInterestRate, cur)}
                   <span className="badge-interval">{INTERVAL_LABELS[r.interval]}</span>
                   {status === 'expired' && <span className="badge-expired">{t('portfolio.expired')}</span>}
                   {status === 'upcoming' && <span className="badge-upcoming">{t('portfolio.upcoming')}</span>}
