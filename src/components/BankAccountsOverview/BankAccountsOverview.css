@@ -93,6 +93,10 @@
   @apply ml-1.5 mr-0 align-middle text-navy-600 bg-navy-100 dark:text-navy-300 dark:bg-navy-700;
 }
 
+.comparison-badge--ongoing {
+  @apply text-sky-600 bg-sky-500/10 dark:text-sky-400 dark:bg-sky-500/15;
+}
+
 .comparison-badge--complete {
   @apply ml-1.5 mr-0 align-middle text-success bg-success-light;
 }

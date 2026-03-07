@@ -4,7 +4,7 @@ import type { BankAccount } from '../../models/BankAccount';
 import { expandCashFlows } from '../../models/CashFlow';
 import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
 import { formatCurrency } from '../../utils/format';
-import { toMonthKey, addMonthsToISO, todayISO, toISO, getNextMonthStart, parseDate } from '../../utils/date';
+import { toMonthKey, addMonthsToISO, todayISO, toISO, getNextMonthStart, endOfMonthISO, parseDate } from '../../utils/date';
 import { yearFraction } from '../../utils/dayCount';
 import { getRateForDate } from '../../utils/rateChange';
 import PortfolioChart from '../PortfolioChart';
@@ -136,9 +136,6 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
   const atStart = monthBounds.min !== '' && selectedMonthKey <= monthBounds.min;
   const atEnd = monthBounds.max !== '' && selectedMonthKey >= monthBounds.max;
 
-  const totalInterest = items.reduce((sum, r) => sum + r.totalInterest, 0);
-  const totalDisbursed = items.reduce((sum, r) => sum + r.totalDisbursed, 0);
-
   const totalForMonth = items.reduce((sum, r) => {
     const projection = viewMode === 'disbursed' ? r.calendarMonthDisbursement : r.calendarMonthProjection;
     return sum + (projection.get(selectedMonthKey) ?? 0);
@@ -148,7 +145,16 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
 
   const activeForMonth = items.filter((r) => itemStatusForMonth(r, selectedMonthKey) === 'active');
 
-  const totalInvested = activeForMonth.reduce((sum, r) => {
+  // Alleen rekeningen meetellen die op de laatste dag van de maand nog lopen.
+  // Voorkomt dubbeltelling wanneer geld van een aflopende rekening diezelfde
+  // maand wordt herbelegd in een nieuwe rekening.
+  const lastDayOfMonth = endOfMonthISO(`${selectedMonthKey}-01`);
+  const activeAtMonthEnd = activeForMonth.filter((r) => {
+    const lastPayout = r.periods[r.periods.length - 1]?.endDate;
+    return r.isOngoing || !lastPayout || lastPayout >= lastDayOfMonth;
+  });
+
+  const totalInvested = activeAtMonthEnd.reduce((sum, r) => {
     const deposited = r.periods
       .filter((p) => p.endDate && p.endDate <= monthEnd)
       .reduce((s, p) => s + (p.deposited ?? 0), 0);
@@ -173,6 +179,32 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
         </div>
       </div>
 
+      <div className="month-nav">
+        <button
+          className="month-nav__btn"
+          onClick={() => setMonthOffset((o) => o - 1)}
+          disabled={atStart}
+          aria-label="Vorige maand"
+        >
+          <ChevronLeftIcon aria-hidden="true" />
+        </button>
+        <div className="month-nav__label">
+          <span className="portfolio-stat-label">{formatMonthLabel(selectedMonthKey)}</span>
+          {isCurrentMonth
+            ? <span className="month-nav__current">nu</span>
+            : <button className="btn-action month-nav__reset" onClick={() => setMonthOffset(0)} aria-label="Terug naar huidige maand">nu</button>
+          }
+        </div>
+        <button
+          className="month-nav__btn"
+          onClick={() => setMonthOffset((o) => o + 1)}
+          disabled={atEnd}
+          aria-label="Volgende maand"
+        >
+          <ChevronRightIcon aria-hidden="true" />
+        </button>
+      </div>
+
       <nav className="portfolio-tabs" aria-label="Weergave">
         <button
           className={`portfolio-tabs__tab${viewMode === 'accrued' ? ' portfolio-tabs__tab--active' : ''}`}
@@ -193,36 +225,8 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
           <div className="portfolio-stat-label">Totaal ingelegd</div>
           <div className="portfolio-stat-value">{formatCurrency(totalInvested)}</div>
         </div>
-        <div className="portfolio-stat">
-          <div className="portfolio-stat-label">{viewMode === 'disbursed' ? 'Totaal uitbetaald' : 'Totale rente'}</div>
-          <div className="portfolio-stat-value">{formatCurrency(viewMode === 'disbursed' ? totalDisbursed : totalInterest)}</div>
-        </div>
         <div className="portfolio-stat portfolio-stat--highlight">
-          <div className="month-nav">
-            <button
-              className="month-nav__btn"
-              onClick={() => setMonthOffset((o) => o - 1)}
-              disabled={atStart}
-              aria-label="Vorige maand"
-            >
-              <ChevronLeftIcon aria-hidden="true" />
-            </button>
-            <div className="month-nav__label">
-              <span className="portfolio-stat-label">{formatMonthLabel(selectedMonthKey)}</span>
-              {isCurrentMonth
-                ? <span className="month-nav__current">nu</span>
-                : <button className="month-nav__reset" onClick={() => setMonthOffset(0)} aria-label="Terug naar huidige maand">nu</button>
-              }
-            </div>
-            <button
-              className="month-nav__btn"
-              onClick={() => setMonthOffset((o) => o + 1)}
-              disabled={atEnd}
-              aria-label="Volgende maand"
-            >
-              <ChevronRightIcon aria-hidden="true" />
-            </button>
-          </div>
+          <div className="portfolio-stat-label">{viewMode === 'disbursed' ? 'Uitbetaald' : 'Rente'}</div>
           <div className="portfolio-stat-value">{formatCurrency(totalForMonth)}</div>
         </div>
       </div>

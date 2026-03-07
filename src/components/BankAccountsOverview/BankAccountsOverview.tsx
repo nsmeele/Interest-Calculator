@@ -1,6 +1,6 @@
 import { Fragment, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { InformationCircleIcon, PlusIcon, ChevronDownIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { InformationCircleIcon, PlusIcon, ChevronDownIcon, PencilIcon, XMarkIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 import type { BankAccount } from '../../models/BankAccount';
@@ -11,6 +11,7 @@ import { InterestType, INTEREST_TYPE_LABELS } from '../../enums/InterestType';
 import { formatCurrency, formatDurationShort, formatDate } from '../../utils/format';
 import CashFlowEditor from '../CashFlowEditor';
 import RateChangeEditor from '../RateChangeEditor';
+import { useModal } from '../../context/ModalContext';
 import './BankAccountsOverview.css';
 
 interface BankAccountsOverviewProps {
@@ -69,6 +70,27 @@ function ColumnInfo({ label, info }: { label: string; info: string }) {
 export default function BankAccountsOverview({ results, onRemove, onClear, portfolioIds, onTogglePortfolio, onEdit, onNewAccount, onUpdateCashFlows, onUpdateRateChanges, onExport, onImportFile, importError }: BankAccountsOverviewProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { openModal } = useModal();
+
+  function handleRemove(id: string) {
+    openModal({
+      type: 'confirm',
+      title: 'Rekening verwijderen',
+      message: 'Weet je zeker dat je deze rekening wilt verwijderen?',
+      confirmLabel: 'Verwijderen',
+      onConfirm: () => onRemove(id),
+    });
+  }
+
+  function handleClear() {
+    openModal({
+      type: 'confirm',
+      title: 'Alles wissen',
+      message: 'Weet je zeker dat je alle rekeningen wilt verwijderen?',
+      confirmLabel: 'Alles wissen',
+      onConfirm: onClear,
+    });
+  }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -145,7 +167,7 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
             aria-hidden="true"
             tabIndex={-1}
           />
-          <button className="btn-action btn-action--danger" onClick={onClear}>
+          <button className="btn-action btn-action--danger" onClick={handleClear}>
             Alles wissen
           </button>
         </div>
@@ -161,10 +183,8 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
               <th></th>
               <th><ColumnInfo label="Saldo" info="Je huidige saldo: het startbedrag plus alle stortingen en min alle opnames. Bij rente op rente wordt uitbetaalde rente meegenomen." /></th>
               <th>Rente</th>
-              <th>Van</th>
-              <th>Tot</th>
               <th>Looptijd</th>
-              <th>Type</th>
+              <th>Betaling</th>
               <th></th>
             </tr>
           </thead>
@@ -184,20 +204,25 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                       {formatCurrency(r.interestType === InterestType.Compound ? r.currentBalance + r.disbursedToDate : r.currentBalance)}
                       {!r.isOngoing && r.totalInterest > 0 && (() => {
                         const pct = Math.round((r.disbursedToDate + r.accruedInterest) / r.totalInterest * 100);
-                        if (pct >= 100) return <span className="comparison-badge comparison-badge--complete">Voltooid</span>;
+                        if (pct >= 100) return <span className="comparison-badge comparison-badge--complete">{pct}%</span>;
                         return <span className="comparison-badge comparison-badge--progress">{pct}%</span>;
                       })()}
                     </td>
                     <td>{r.annualInterestRate}%</td>
                     <td>
-                      {r.startDate ? formatDate(r.startDate) : '—'}
-                      {r.hasNotStartedYet && <span className="comparison-badge comparison-badge--upcoming">Toekomstig</span>}
+                      {r.isOngoing
+                        ? <span className="comparison-badge comparison-badge--ongoing">Lopend</span>
+                        : <>
+                            {r.endDate && formatDate(r.endDate)}{' '}
+                            <span className="comparison-badge">{formatDurationShort(r.durationMonths)}</span>
+                            {r.totalInterest > 0 && Math.round((r.disbursedToDate + r.accruedInterest) / r.totalInterest * 100) >= 100 && (
+                              <span className="comparison-badge comparison-badge--complete">Voltooid</span>
+                            )}
+                          </>
+                      }
                     </td>
-                    <td>{r.endDate ? formatDate(r.endDate) : '—'}</td>
-                    <td>{r.isOngoing ? 'Lopend' : formatDurationShort(r.durationMonths)}</td>
                     <td>
-                      <span className="comparison-badge">{INTERVAL_LABELS[r.interval]}</span>
-                      <span className="comparison-badge">{INTEREST_TYPE_LABELS[r.interestType]}</span>
+                      {INTERVAL_LABELS[r.interval]} <span className="comparison-badge">{INTEREST_TYPE_LABELS[r.interestType]}</span>
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
                       <div className="comparison-actions">
@@ -224,13 +249,13 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                           onClick={() => navigator.clipboard.writeText(JSON.stringify(r, null, 2))}
                           aria-label="Kopieer data"
                         >
-                          📋
+                          <ClipboardDocumentIcon aria-hidden="true" />
                         </button>
                       )}
                       <button
                         className="btn-icon"
                         title="Verwijderen"
-                        onClick={() => onRemove(r.id)}
+                        onClick={() => handleRemove(r.id)}
                         aria-label="Verwijderen"
                       >
                         <XMarkIcon aria-hidden="true" />
@@ -240,7 +265,7 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                   </tr>
                   {isOpen && (
                     <tr className="period-detail-row">
-                      <td colSpan={8}>
+                      <td colSpan={6}>
                         {(r.disbursedToDate > 0 || r.accruedInterest > 0 || r.nextPayoutDate) && (
                           <div className="period-detail-status">
                             {r.disbursedToDate > 0 && (

@@ -5,11 +5,13 @@ import type { BankAccount } from '../models/BankAccount';
 import ImportModal from '../components/ImportModal';
 import ExportModal from '../components/ExportModal';
 import AccountFormModal from '../components/AccountFormModal';
+import Modal from '../components/Modal';
 
 type ModalState =
   | { type: 'import'; preview: ImportPreview; onConfirm: (mode: ImportMode) => void; onCancel?: () => void }
   | { type: 'export'; resultCount: number; onConfirm: () => void }
   | { type: 'account'; editingResult: BankAccount | null; onResult: (result: BankAccount) => void }
+  | { type: 'confirm'; title: string; message: string; confirmLabel: string; onConfirm: () => void }
   | null;
 
 interface ModalContextValue {
@@ -60,6 +62,20 @@ export function ModalProvider({ children }: { children: ReactNode }) {
           }}
           onClose={closeModal}
         />
+      )}
+      {modal?.type === 'confirm' && (
+        <Modal
+          titleId="confirm-modal-title"
+          title={modal.title}
+          confirmLabel={modal.confirmLabel}
+          onConfirm={() => {
+            modal.onConfirm();
+            closeModal();
+          }}
+          onClose={closeModal}
+        >
+          <p>{modal.message}</p>
+        </Modal>
       )}
     </ModalContext.Provider>
   );

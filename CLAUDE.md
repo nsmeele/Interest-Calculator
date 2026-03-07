@@ -9,7 +9,7 @@
 ## Frontend Regels
 
 - React 19 + TypeScript + Tailwind CSS 4 + Vite 7
-- Mobile-first responsive design (breakpoints: 640px, 960px)
+- Mobile-first responsive design
 - Component-based architectuur met single responsibility
 - DRY: geen dubbele logica, herbruikbare componenten, gedeelde CSS classes in `src/style.css`
 - SOLID: business logic gescheiden van UI (strategies, interfaces, models in eigen mappen)
@@ -19,3 +19,4 @@
 - BEM class naming: `.block__element--modifier` (bijv. `.mobile-tab--active`)
 - CSS classes via `@apply` in `src/style.css`, geen inline Tailwind in JSX
 - UI-teksten in het Nederlands, code in het Engels
+- Gebruik Tailwind functions and directives
