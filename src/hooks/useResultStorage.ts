@@ -67,7 +67,7 @@ function loadFromStorage(): BankAccount[] {
         if (!r.isOngoing || !r.startDate) return r;
         const lastKey = [...r.calendarMonthProjection.keys()].sort().pop();
         if (lastKey && lastKey >= maxKey) return r;
-        const months = Math.max(1, Math.ceil(daysBetween(r.startDate, `${maxKey}-28`) / 30.44) + 1);
+        const months = Math.max(1, Math.ceil(daysBetween(r.startDate, `${maxKey}-28`) / 30.44));
         const rebuilt = reconstructResult(parsed[i], months);
         Object.assign(rebuilt, { id: r.id, timestamp: r.timestamp });
         return rebuilt;
