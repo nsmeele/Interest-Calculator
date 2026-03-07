@@ -39,4 +39,8 @@
 
 ## Commit rules
 
+- Focus op waarom ipv wat: leg de reden achter de verandering uit, niet alleen wat er is veranderd
+- Gebruik geen prefixes
+- Gebruik Engelse commit messages
+
 
