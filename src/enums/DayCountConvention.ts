@@ -28,15 +28,3 @@ export function getDayCountLabel(convention: DayCountConvention): string {
 export function getDayCountDescription(convention: DayCountConvention): string {
   return i18n.t(DAY_COUNT_DESC_KEYS[convention]);
 }
-
-/** @deprecated Use getDayCountLabel() for i18n support */
-export const DAY_COUNT_LABELS: Record<DayCountConvention, string> = new Proxy(
-  {} as Record<DayCountConvention, string>,
-  { get: (_, key: string) => getDayCountLabel(key as DayCountConvention) },
-);
-
-/** @deprecated Use getDayCountDescription() for i18n support */
-export const DAY_COUNT_DESCRIPTIONS: Record<DayCountConvention, string> = new Proxy(
-  {} as Record<DayCountConvention, string>,
-  { get: (_, key: string) => getDayCountDescription(key as DayCountConvention) },
-);

@@ -7,8 +7,8 @@ import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 import type { BankAccount } from '../../models/BankAccount';
 import type { CashFlow } from '../../models/CashFlow';
 import type { RateChange } from '../../models/RateChange';
-import { PayoutInterval, INTERVAL_LABELS } from '../../enums/PayoutInterval';
-import { InterestType, INTEREST_TYPE_LABELS } from '../../enums/InterestType';
+import { PayoutInterval, getIntervalLabel } from '../../enums/PayoutInterval';
+import { InterestType, getInterestTypeLabel } from '../../enums/InterestType';
 import { formatCurrency, formatDurationShort, formatDate } from '../../utils/format';
 import { useCurrency } from '../../hooks/useCurrency';
 import CashFlowEditor from '../CashFlowEditor';
@@ -234,7 +234,7 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                       }
                     </td>
                     <td>
-                      {INTERVAL_LABELS[r.interval]} <span className="comparison-badge">{INTEREST_TYPE_LABELS[r.interestType]}</span>
+                      {getIntervalLabel(r.interval)} <span className="comparison-badge">{getInterestTypeLabel(r.interestType)}</span>
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
                       <div className="comparison-actions">

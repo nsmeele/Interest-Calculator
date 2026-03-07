@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { PayoutInterval, INTERVAL_LABELS } from '../../enums/PayoutInterval';
-import { InterestType, INTEREST_TYPE_LABELS } from '../../enums/InterestType';
-import { DayCountConvention, DAY_COUNT_LABELS, DAY_COUNT_DESCRIPTIONS } from '../../enums/DayCountConvention';
+import { PayoutInterval, getIntervalLabel } from '../../enums/PayoutInterval';
+import { InterestType, getInterestTypeLabel } from '../../enums/InterestType';
+import { DayCountConvention, getDayCountLabel, getDayCountDescription } from '../../enums/DayCountConvention';
 import { BankAccountInput } from '../../models/BankAccountInput';
 import { AccountCalculator } from '../../calculator/AccountCalculator';
 import { useCurrency } from '../../hooks/useCurrency';
@@ -267,7 +267,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                       onChange={() => setInterestType(rt)}
                     />
                     <label htmlFor={`interest-type-${rt}`}>
-                      {INTEREST_TYPE_LABELS[rt]}
+                      {getInterestTypeLabel(rt)}
                     </label>
                   </div>
                 ))}
@@ -291,7 +291,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                       onChange={() => setInterval(iv)}
                     />
                     <label htmlFor={`interval-${iv}`}>
-                      {INTERVAL_LABELS[iv]}
+                      {getIntervalLabel(iv)}
                     </label>
                   </div>
                 ))}
@@ -315,10 +315,10 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                       onChange={() => setDayCount(dc)}
                     />
                     <label htmlFor={`daycount-${dc}`}>
-                      {DAY_COUNT_LABELS[dc]}
-                      <span className="popover-anchor" tabIndex={0} role="button" aria-label={t('accounts.infoAbout', { label: DAY_COUNT_LABELS[dc] })} onClick={(e) => e.preventDefault()}>
+                      {getDayCountLabel(dc)}
+                      <span className="popover-anchor" tabIndex={0} role="button" aria-label={t('accounts.infoAbout', { label: getDayCountLabel(dc) })} onClick={(e) => e.preventDefault()}>
                         <InformationCircleIcon className="popover-anchor__icon" aria-hidden="true" />
-                        <span className="popover-anchor__content">{DAY_COUNT_DESCRIPTIONS[dc]}</span>
+                        <span className="popover-anchor__content">{getDayCountDescription(dc)}</span>
                       </span>
                     </label>
                   </div>

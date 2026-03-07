@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon, StarIcon } from '@heroicons/react/24/outline';
 import type { BankAccount } from '../../models/BankAccount';
 import { expandCashFlows } from '../../models/CashFlow';
-import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
+import { getIntervalLabel } from '../../enums/PayoutInterval';
 import { formatCurrency, formatAccountLabel } from '../../utils/format';
 import { useCurrency } from '../../hooks/useCurrency';
 import { toMonthKey, addMonthsToISO, todayISO, toISO, getNextMonthStart, endOfMonthISO, parseDate } from '../../utils/date';
@@ -275,7 +275,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle }: Po
               <div className="portfolio-item-info">
                 <span className="portfolio-item-label">
                   {formatAccountLabel(r.currentBalance, r.annualInterestRate, cur)}
-                  <span className="badge-interval">{INTERVAL_LABELS[r.interval]}</span>
+                  <span className="badge-interval">{getIntervalLabel(r.interval)}</span>
                   {status === 'expired' && <span className="badge-expired">{t('portfolio.expired')}</span>}
                   {status === 'upcoming' && <span className="badge-upcoming">{t('portfolio.upcoming')}</span>}
                 </span>
