@@ -44,23 +44,37 @@ export function daysBetween(startISO: string, endISO: string): number {
   return differenceInDays(parseISO(endISO), parseISO(startISO));
 }
 
-const QUARTER_MONTHS = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
+const MONTHLY_BOUNDARIES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+const QUARTERLY_BOUNDARIES = [0, 3, 6, 9];
+const SEMI_ANNUAL_BOUNDARIES = [0, 6];
+const ANNUAL_BOUNDARIES = [0];
 
-export function getNextQuarterStart(iso: string): string {
+export const INTERVAL_BOUNDARIES: Record<string, number[]> = {
+  monthly: MONTHLY_BOUNDARIES,
+  quarterly: QUARTERLY_BOUNDARIES,
+  semi_annually: SEMI_ANNUAL_BOUNDARIES,
+  annually: ANNUAL_BOUNDARIES,
+  at_maturity: MONTHLY_BOUNDARIES,
+};
+
+export function getNextBoundaryStart(iso: string, boundaries: number[]): string {
   const date = parseISO(iso);
   const month = date.getMonth();
 
-  for (const qm of QUARTER_MONTHS) {
-    if (qm > month) {
-      return toISO(new Date(date.getFullYear(), qm, 1));
+  for (const bm of boundaries) {
+    if (bm > month) {
+      return toISO(new Date(date.getFullYear(), bm, 1));
     }
   }
-  return toISO(new Date(date.getFullYear() + 1, 0, 1));
+  return toISO(new Date(date.getFullYear() + 1, boundaries[0], 1));
+}
+
+export function getNextQuarterStart(iso: string): string {
+  return getNextBoundaryStart(iso, QUARTERLY_BOUNDARIES);
 }
 
 export function getNextMonthStart(iso: string): string {
-  const date = parseISO(iso);
-  return toISO(new Date(date.getFullYear(), date.getMonth() + 1, 1));
+  return getNextBoundaryStart(iso, MONTHLY_BOUNDARIES);
 }
 
 export function endOfMonthISO(iso: string): string {

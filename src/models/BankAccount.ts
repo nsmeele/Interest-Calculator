@@ -1,10 +1,10 @@
-import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
+import { PayoutInterval } from '../enums/PayoutInterval';
 
 import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
 import { type CashFlow, expandCashFlows } from './CashFlow';
 import type { RateChange } from './RateChange';
-import { addMonthsToISO, todayISO, isBeforeDate, getNextQuarterStart, getNextMonthStart, toMonthKey, daysBetween } from '../utils/date';
+import { addMonthsToISO, todayISO, isBeforeDate, addDayISO, getNextMonthStart, getNextBoundaryStart, INTERVAL_BOUNDARIES, toMonthKey, daysBetween } from '../utils/date';
 import { calculateDailyInterest } from '../utils/dailyInterest';
 
 
@@ -96,37 +96,21 @@ export class BankAccount {
 
   get nextPayoutDate(): string | undefined {
     if (!this.startDate || this.hasExpired) return undefined;
-
-    if (this.hasNotStartedYet) {
-      if (this.interval === PayoutInterval.AtMaturity) return this.endDate;
-      if (this.interval === PayoutInterval.Monthly) return getNextMonthStart(this.startDate);
-      if (this.interval === PayoutInterval.Quarterly) return getNextQuarterStart(this.startDate);
-      const monthsPerPeriod = 12 / getPeriodsPerYear(this.interval);
-      return addMonthsToISO(this.startDate, monthsPerPeriod);
-    }
     if (this.interval === PayoutInterval.AtMaturity) return this.endDate;
-
-    const today = todayISO();
-
-    if (this.interval === PayoutInterval.Monthly) {
-      const next = getNextMonthStart(today);
+    if (this.interval === PayoutInterval.Daily) {
+      const next = addDayISO(this.hasNotStartedYet ? this.startDate : todayISO());
       if (this.endDate && !isBeforeDate(next, this.endDate)) return this.endDate;
       return next;
     }
 
-    if (this.interval === PayoutInterval.Quarterly) {
-      const next = getNextQuarterStart(today);
-      if (this.endDate && !isBeforeDate(next, this.endDate)) return this.endDate;
-      return next;
-    }
+    const boundaries = INTERVAL_BOUNDARIES[this.interval];
+    if (!boundaries) return undefined;
 
-    const monthsPerPeriod = 12 / getPeriodsPerYear(this.interval);
-    let payoutDate = addMonthsToISO(this.startDate, monthsPerPeriod);
-    while (isBeforeDate(payoutDate, today)) {
-      payoutDate = addMonthsToISO(payoutDate, monthsPerPeriod);
-    }
-    if (this.endDate && !isBeforeDate(payoutDate, this.endDate)) return this.endDate;
-    return payoutDate;
+    const ref = this.hasNotStartedYet ? this.startDate : todayISO();
+    const next = getNextBoundaryStart(ref, boundaries);
+
+    if (this.endDate && !isBeforeDate(next, this.endDate)) return this.endDate;
+    return next;
   }
 
   get accruedInterest(): number {

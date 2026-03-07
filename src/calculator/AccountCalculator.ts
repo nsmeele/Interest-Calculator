@@ -5,7 +5,7 @@ import { BankAccount } from '../models/BankAccount';
 import { InterestStrategyFactory } from '../factories/InterestStrategyFactory';
 import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
 import { expandCashFlows, type ExpandedCashFlow } from '../models/CashFlow';
-import { addMonthsToISO, monthsBetween, getNextQuarterStart, getNextMonthStart, isBeforeDate } from '../utils/date';
+import { addMonthsToISO, monthsBetween, isBeforeDate, getNextBoundaryStart, INTERVAL_BOUNDARIES } from '../utils/date';
 
 export class AccountCalculator implements IAccountCalculator {
   calculate(input: BankAccountInput): BankAccount {
@@ -59,12 +59,9 @@ export class AccountCalculator implements IAccountCalculator {
   }
 
   private getNextBoundaryFn(interval: PayoutInterval): ((iso: string) => string) | undefined {
-    switch (interval) {
-      case PayoutInterval.Monthly: return getNextMonthStart;
-      case PayoutInterval.Quarterly: return getNextQuarterStart;
-      case PayoutInterval.AtMaturity: return getNextMonthStart;
-      default: return undefined;
-    }
+    const boundaries = INTERVAL_BOUNDARIES[interval];
+    if (!boundaries) return undefined;
+    return (iso: string) => getNextBoundaryStart(iso, boundaries);
   }
 
   private getEndISO(input: BankAccountInput): string {

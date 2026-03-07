@@ -207,6 +207,74 @@ describe('AccountCalculator', () => {
     });
   });
 
+  describe('semi-annual fixed calendar dates', () => {
+    it('snaps semi-annual periods to Jan/Jul boundaries', () => {
+      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.SemiAnnually, InterestType.Compound, '2025-03-15');
+      const result = calculator.calculate(input);
+
+      // Mar 15 → Jul 1 (short), Jul 1 → Jan 1, Jan 1 → Mar 15 (short)
+      expect(result.periods).toHaveLength(3);
+    });
+
+    it('produces 2 equal periods when starting on a semi-annual boundary', () => {
+      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.SemiAnnually, InterestType.Compound, '2025-01-01');
+      const result = calculator.calculate(input);
+
+      expect(result.periods).toHaveLength(2);
+    });
+
+    it('pro-rates interest for partial periods based on ACT/ACT year fraction', () => {
+      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.SemiAnnually, InterestType.Compound, '2025-03-15', [], false, DayCountConvention.ACT_ACT);
+      const result = calculator.calculate(input);
+
+      // First period: Mar 15 → Jul 1 = 108 days in 2025 (non-leap, 365 days)
+      const expectedFraction = 108 / 365;
+      expect(result.periods[0].interestEarned).toBeCloseTo(10000 * 0.05 * expectedFraction, 2);
+    });
+
+    it('maps cash flow to correct fixed-date period', () => {
+      const cashFlows: CashFlow[] = [{
+        id: '1', date: '2025-08-01', amount: 3000, description: 'Storting',
+      }];
+      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.SemiAnnually, InterestType.Compound, '2025-03-15', cashFlows);
+      const result = calculator.calculate(input);
+
+      // Aug 1 falls in period Jul 1 → Jan 1 (period 2)
+      expect(result.periods[1].deposited).toBe(3000);
+    });
+
+    it('works without startDate (falls back to equal periods)', () => {
+      const input = new BankAccountInput(10000, 5, 12, PayoutInterval.SemiAnnually, InterestType.Compound);
+      const result = calculator.calculate(input);
+
+      expect(result.periods).toHaveLength(2);
+    });
+  });
+
+  describe('annual fixed calendar dates', () => {
+    it('snaps annual periods to Jan 1 boundaries', () => {
+      const input = new BankAccountInput(10000, 5, 24, PayoutInterval.Annually, InterestType.Compound, '2025-06-15');
+      const result = calculator.calculate(input);
+
+      // Jun 15 → Jan 1 (short), Jan 1 → Jan 1, Jan 1 → Jun 15 (short)
+      expect(result.periods).toHaveLength(3);
+    });
+
+    it('produces 2 equal periods when starting on Jan 1', () => {
+      const input = new BankAccountInput(10000, 5, 24, PayoutInterval.Annually, InterestType.Compound, '2025-01-01');
+      const result = calculator.calculate(input);
+
+      expect(result.periods).toHaveLength(2);
+    });
+
+    it('works without startDate (falls back to equal periods)', () => {
+      const input = new BankAccountInput(10000, 5, 24, PayoutInterval.Annually, InterestType.Compound);
+      const result = calculator.calculate(input);
+
+      expect(result.periods).toHaveLength(2);
+    });
+  });
+
   describe('variable rate', () => {
     it('reduces total interest when rate drops mid-term', () => {
       const rateChanges: RateChange[] = [
