@@ -2,6 +2,7 @@ import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
 import { Currency } from '../enums/Currency';
 import { DayCountConvention } from '../enums/DayCountConvention';
+import { AccountType } from '../enums/AccountType';
 import { EXPORT_FORMAT_VERSION } from '../models/ExportFile';
 import type { ExportFile, ExportedResult } from '../models/ExportFile';
 
@@ -13,6 +14,7 @@ const PAYOUT_INTERVAL_VALUES = Object.values(PayoutInterval) as string[];
 const INTEREST_TYPE_VALUES = Object.values(InterestType) as string[];
 const CURRENCY_VALUES = Object.values(Currency) as string[];
 const DAY_COUNT_VALUES = Object.values(DayCountConvention) as string[];
+const ACCOUNT_TYPE_VALUES = Object.values(AccountType) as string[];
 const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -99,6 +101,18 @@ function validateExportedResult(value: unknown, index: number): string | null {
     if (typeof r.currency !== 'string' || !CURRENCY_VALUES.includes(r.currency)) {
       return `Rekening ${index + 1}: 'currency' heeft een ongeldige waarde '${r.currency}'.`;
     }
+  }
+
+  if (r.isVariableRate !== undefined && typeof r.isVariableRate !== 'boolean') {
+    return `Rekening ${index + 1}: 'isVariableRate' moet een boolean zijn.`;
+  }
+
+  if (r.hasCashFlows !== undefined && typeof r.hasCashFlows !== 'boolean') {
+    return `Rekening ${index + 1}: 'hasCashFlows' moet een boolean zijn.`;
+  }
+
+  if (r.accountType !== undefined && (typeof r.accountType !== 'string' || !ACCOUNT_TYPE_VALUES.includes(r.accountType))) {
+    return `Rekening ${index + 1}: 'accountType' heeft een ongeldige waarde '${r.accountType}'.`;
   }
 
   if (r.rateChanges !== undefined) {

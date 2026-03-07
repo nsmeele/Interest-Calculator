@@ -86,6 +86,7 @@
     "optional": "(optioneel)",
     "ongoingAccount": "Lopende rekening (geen einddatum)",
     "endDate": "Einddatum",
+    "useCustomEndDate": "Einddatum opgeven in plaats van looptijd",
     "endDateOptional": "Einddatum (optioneel)",
     "durationAuto": "Looptijd wordt automatisch berekend",
     "duration": "Looptijd",
@@ -94,11 +95,14 @@
     "annualRate": "Rente per jaar",
     "variableRate": "Variabele rente",
     "variableRateHint": "Rentewijzigingen kun je toevoegen in het overzicht.",
+    "cashFlows": "Transacties",
+    "cashFlowsHint": "Stortingen en opnames kun je toevoegen in het overzicht.",
     "interestType": "Rentetype",
     "payoutLabel": "Uitbetaling",
     "dayCountConvention": "Dagtellingconventie",
     "dayCountHint": "Voor een nauwkeurige berekening: kies de conventie die je bank hanteert. Dit staat in het productinformatieblad (PIB) onder 'Renteberekening'.",
     "update": "Bijwerken",
+    "advanced": "Geavanceerd",
     "calculate": "Bereken",
     "cancel": "Annuleren",
     "errorInvalidAmount": "Vul een geldig bedrag in",
@@ -205,6 +209,14 @@
     "confirm": "Alles wissen",
     "buttonTitle": "Alle opgeslagen gegevens wissen",
     "buttonLabel": "Wis alles"
+  },
+  "accountType": {
+    "label": "Type rekening",
+    "savings": "Spaarrekening",
+    "deposit": "Deposito",
+    "investment": "Investering",
+    "placeholder": "Geen preset — zelf instellen",
+    "hint": "Vult automatisch de geavanceerde instellingen in. Zonder preset kun je alles zelf kiezen."
   },
   "interval": {
     "daily": "Dagelijks",

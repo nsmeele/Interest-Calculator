@@ -32,3 +32,24 @@
 .interval-option--wide label {
   @apply col-span-2;
 }
+
+/* ─── Advanced Toggle ─── */
+.advanced-toggle {
+  @apply flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-navy-400 cursor-pointer select-none transition-colors duration-200 bg-transparent border-none p-0 mb-5 dark:text-navy-500;
+}
+
+.advanced-toggle:hover {
+  @apply text-navy-600 dark:text-navy-300;
+}
+
+.advanced-toggle__icon {
+  @apply w-4 h-4 transition-transform duration-200;
+}
+
+.advanced-toggle__icon--open {
+  @apply rotate-180;
+}
+
+.advanced-section {
+  @apply animate-[expandReveal_0.25s_ease];
+}

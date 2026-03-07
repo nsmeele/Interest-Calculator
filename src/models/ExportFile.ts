@@ -1,6 +1,7 @@
 import type { PayoutInterval } from '../enums/PayoutInterval';
 import type { InterestType } from '../enums/InterestType';
 import type { DayCountConvention } from '../enums/DayCountConvention';
+import type { AccountType } from '../enums/AccountType';
 import type { PeriodResult } from './BankAccount';
 import type { CashFlow } from './CashFlow';
 import type { RateChange } from './RateChange';
@@ -22,6 +23,8 @@ export interface ExportedResult {
   rateChanges?: RateChange[];
   isVariableRate?: boolean;
   currency?: string;
+  accountType?: AccountType;
+  hasCashFlows?: boolean;
 }
 
 export interface StoredResult extends ExportedResult {

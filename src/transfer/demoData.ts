@@ -3,6 +3,7 @@ import { EXPORT_FORMAT_VERSION } from '../models/ExportFile';
 import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
+import { AccountType } from '../enums/AccountType';
 
 export const demoData: ExportFile = {
   version: EXPORT_FORMAT_VERSION,
@@ -35,6 +36,7 @@ export const demoData: ExportFile = {
       ],
       isOngoing: true,
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Savings,
     },
     {
       id: 'demo-0001-0001-0001-000000000002',
@@ -52,6 +54,7 @@ export const demoData: ExportFile = {
       ],
       isOngoing: true,
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Savings,
     },
     {
       id: 'demo-0001-0001-0001-000000000003',
@@ -69,6 +72,7 @@ export const demoData: ExportFile = {
       ],
       isOngoing: true,
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Savings,
     },
     {
       id: 'demo-0001-0001-0001-000000000004',
@@ -76,11 +80,12 @@ export const demoData: ExportFile = {
       startAmount: 8000,
       annualInterestRate: 2.4,
       durationMonths: 12,
-      interval: PayoutInterval.Daily,
-      interestType: InterestType.Compound,
+      interval: PayoutInterval.AtMaturity,
+      interestType: InterestType.Simple,
       startDate: '2025-07-01',
 
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Deposit,
     },
     {
       id: 'demo-0001-0001-0001-000000000005',
@@ -89,10 +94,11 @@ export const demoData: ExportFile = {
       annualInterestRate: 1.95,
       durationMonths: 12,
       interval: PayoutInterval.AtMaturity,
-      interestType: InterestType.Compound,
+      interestType: InterestType.Simple,
       startDate: '2025-12-01',
 
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Deposit,
     },
     {
       id: 'demo-0001-0001-0001-000000000006',
@@ -101,10 +107,11 @@ export const demoData: ExportFile = {
       annualInterestRate: 2.5,
       durationMonths: 18,
       interval: PayoutInterval.AtMaturity,
-      interestType: InterestType.Compound,
+      interestType: InterestType.Simple,
       startDate: '2025-08-01',
 
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Deposit,
     },
     {
       id: 'demo-0001-0001-0001-000000000007',
@@ -117,6 +124,7 @@ export const demoData: ExportFile = {
       startDate: '2025-04-01',
 
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Investment,
     },
     {
       id: 'demo-0001-0001-0001-000000000008',
@@ -129,6 +137,7 @@ export const demoData: ExportFile = {
       startDate: '2025-03-07',
 
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Investment,
     },
     {
       id: 'demo-0001-0001-0001-000000000009',
@@ -141,6 +150,7 @@ export const demoData: ExportFile = {
       startDate: '2025-06-01',
 
       dayCount: DayCountConvention.NOM_12,
+      accountType: AccountType.Deposit,
     },
   ],
 };

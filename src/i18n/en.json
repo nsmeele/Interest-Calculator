@@ -86,6 +86,7 @@
     "optional": "(optional)",
     "ongoingAccount": "Ongoing account (no end date)",
     "endDate": "End date",
+    "useCustomEndDate": "Specify end date instead of duration",
     "endDateOptional": "End date (optional)",
     "durationAuto": "Duration is calculated automatically",
     "duration": "Duration",
@@ -94,11 +95,14 @@
     "annualRate": "Annual interest rate",
     "variableRate": "Variable rate",
     "variableRateHint": "You can add rate changes in the overview.",
+    "cashFlows": "Transactions",
+    "cashFlowsHint": "You can add deposits and withdrawals in the overview.",
     "interestType": "Interest type",
     "payoutLabel": "Payout",
     "dayCountConvention": "Day count convention",
     "dayCountHint": "For accurate calculations: choose the convention your bank uses. This can be found in the product information sheet under 'Interest calculation'.",
     "update": "Update",
+    "advanced": "Advanced",
     "calculate": "Calculate",
     "cancel": "Cancel",
     "errorInvalidAmount": "Enter a valid amount",
@@ -204,6 +208,14 @@
     "confirm": "Clear all",
     "buttonTitle": "Clear all saved data",
     "buttonLabel": "Clear all"
+  },
+  "accountType": {
+    "label": "Account type",
+    "savings": "Savings",
+    "deposit": "Deposit",
+    "investment": "Investment",
+    "placeholder": "No preset — configure manually",
+    "hint": "Automatically fills in the advanced settings. Without a preset you can configure everything yourself."
   },
   "interval": {
     "daily": "Daily",

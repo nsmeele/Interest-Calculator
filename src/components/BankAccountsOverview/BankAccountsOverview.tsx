@@ -361,11 +361,13 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                           </aside>
                         </div>
                         <div className="period-editors">
-                          <CashFlowEditor
-                            cashFlows={r.cashFlows}
-                            onUpdate={(cfs) => onUpdateCashFlows(r.id, cfs)}
-                            currency={cur}
-                          />
+                          {r.hasCashFlows && (
+                            <CashFlowEditor
+                              cashFlows={r.cashFlows}
+                              onUpdate={(cfs) => onUpdateCashFlows(r.id, cfs)}
+                              currency={cur}
+                            />
+                          )}
                           {r.isVariableRate && (
                             <RateChangeEditor
                               rateChanges={r.rateChanges}

@@ -1,6 +1,7 @@
 import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
 import { DayCountConvention } from '../enums/DayCountConvention';
+import type { AccountType } from '../enums/AccountType';
 import type { CashFlow } from './CashFlow';
 import type { RateChange } from './RateChange';
 
@@ -18,6 +19,8 @@ export class BankAccountInput {
     public readonly rateChanges: RateChange[] = [],
     public readonly isVariableRate: boolean = false,
     public readonly currency?: string,
+    public readonly accountType?: AccountType,
+    public readonly hasCashFlows: boolean = true,
   ) {}
 
   get durationYears(): number {
