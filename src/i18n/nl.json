@@ -39,6 +39,7 @@
     "import": "Importeren",
     "export": "Exporteren",
     "clearAll": "Alles wissen",
+    "loadDemo": "Demo data laden",
     "sectionLabel": "Rekeningen",
     "confirmDeleteTitle": "Rekening verwijderen",
     "confirmDeleteMessage": "Weet je zeker dat je deze rekening wilt verwijderen?",

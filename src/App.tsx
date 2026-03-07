@@ -16,6 +16,7 @@ import { BankAccountInput } from './models/BankAccountInput';
 import type { BankAccount } from './models/BankAccount';
 import type { CashFlow } from './models/CashFlow';
 import type { RateChange } from './models/RateChange';
+import { demoData } from './transfer/demoData';
 
 export default function App() {
   const { t } = useTranslation();
@@ -65,6 +66,11 @@ export default function App() {
       editingResult: result,
       onResult: (updated) => updateResult(result.id, updated),
     });
+  }
+
+  function handleLoadDemo() {
+    replaceResults(demoData.results);
+    replacePortfolio(demoData.portfolioIds);
   }
 
   function handleUpdateCashFlows(id: string, cashFlows: CashFlow[]) {
@@ -192,6 +198,7 @@ export default function App() {
             onExport={handleExportClick}
             onImportFile={transfer.handleFileSelected}
             importError={transfer.importError}
+            onLoadDemo={handleLoadDemo}
           />
           {hasPortfolio && (
             <PortfolioSummary

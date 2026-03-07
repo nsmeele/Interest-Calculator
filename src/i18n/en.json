@@ -39,6 +39,7 @@
     "import": "Import",
     "export": "Export",
     "clearAll": "Clear all",
+    "loadDemo": "Load demo data",
     "sectionLabel": "Accounts",
     "confirmDeleteTitle": "Delete account",
     "confirmDeleteMessage": "Are you sure you want to delete this account?",

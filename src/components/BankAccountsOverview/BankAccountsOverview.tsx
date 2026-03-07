@@ -28,6 +28,7 @@ interface BankAccountsOverviewProps {
   onExport: () => void;
   onImportFile: (file: File) => Promise<void>;
   importError: string | null;
+  onLoadDemo?: () => void;
 }
 
 function ColumnInfo({ label, info }: { label: string; info: string }) {
@@ -69,7 +70,7 @@ function ColumnInfo({ label, info }: { label: string; info: string }) {
   );
 }
 
-export default function BankAccountsOverview({ results, onRemove, onClear, portfolioIds, onTogglePortfolio, onEdit, onNewAccount, onUpdateCashFlows, onUpdateRateChanges, onExport, onImportFile, importError }: BankAccountsOverviewProps) {
+export default function BankAccountsOverview({ results, onRemove, onClear, portfolioIds, onTogglePortfolio, onEdit, onNewAccount, onUpdateCashFlows, onUpdateRateChanges, onExport, onImportFile, importError, onLoadDemo }: BankAccountsOverviewProps) {
   const { t } = useTranslation();
   const [openId, setOpenId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -116,6 +117,11 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
           <button className="btn-secondary empty-state__btn" onClick={() => fileInputRef.current?.click()}>
             {t('accounts.import')}
           </button>
+          {onLoadDemo && (
+            <button className="btn-secondary empty-state__btn" onClick={onLoadDemo}>
+              {t('accounts.loadDemo')}
+            </button>
+          )}
           <input
             ref={fileInputRef}
             type="file"
