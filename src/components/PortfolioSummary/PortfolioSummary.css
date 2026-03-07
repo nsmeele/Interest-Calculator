@@ -3,20 +3,20 @@
 /* ─── Portfolio ─── */
 
 .portfolio-stats {
-  @apply grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 sm:gap-4 sm:mb-5 sm:max-w-lg sm:mx-auto;
+  @apply grid grid-cols-1 gap-3 mb-3 sm:grid-cols-2 sm:gap-3 sm:mb-4;
 }
 
 .portfolio-stat {
-  @apply p-3.5 text-center transition-colors duration-200 sm:p-4;
+  @apply p-3 text-center rounded-xl bg-navy-50 border border-navy-100 transition-colors duration-200 dark:bg-navy-800/50 dark:border-navy-700/50 sm:p-3.5;
 }
 
 .portfolio-stat--highlight {
-  @apply border-l-2 border-copper-400;
+  @apply border-l-2 border-l-copper-400;
 }
 
 /* ─── Portfolio Tabs ─── */
 .portfolio-tabs {
-  @apply flex gap-0 mb-4 border-b border-navy-200/60 dark:border-navy-700/40;
+  @apply flex gap-0 mb-3 border-b border-navy-200/60 dark:border-navy-700/40;
 }
 
 .portfolio-tabs__tab {
@@ -36,7 +36,7 @@
 
 /* ─── Month Navigation ─── */
 .month-nav {
-  @apply flex items-center justify-center gap-3 py-3 mb-4 rounded-lg bg-navy-50/60 dark:bg-navy-800/40;
+  @apply flex items-center justify-center gap-3 py-2 mb-3 rounded-lg bg-navy-50/60 dark:bg-navy-800/40;
 }
 
 .month-nav__btn {
@@ -64,7 +64,7 @@
 }
 
 .portfolio-stat-value {
-  @apply text-lg font-bold text-navy-900 tabular-nums dark:text-navy-50 sm:text-xl;
+  @apply text-base font-bold text-navy-900 tabular-nums dark:text-navy-50 sm:text-lg;
 }
 
 .portfolio-stat--highlight .portfolio-stat-value {
@@ -79,12 +79,9 @@
   @apply border-b border-navy-100 dark:border-navy-700;
 }
 
-.portfolio-entry:last-child {
-  @apply border-b-0;
-}
 
 .portfolio-item {
-  @apply flex items-center gap-3 px-0 py-3 cursor-pointer select-none transition-colors duration-200 hover:bg-navy-50 dark:hover:bg-navy-800/50;
+  @apply flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer select-none transition-colors duration-200 hover:bg-navy-50 dark:hover:bg-navy-800/50;
 }
 
 .portfolio-item-chevron {
@@ -161,6 +158,19 @@
   @apply font-semibold text-navy-800 border-t border-navy-200 border-b-0 dark:text-navy-100 dark:border-navy-600;
 }
 
+
+/* ─── Portfolio Empty ─── */
+.portfolio-empty {
+  @apply text-center py-8 px-4;
+}
+
+.portfolio-empty__icon {
+  @apply w-8 h-8 mx-auto mb-2 text-navy-300 dark:text-navy-600;
+}
+
+.portfolio-empty p {
+  @apply text-sm text-navy-400 leading-relaxed max-w-52 mx-auto;
+}
 
 /* ─── Inactive Toggle ─── */
 .portfolio-inactive-toggle {

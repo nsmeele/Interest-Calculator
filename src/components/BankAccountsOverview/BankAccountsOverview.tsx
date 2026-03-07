@@ -1,7 +1,7 @@
-import { Fragment, useState, useRef, useCallback } from 'react';
+import { Fragment, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { InformationCircleIcon, PlusIcon, ChevronDownIcon, PencilIcon, XMarkIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import { InformationCircleIcon, PlusIcon, ChevronDownIcon, ChevronUpDownIcon, PencilIcon, XMarkIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 import type { BankAccount } from '../../models/BankAccount';
@@ -15,19 +15,76 @@ import RateChangeEditor from '../RateChangeEditor';
 import { useModal } from '../../context/ModalContext';
 import './BankAccountsOverview.css';
 
+export type SortColumn = 'balance' | 'endDate';
+export type SortDirection = 'asc' | 'desc';
+export type SortState = { column: SortColumn; direction: SortDirection } | null;
+
+const SORT_STORAGE_KEY = 'bank-account-sort';
+
+function loadSortState(): SortState {
+  try {
+    const raw = localStorage.getItem(SORT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && ['balance', 'endDate'].includes(parsed.column) && ['asc', 'desc'].includes(parsed.direction)) {
+      return parsed;
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
+function saveSortState(state: SortState) {
+  if (state) {
+    localStorage.setItem(SORT_STORAGE_KEY, JSON.stringify(state));
+  } else {
+    localStorage.removeItem(SORT_STORAGE_KEY);
+  }
+}
+
+function getBalanceValue(r: BankAccount): number {
+  return r.interestType === InterestType.Compound ? r.currentBalance + r.disbursedToDate : r.currentBalance;
+}
+
+export function sortAccounts(results: BankAccount[], sortState: SortState): BankAccount[] {
+  const sorted = [...results];
+
+  if (!sortState) {
+    // Default: ongoing first, then by end date ascending
+    return sorted.sort((a, b) => {
+      if (!a.endDate && !b.endDate) return 0;
+      if (!a.endDate) return -1;
+      if (!b.endDate) return 1;
+      return a.endDate.localeCompare(b.endDate);
+    });
+  }
+
+  const dir = sortState.direction === 'asc' ? 1 : -1;
+
+  return sorted.sort((a, b) => {
+    switch (sortState.column) {
+      case 'balance':
+        return (getBalanceValue(a) - getBalanceValue(b)) * dir;
+      case 'endDate': {
+        // Ongoing (no endDate) = "infinity"
+        if (!a.endDate && !b.endDate) return 0;
+        if (!a.endDate) return dir;
+        if (!b.endDate) return -dir;
+        return a.endDate.localeCompare(b.endDate) * dir;
+      }
+    }
+  });
+}
+
 interface BankAccountsOverviewProps {
   results: BankAccount[];
   onRemove: (id: string) => void;
-  onClear: () => void;
   portfolioIds: Set<string>;
   onTogglePortfolio: (id: string) => void;
   onEdit: (result: BankAccount) => void;
   onNewAccount: () => void;
   onUpdateCashFlows: (id: string, cashFlows: CashFlow[]) => void;
   onUpdateRateChanges: (id: string, rateChanges: RateChange[]) => void;
-  onExport: () => void;
-  onImportFile: (file: File) => Promise<void>;
-  importError: string | null;
+  onImport: () => void;
   onLoadDemo?: () => void;
 }
 
@@ -70,11 +127,36 @@ function ColumnInfo({ label, info }: { label: string; info: string }) {
   );
 }
 
-export default function BankAccountsOverview({ results, onRemove, onClear, portfolioIds, onTogglePortfolio, onEdit, onNewAccount, onUpdateCashFlows, onUpdateRateChanges, onExport, onImportFile, importError, onLoadDemo }: BankAccountsOverviewProps) {
+function SortIndicator({ column, sortState }: { column: SortColumn; sortState: SortState }) {
+  if (sortState?.column !== column) {
+    return <ChevronUpDownIcon className="sort-indicator sort-indicator--inactive" aria-hidden="true" />;
+  }
+  return (
+    <ChevronDownIcon
+      className={`sort-indicator${sortState.direction === 'asc' ? ' sort-indicator--asc' : ''}`}
+      aria-hidden="true"
+    />
+  );
+}
+
+export default function BankAccountsOverview({ results, onRemove, portfolioIds, onTogglePortfolio, onEdit, onNewAccount, onUpdateCashFlows, onUpdateRateChanges, onImport, onLoadDemo }: BankAccountsOverviewProps) {
   const { t } = useTranslation();
   const [openId, setOpenId] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [sortState, setSortState] = useState<SortState>(loadSortState);
   const { openModal } = useModal();
+
+  function toggleSort(column: SortColumn) {
+    setSortState(prev => {
+      let next: SortState;
+      if (prev?.column === column) {
+        next = prev.direction === 'asc' ? { column, direction: 'desc' } : null;
+      } else {
+        next = { column, direction: 'asc' };
+      }
+      saveSortState(next);
+      return next;
+    });
+  }
 
   function handleRemove(id: string) {
     openModal({
@@ -84,24 +166,6 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
       confirmLabel: t('accounts.confirmDeleteButton'),
       onConfirm: () => onRemove(id),
     });
-  }
-
-  function handleClear() {
-    openModal({
-      type: 'confirm',
-      title: t('accounts.confirmClearTitle'),
-      message: t('accounts.confirmClearMessage'),
-      confirmLabel: t('accounts.clearAll'),
-      onConfirm: onClear,
-    });
-  }
-
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      onImportFile(file);
-      e.target.value = '';
-    }
   }
 
   if (results.length === 0) {
@@ -114,7 +178,7 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
           <button className="btn-primary empty-state__btn" onClick={onNewAccount}>
             {t('accounts.newAccount')}
           </button>
-          <button className="btn-secondary empty-state__btn" onClick={() => fileInputRef.current?.click()}>
+          <button className="btn-secondary empty-state__btn" onClick={onImport}>
             {t('accounts.import')}
           </button>
           {onLoadDemo && (
@@ -122,29 +186,12 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
               {t('accounts.loadDemo')}
             </button>
           )}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            className="sr-only"
-            onChange={handleFileChange}
-            aria-hidden="true"
-            tabIndex={-1}
-          />
         </div>
-        {importError && (
-          <p className="data-transfer__error" role="alert">{importError}</p>
-        )}
       </section>
     );
   }
 
-  const sorted = [...results].sort((a, b) => {
-    if (!a.endDate && !b.endDate) return 0;
-    if (!a.endDate) return 1;
-    if (!b.endDate) return -1;
-    return a.endDate.localeCompare(b.endDate);
-  });
+  const sorted = sortAccounts(results, sortState);
 
 
   return (
@@ -161,38 +208,33 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
             <PlusIcon aria-hidden="true" />
             {t('accounts.newAccount')}
           </button>
-          <button className="btn-action btn-action--muted" onClick={onExport} aria-label={t('accounts.export')}>
-            {t('accounts.export')}
-          </button>
-          <button className="btn-action btn-action--muted" onClick={() => fileInputRef.current?.click()} aria-label={t('accounts.import')}>
-            {t('accounts.import')}
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            className="sr-only"
-            onChange={handleFileChange}
-            aria-hidden="true"
-            tabIndex={-1}
-          />
-          <button className="btn-action btn-action--danger" onClick={handleClear}>
-            {t('accounts.clearAll')}
-          </button>
         </div>
       </div>
-      {importError && (
-        <p className="data-transfer__error" role="alert">{importError}</p>
-      )}
-
       <div className="comparison-table-wrapper-inner">
           <table className="comparison-table">
           <thead>
             <tr>
               <th></th>
-              <th><ColumnInfo label={t('accounts.balance')} info={t('accounts.balanceInfo')} /></th>
-              <th>{t('accounts.interest')}</th>
-              <th>{t('accounts.endDate')}</th>
+              <th
+                className="comparison-table__th--sortable"
+                onClick={() => toggleSort('balance')}
+                aria-sort={sortState?.column === 'balance' ? (sortState.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
+                aria-label={t('accounts.sortBy', { column: t('accounts.balance') })}
+              >
+                <ColumnInfo label={t('accounts.balance')} info={t('accounts.balanceInfo')} />
+                <span className="comparison-table__th-separator">@</span>
+                {t('accounts.interest')}
+                <SortIndicator column="balance" sortState={sortState} />
+              </th>
+              <th
+                className="comparison-table__th--sortable"
+                onClick={() => toggleSort('endDate')}
+                aria-sort={sortState?.column === 'endDate' ? (sortState.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
+                aria-label={t('accounts.sortBy', { column: t('accounts.endDate') })}
+              >
+                {t('accounts.endDate')}
+                <SortIndicator column="endDate" sortState={sortState} />
+              </th>
               <th>{t('accounts.payout')}</th>
               <th></th>
             </tr>
@@ -211,20 +253,15 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                     </td>
                     <td className="amount">
                       {formatCurrency(r.interestType === InterestType.Compound ? r.currentBalance + r.disbursedToDate : r.currentBalance)}
-                      {!r.isOngoing && r.totalInterest > 0 && (() => {
-                        const pct = Math.round((r.disbursedToDate + r.accruedInterest) / r.totalInterest * 100);
-                        if (pct >= 100) return <span className="comparison-badge comparison-badge--complete">{pct}%</span>;
-                        return <span className="comparison-badge comparison-badge--progress">{pct}%</span>;
-                      })()}
+                      <span className="comparison-rate">@ {r.annualInterestRate}%</span>
                     </td>
-                    <td>{r.annualInterestRate}%</td>
                     <td>
                       {r.isOngoing
                         ? <span className="comparison-badge comparison-badge--ongoing">{t('accounts.ongoing')}</span>
                         : <>
                             {r.endDate && formatDate(r.endDate)}{' '}
                             <span className="comparison-badge">{formatDurationShort(r.durationMonths)}</span>
-                            {r.totalInterest > 0 && Math.round((r.disbursedToDate + r.accruedInterest) / r.totalInterest * 100) >= 100 && (
+                            {r.hasExpired && (
                               <span className="comparison-badge comparison-badge--complete">{t('accounts.completed')}</span>
                             )}
                           </>
@@ -274,7 +311,7 @@ export default function BankAccountsOverview({ results, onRemove, onClear, portf
                   </tr>
                   {isOpen && (
                     <tr className="period-detail-row">
-                      <td colSpan={6}>
+                      <td colSpan={5}>
                         {(r.disbursedToDate > 0 || r.accruedInterest > 0 || r.nextPayoutDate) && (
                           <div className="period-detail-status">
                             {r.disbursedToDate > 0 && (

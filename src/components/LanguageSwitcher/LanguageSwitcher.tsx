@@ -9,14 +9,16 @@ export default function LanguageSwitcher() {
     i18n.changeLanguage(lng);
   }
 
+  const resolvedLng = i18n.resolvedLanguage ?? i18n.language;
+
   return (
     <div className="language-switcher" role="radiogroup" aria-label="Language">
       {SUPPORTED_LANGUAGES.map(({ code, label }) => (
         <button
           key={code}
-          className={`language-switcher__btn${i18n.language === code ? ' language-switcher__btn--active' : ''}`}
+          className={`language-switcher__btn${resolvedLng === code ? ' language-switcher__btn--active' : ''}`}
           onClick={() => handleChange(code)}
-          aria-pressed={i18n.language === code}
+          aria-pressed={resolvedLng === code}
           lang={code}
         >
           {label}

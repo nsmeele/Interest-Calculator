@@ -21,11 +21,11 @@
 
 /* ─── Portfolio Chart ─── */
 .portfolio-chart {
-  @apply my-4 -mx-1 sm:my-5;
+  @apply my-3 -mx-1 sm:my-4;
 }
 
 .portfolio-chart__container {
-  @apply w-full h-50 sm:h-60;
+  @apply w-full h-40 sm:h-48;
 }
 
 .portfolio-chart__tooltip {

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { useModal } from '../../context/ModalContext';
 
 interface ClearDataButtonProps {
@@ -27,7 +28,8 @@ export default function ClearDataButton({ onClear }: ClearDataButtonProps) {
       title={t('clearData.buttonTitle')}
       aria-label={t('clearData.buttonTitle')}
     >
-      {t('clearData.buttonLabel')}
+      <TrashIcon aria-hidden="true" />
+      <span className="toolbar-label">{t('clearData.buttonLabel')}</span>
     </button>
   );
 }

@@ -5,6 +5,9 @@
     "hideGuide": "Verberg uitleg",
     "showGuide": "Hoe werkt het?"
   },
+  "nav": {
+    "ariaLabel": "Secties"
+  },
   "guide": {
     "ariaLabel": "Uitleg en features",
     "featuresHeading": "Wat kan MoneyGrip?",
@@ -38,14 +41,11 @@
     "newAccount": "Nieuwe rekening",
     "import": "Importeren",
     "export": "Exporteren",
-    "clearAll": "Alles wissen",
     "loadDemo": "Demo data laden",
     "sectionLabel": "Rekeningen",
     "confirmDeleteTitle": "Rekening verwijderen",
     "confirmDeleteMessage": "Weet je zeker dat je deze rekening wilt verwijderen?",
     "confirmDeleteButton": "Verwijderen",
-    "confirmClearTitle": "Alles wissen",
-    "confirmClearMessage": "Weet je zeker dat je alle rekeningen wilt verwijderen?",
     "balance": "Saldo",
     "balanceInfo": "Je huidige saldo: het startbedrag plus alle stortingen en min alle opnames. Bij rente op rente wordt uitbetaalde rente meegenomen.",
     "interest": "Rente",
@@ -71,7 +71,8 @@
     "totalInterest": "Totale rente",
     "endAmount": "Eindbedrag",
     "interestThisMonth": "Rente deze maand",
-    "infoAbout": "Info over {{label}}"
+    "infoAbout": "Info over {{label}}",
+    "sortBy": "Sorteer op {{column}}"
   },
   "form": {
     "deposit": "Inleg",
@@ -135,7 +136,7 @@
   },
   "portfolio": {
     "title": "Portefeuille",
-    "clear": "Leegmaken",
+    "emptyHint": "Voeg rekeningen toe aan je portefeuille via de ster ★ bij elke rekening.",
     "prevMonth": "Vorige maand",
     "nextMonth": "Volgende maand",
     "now": "nu",

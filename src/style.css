@@ -40,6 +40,9 @@
   --text-3xs--line-height: 1;
   --text-2xs: 0.625rem;
   --text-2xs--line-height: 1.2;
+
+  --container-dashboard: 96rem;
+  --width-sidebar: 28rem;
 }
 
 /* ─── Dark Theme Color Overrides ─── */
@@ -81,16 +84,53 @@ body {
 
 /* ─── Layout ─── */
 .app-container {
-  @apply mx-auto px-4 animate-[fadeInUp_0.5s_ease_both] sm:px-6;
+  @apply mx-auto px-4 max-w-dashboard animate-[fadeInUp_0.5s_ease_both] sm:px-6 lg:px-10;
+}
+
+/* ─── Toolbar ─── */
+.app-toolbar {
+  @apply flex items-center justify-end gap-1.5 mb-3 sm:gap-2 sm:mb-4;
+}
+
+.toolbar-label {
+  @apply hidden sm:inline;
+}
+
+.toolbar-separator {
+  @apply hidden w-px h-5 bg-navy-200/70 dark:bg-navy-700/60 sm:block;
+}
+
+.toolbar-dropdown {
+  @apply relative;
+}
+
+.toolbar-dropdown__chevron {
+  @apply w-3 h-3 transition-transform duration-200;
+}
+
+.toolbar-dropdown__chevron--open {
+  @apply rotate-180;
+}
+
+.toolbar-dropdown__menu {
+  @apply absolute right-0 top-full mt-1 py-1 min-w-40 rounded-lg bg-white border border-navy-200/80 shadow-lg z-50 animate-[fadeIn_0.12s_ease] dark:bg-navy-800 dark:border-navy-700;
+}
+
+.toolbar-dropdown__item {
+  @apply flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-left text-navy-700 bg-transparent border-none cursor-pointer font-body transition-colors duration-150 hover:bg-navy-50 dark:text-navy-200 dark:hover:bg-navy-700;
+}
+
+.toolbar-dropdown__item--muted {
+  @apply text-navy-400 dark:text-navy-500;
 }
 
 /* ─── Header ─── */
 .app-header {
-  @apply pt-8 pb-6 mb-6 border-b border-navy-200/70 dark:border-navy-700/50;
+  @apply pt-4 pb-4 mb-6 border-b border-navy-200/70 dark:border-navy-700/50;
 }
 
 .header-accent {
-  @apply inline-block w-8 h-[3px] mb-3 rounded-full bg-linear-to-r from-copper-500 to-copper-300;
+  @apply inline-block w-6 h-0.5 mb-2 rounded-full bg-linear-to-r from-copper-500 to-copper-300 sm:w-8 sm:h-[3px] sm:mb-3;
 }
 
 /* ─── Hero Top ─── */
@@ -99,15 +139,15 @@ body {
 }
 
 .hero-top__text h1 {
-  @apply font-display text-3xl font-semibold text-navy-900 leading-tight tracking-[-0.03em] dark:text-navy-50;
+  @apply font-display text-2xl font-semibold text-navy-900 leading-tight tracking-[-0.03em] dark:text-navy-50;
 }
 
 .app-header__tagline {
-  @apply font-display text-base text-copper-600 mt-1 font-medium italic leading-snug dark:text-copper-400;
+  @apply font-display text-sm text-copper-600 mt-0.5 font-medium italic leading-snug dark:text-copper-400 sm:text-base sm:mt-1;
 }
 
 .hero-top__actions {
-  @apply flex items-center gap-4;
+  @apply flex items-center gap-2 flex-wrap sm:gap-3;
 }
 
 .btn-start {
@@ -192,7 +232,7 @@ body {
 
 
 .app-header {
-  @apply sm:pt-10 sm:pb-8 sm:mb-8 lg:pt-12 lg:mb-10;
+  @apply sm:pt-6 sm:pb-5 sm:mb-6 lg:pt-8 lg:mb-8;
 }
 
 .hero-top {
@@ -200,7 +240,7 @@ body {
 }
 
 .hero-top__text h1 {
-  @apply sm:text-3xl lg:text-4xl;
+  @apply sm:text-2xl lg:text-3xl;
 }
 
 .app-header__tagline {
@@ -208,7 +248,7 @@ body {
 }
 
 .header-accent {
-  @apply sm:mb-2 lg:w-10 lg:mb-3;
+  @apply sm:mb-2 lg:w-8 lg:mb-2;
 }
 
 .usage-guide__layout {
@@ -221,7 +261,7 @@ body {
 
 /* ─── Disclaimer Footer ─── */
 .app-disclaimer {
-  @apply mt-12 pt-6 pb-8 border-t border-navy-200/50 dark:border-navy-700/40;
+  @apply mt-12 pt-6 pb-20 border-t border-navy-200/50 dark:border-navy-700/40 lg:pb-8;
 }
 
 .app-disclaimer p {
@@ -280,12 +320,20 @@ body {
 
 /* ─── Main Grid ─── */
 .main-layout {
-  @apply pb-8 lg:pb-20;
+  @apply pb-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-6 lg:pb-16;
 }
 
-/* ─── Section Divider ─── */
+.main-section {
+  @apply min-w-0 lg:flex-1;
+}
+
+.main-section + .main-section {
+  @apply lg:flex-none lg:w-sidebar;
+}
+
+/* ─── Section Card ─── */
 .portfolio-section {
-  @apply pt-8 mt-8 border-t border-navy-200/60 dark:border-navy-700/40;
+  @apply p-4 rounded-2xl bg-white border border-navy-200/60 shadow-sm dark:bg-navy-900 dark:border-navy-700/50 dark:shadow-none sm:p-6;
 }
 
 /* ─── Form ─── */
@@ -433,7 +481,7 @@ body {
 
 /* ─── Results Section ─── */
 .results-section {
-  @apply min-w-0 overflow-hidden animate-[fadeInUp_0.4s_ease_both];
+  @apply min-w-0 overflow-hidden animate-[fadeInUp_0.4s_ease_both] p-4 rounded-2xl bg-white border border-navy-200/60 shadow-sm dark:bg-navy-900 dark:border-navy-700/50 dark:shadow-none sm:p-6 lg:p-8;
 }
 
 .results-count {
@@ -515,6 +563,36 @@ body {
   to {
     opacity: 1;
     max-height: 2000px;
+  }
+}
+
+/* ─── Mobile Tab Bar ─── */
+.mobile-tab-bar {
+  @apply fixed bottom-0 left-0 right-0 z-40 flex bg-white/95 backdrop-blur-sm border-t border-navy-200/70 dark:bg-navy-900/95 dark:border-navy-700/60 lg:hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.mobile-tab {
+  @apply flex-1 flex flex-col items-center gap-1 py-3 text-xs font-semibold bg-transparent border-none cursor-pointer font-body uppercase tracking-wide transition-colors duration-200 text-navy-400 dark:text-navy-300;
+}
+
+.mobile-tab svg {
+  @apply w-5.5 h-5.5;
+}
+
+.mobile-tab--active {
+  @apply text-copper-600 dark:text-copper-400;
+}
+
+.mobile-tab--active::after {
+  @apply block w-5 h-0.5 rounded-full bg-copper-500 mt-0.5;
+  content: '';
+}
+
+/* ─── Mobile Section Visibility ─── */
+@media (max-width: 1023px) {
+  .main-section:not(.main-section--active) {
+    display: none;
   }
 }
 

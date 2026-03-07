@@ -6,8 +6,8 @@ import nl from './nl.json';
 import en from './en.json';
 
 export const SUPPORTED_LANGUAGES = [
-  { code: 'nl', label: 'Nederlands' },
-  { code: 'en', label: 'English' },
+  { code: 'nl', label: 'NL' },
+  { code: 'en', label: 'EN' },
 ] as const;
 
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]['code'];
@@ -25,7 +25,7 @@ i18n
       nl: { translation: nl },
       en: { translation: en },
     },
-    fallbackLng: 'nl',
+    fallbackLng: 'en',
     interpolation: {
       escapeValue: false,
     },

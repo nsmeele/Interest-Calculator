@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import BankAccountsOverview from './components/BankAccountsOverview';
 import PortfolioSummary from './components/PortfolioSummary';
@@ -11,6 +11,7 @@ import { useModal } from './context/ModalContext';
 import { useThemeProvider, ThemeContext } from './hooks/useTheme';
 import { useLastTabClear } from './hooks/useLastTabClear';
 import ClearDataButton from './components/ClearDataButton';
+import { BanknotesIcon, ChartBarIcon, ArrowUpTrayIcon, ArrowDownTrayIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { AccountCalculator } from './calculator/AccountCalculator';
 import { BankAccountInput } from './models/BankAccountInput';
 import type { BankAccount } from './models/BankAccount';
@@ -25,7 +26,24 @@ export default function App() {
   const { portfolioIds, togglePortfolio, clearPortfolio, replacePortfolio, mergePortfolio } = usePortfolio();
   const transfer = useDataTransfer(results, portfolioIds, replaceResults, mergeResults, replacePortfolio, mergePortfolio);
   const { openModal } = useModal();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dataMenuRef = useRef<HTMLDivElement>(null);
+  const [showDataMenu, setShowDataMenu] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'accounts' | 'portfolio'>('accounts');
+
+  const closeDataMenu = useCallback(() => setShowDataMenu(false), []);
+
+  useEffect(() => {
+    if (!showDataMenu) return;
+    function handleClick(e: MouseEvent) {
+      if (dataMenuRef.current && !dataMenuRef.current.contains(e.target as Node)) {
+        closeDataMenu();
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showDataMenu, closeDataMenu]);
 
   const hasData = results.length > 0 || portfolioIds.size > 0;
   const { clearAllData } = useLastTabClear({ hasData, clearResults, clearPortfolio });
@@ -42,6 +60,18 @@ export default function App() {
     }
   }, [pendingImport, openModal, handleConfirmImport, handleCancelImport]);
 
+  function handleImportClick() {
+    fileInputRef.current?.click();
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      transfer.handleFileSelected(file);
+      e.target.value = '';
+    }
+  }
+
   function handleExportClick() {
     openModal({
       type: 'export',
@@ -50,7 +80,13 @@ export default function App() {
     });
   }
 
-  const hasPortfolio = results.some((r) => portfolioIds.has(r.id));
+  const hasResults = results.length > 0;
+
+  useEffect(() => {
+    if (!hasResults && mobileTab === 'portfolio') {
+      setMobileTab('accounts');
+    }
+  }, [hasResults, mobileTab]);
 
   function handleNewAccount() {
     openModal({
@@ -122,6 +158,54 @@ export default function App() {
     <div className="app-background">
       <div className="app-container">
         <header className="app-header">
+          <div className="app-toolbar">
+            {hasData && (
+              <>
+                <div className="toolbar-dropdown" ref={dataMenuRef}>
+                  <button
+                    className="btn-action btn-action--muted"
+                    onClick={() => setShowDataMenu((v) => !v)}
+                    aria-expanded={showDataMenu}
+                    aria-haspopup="true"
+                    aria-label={t('accounts.import')}
+                  >
+                    <ArrowUpTrayIcon aria-hidden="true" />
+                    <span className="toolbar-label">{t('accounts.import')}</span>
+                    <ChevronDownIcon className={`toolbar-dropdown__chevron${showDataMenu ? ' toolbar-dropdown__chevron--open' : ''}`} aria-hidden="true" />
+                  </button>
+                  {showDataMenu && (
+                    <div className="toolbar-dropdown__menu" role="menu">
+                      <button className="toolbar-dropdown__item" role="menuitem" onClick={() => { handleImportClick(); closeDataMenu(); }}>
+                        <ArrowUpTrayIcon aria-hidden="true" />
+                        {t('accounts.import')}
+                      </button>
+                      <button className="toolbar-dropdown__item toolbar-dropdown__item--muted" role="menuitem" onClick={() => { handleExportClick(); closeDataMenu(); }}>
+                        <ArrowDownTrayIcon aria-hidden="true" />
+                        {t('accounts.export')}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <span className="toolbar-separator" aria-hidden="true" />
+                <ClearDataButton onClear={clearAllData} />
+                <span className="toolbar-separator" aria-hidden="true" />
+              </>
+            )}
+            <LanguageSwitcher />
+            <ThemeToggle />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              className="sr-only"
+              onChange={handleFileChange}
+              aria-hidden="true"
+              tabIndex={-1}
+            />
+          </div>
+          {transfer.importError && (
+            <p className="data-transfer__error" role="alert">{transfer.importError}</p>
+          )}
           <div className="hero-top">
             <div className="hero-top__text">
               <div className="header-accent" />
@@ -132,12 +216,6 @@ export default function App() {
             </div>
             <div className="hero-top__actions">
               <button
-                className="btn-start"
-                onClick={handleNewAccount}
-              >
-                {t('app.newAccount')}
-              </button>
-              <button
                 className="btn-guide-link"
                 onClick={() => setShowGuide((v) => !v)}
                 aria-expanded={showGuide}
@@ -146,9 +224,6 @@ export default function App() {
                 {showGuide ? t('app.hideGuide') : t('app.showGuide')}
                 <span className={`btn-guide-link__chevron${showGuide ? ' btn-guide-link__chevron--open' : ''}`} aria-hidden="true">&#8250;</span>
               </button>
-              <ThemeToggle />
-              <LanguageSwitcher />
-              {hasData && <ClearDataButton onClear={clearAllData} />}
             </div>
           </div>
 
@@ -185,28 +260,28 @@ export default function App() {
         </header>
 
         <main className="main-layout">
-          <BankAccountsOverview
-            results={results}
-            onRemove={removeResult}
-            onClear={clearResults}
-            portfolioIds={portfolioIds}
-            onTogglePortfolio={togglePortfolio}
-            onEdit={handleEdit}
-            onNewAccount={handleNewAccount}
-            onUpdateCashFlows={handleUpdateCashFlows}
-            onUpdateRateChanges={handleUpdateRateChanges}
-            onExport={handleExportClick}
-            onImportFile={transfer.handleFileSelected}
-            importError={transfer.importError}
-            onLoadDemo={handleLoadDemo}
-          />
-          {hasPortfolio && (
-            <PortfolioSummary
+          <div className={`main-section${mobileTab === 'accounts' || !hasResults ? ' main-section--active' : ''}`}>
+            <BankAccountsOverview
               results={results}
+              onRemove={removeResult}
               portfolioIds={portfolioIds}
-              onToggle={togglePortfolio}
-              onClear={clearPortfolio}
+              onTogglePortfolio={togglePortfolio}
+              onEdit={handleEdit}
+              onNewAccount={handleNewAccount}
+              onUpdateCashFlows={handleUpdateCashFlows}
+              onUpdateRateChanges={handleUpdateRateChanges}
+              onImport={handleImportClick}
+              onLoadDemo={handleLoadDemo}
             />
+          </div>
+          {hasResults && (
+            <div className={`main-section${mobileTab === 'portfolio' ? ' main-section--active' : ''}`}>
+              <PortfolioSummary
+                results={results}
+                portfolioIds={portfolioIds}
+                onToggle={togglePortfolio}
+              />
+            </div>
           )}
         </main>
 
@@ -219,6 +294,24 @@ export default function App() {
           </p>
         </footer>
       </div>
+      {hasResults && (
+        <nav className="mobile-tab-bar" aria-label={t('nav.ariaLabel')}>
+          <button
+            className={`mobile-tab${mobileTab === 'accounts' ? ' mobile-tab--active' : ''}`}
+            onClick={() => setMobileTab('accounts')}
+          >
+            <BanknotesIcon aria-hidden="true" />
+            <span>{t('accounts.sectionLabel')}</span>
+          </button>
+          <button
+            className={`mobile-tab${mobileTab === 'portfolio' ? ' mobile-tab--active' : ''}`}
+            onClick={() => setMobileTab('portfolio')}
+          >
+            <ChartBarIcon aria-hidden="true" />
+            <span>{t('portfolio.title')}</span>
+          </button>
+        </nav>
+      )}
     </div>
     </ThemeContext.Provider>
   );

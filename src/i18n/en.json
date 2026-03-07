@@ -5,6 +5,9 @@
     "hideGuide": "Hide guide",
     "showGuide": "How does it work?"
   },
+  "nav": {
+    "ariaLabel": "Sections"
+  },
   "guide": {
     "ariaLabel": "Guide and features",
     "featuresHeading": "What can MoneyGrip do?",
@@ -38,14 +41,11 @@
     "newAccount": "New account",
     "import": "Import",
     "export": "Export",
-    "clearAll": "Clear all",
     "loadDemo": "Load demo data",
     "sectionLabel": "Accounts",
     "confirmDeleteTitle": "Delete account",
     "confirmDeleteMessage": "Are you sure you want to delete this account?",
     "confirmDeleteButton": "Delete",
-    "confirmClearTitle": "Clear all",
-    "confirmClearMessage": "Are you sure you want to delete all accounts?",
     "balance": "Balance",
     "balanceInfo": "Your current balance: the initial deposit plus all deposits minus all withdrawals. With compound interest, paid-out interest is included.",
     "interest": "Interest",
@@ -71,7 +71,8 @@
     "totalInterest": "Total interest",
     "endAmount": "End amount",
     "interestThisMonth": "Interest this month",
-    "infoAbout": "Info about {{label}}"
+    "infoAbout": "Info about {{label}}",
+    "sortBy": "Sort by {{column}}"
   },
   "form": {
     "deposit": "Deposit",
@@ -135,7 +136,7 @@
   },
   "portfolio": {
     "title": "Portfolio",
-    "clear": "Clear",
+    "emptyHint": "Add accounts to your portfolio using the star ★ on each account.",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "now": "now",

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon, StarIcon } from '@heroicons/react/24/outline';
 import type { BankAccount } from '../../models/BankAccount';
 import { expandCashFlows } from '../../models/CashFlow';
 import { INTERVAL_LABELS } from '../../enums/PayoutInterval';
@@ -93,10 +93,9 @@ interface PortfolioSummaryProps {
   results: BankAccount[];
   portfolioIds: Set<string>;
   onToggle: (id: string) => void;
-  onClear: () => void;
 }
 
-export default function PortfolioSummary({ results, portfolioIds, onToggle, onClear }: PortfolioSummaryProps) {
+export default function PortfolioSummary({ results, portfolioIds, onToggle }: PortfolioSummaryProps) {
   const { t, i18n } = useTranslation();
   const items = results.filter((r) => portfolioIds.has(r.id));
   const currentMonthKey = toMonthKey(todayISO());
@@ -131,7 +130,21 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
     return { min, max };
   }, [items]);
 
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return (
+      <section className="portfolio-section" aria-label={t('portfolio.title')}>
+        <div className="section-header">
+          <div className="section-header__title">
+            <h2>{t('portfolio.title')}</h2>
+          </div>
+        </div>
+        <div className="portfolio-empty">
+          <StarIcon className="portfolio-empty__icon" aria-hidden="true" />
+          <p>{t('portfolio.emptyHint')}</p>
+        </div>
+      </section>
+    );
+  }
 
   const atStart = monthBounds.min !== '' && selectedMonthKey <= monthBounds.min;
   const atEnd = monthBounds.max !== '' && selectedMonthKey >= monthBounds.max;
@@ -168,11 +181,6 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle, onCl
             {t('portfolio.title')}
             <span className="results-count">{items.length}</span>
           </h2>
-        </div>
-        <div className="section-header__actions">
-          <button className="btn-action btn-action--danger" onClick={onClear}>
-            {t('portfolio.clear')}
-          </button>
         </div>
       </div>
 
