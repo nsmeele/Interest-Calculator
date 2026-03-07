@@ -65,6 +65,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
   const hasDurationFromDates = durationFromDates !== null && durationFromDates > 0;
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const clearError = (key: string) => setErrors((p) => { const { [key]: _, ...rest } = p; return rest; });
 
   function validate() {
     const next: Record<string, string> = {};
@@ -102,7 +103,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
     return next;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const validationErrors = validate();
@@ -132,7 +133,19 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                   inputMode="decimal"
                   className={`form-input${errors.startAmount ? ' form-input--error' : ''}`}
                   value={startAmount}
-                  onChange={(e) => { setStartAmount(formatAmountInput(e.target.value, activeCurrency)); setErrors((p) => { const { startAmount: _, ...rest } = p; return rest; }); }}
+                  onChange={(e) => {
+                    setStartAmount(e.target.value);
+                    clearError('startAmount');
+                  }}
+                  onBlur={() => {
+                    const parsed = parseAmountInput(startAmount, activeCurrency);
+                    if (!isNaN(parsed) && parsed > 0) {
+                      setStartAmount(formatAmountInput(startAmount, activeCurrency));
+                    } else {
+                      setStartAmount('');
+                      setErrors((p) => ({...p, startAmount: t('form.errorInvalidAmount')}));
+                    }
+                  }}
                   placeholder="10.000"
                 />
               </div>
@@ -148,7 +161,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                 type="date"
                 className={`form-input${errors.startDate ? ' form-input--error' : ''}`}
                 value={startDate}
-                onChange={(e) => { setStartDate(e.target.value); setErrors((p) => { const { startDate: _, ...rest } = p; return rest; }); }}
+                onChange={(e) => { setStartDate(e.target.value); clearError('startDate'); }}
               />
               {errors.startDate && <span className="form-error">{errors.startDate}</span>}
             </div>
@@ -178,7 +191,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                   type="date"
                   className={`form-input${errors.endDate ? ' form-input--error' : ''}`}
                   value={endDate}
-                  onChange={(e) => { setEndDate(e.target.value); setErrors((p) => { const { endDate: _e, ...rest } = p; return rest; }); }}
+                  onChange={(e) => { setEndDate(e.target.value); clearError('endDate'); }}
                 />
                 {errors.endDate && <span className="form-error">{errors.endDate}</span>}
               </div>
@@ -195,7 +208,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                       max="50"
                       className={`form-input${errors.duration ? ' form-input--error' : ''}${hasDurationFromDates ? ' form-input--derived' : ''}`}
                       value={hasDurationFromDates ? Math.floor(durationFromDates / 12) : years}
-                      onChange={(e) => { setYears(e.target.value); setErrors((p) => { const { duration: _, ...rest } = p; return rest; }); }}
+                      onChange={(e) => { setYears(e.target.value); clearError('duration'); }}
                       placeholder="5"
                       readOnly={hasDurationFromDates}
                       tabIndex={hasDurationFromDates ? -1 : undefined}
@@ -209,7 +222,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                       max="11"
                       className={`form-input${errors.duration ? ' form-input--error' : ''}${hasDurationFromDates ? ' form-input--derived' : ''}`}
                       value={hasDurationFromDates ? durationFromDates % 12 : months}
-                      onChange={(e) => { setMonths(e.target.value); setErrors((p) => { const { duration: _, ...rest } = p; return rest; }); }}
+                      onChange={(e) => { setMonths(e.target.value); clearError('duration'); }}
                       placeholder="0"
                       readOnly={hasDurationFromDates}
                       tabIndex={hasDurationFromDates ? -1 : undefined}
@@ -230,7 +243,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                   inputMode="decimal"
                   className={`form-input${errors.interestRate ? ' form-input--error' : ''}`}
                   value={interestRate}
-                  onChange={(e) => { setInterestRate(e.target.value); setErrors((p) => { const { interestRate: _, ...rest } = p; return rest; }); }}
+                  onChange={(e) => { setInterestRate(e.target.value); clearError('interestRate'); }}
                   placeholder="3,5"
                 />
                 <span className="suffix">%</span>
