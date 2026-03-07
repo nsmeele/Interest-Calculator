@@ -16,13 +16,16 @@ export interface ExportedResult {
   interval: PayoutInterval;
   interestType: InterestType;
   startDate?: string;
-  periods: PeriodResult[];
   cashFlows?: CashFlow[];
   isOngoing?: boolean;
   dayCount?: DayCountConvention;
   rateChanges?: RateChange[];
   isVariableRate?: boolean;
   currency?: string;
+}
+
+export interface StoredResult extends ExportedResult {
+  periods: PeriodResult[];
 }
 
 export interface ExportFile {

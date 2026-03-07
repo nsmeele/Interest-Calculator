@@ -28,7 +28,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.Monthly,
       interestType: InterestType.Compound,
       startDate: '2025-09-01',
-      periods: [],
+
       cashFlows: [
         { id: 'cf-1a', date: '2025-11-01', amount: 500, description: 'Storting' },
         { id: 'cf-1b', date: '2026-01-15', amount: -1000, description: 'Opname' },
@@ -45,7 +45,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.Monthly,
       interestType: InterestType.Compound,
       startDate: '2025-05-01',
-      periods: [],
+
       cashFlows: [
         { id: 'cf-2a', date: '2025-07-01', amount: 200, description: 'Storting', recurring: { intervalMonths: 1 } },
         { id: 'cf-2b', date: '2025-12-01', amount: -2000, description: 'Opname' },
@@ -62,7 +62,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.Quarterly,
       interestType: InterestType.Compound,
       startDate: '2025-03-15',
-      periods: [],
+
       cashFlows: [
         { id: 'cf-3a', date: '2025-06-01', amount: 1000, description: 'Storting' },
         { id: 'cf-3b', date: '2025-10-01', amount: -500, description: 'Opname' },
@@ -79,7 +79,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.Daily,
       interestType: InterestType.Compound,
       startDate: '2025-07-01',
-      periods: [],
+
       dayCount: DayCountConvention.NOM_12,
     },
     {
@@ -91,7 +91,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.AtMaturity,
       interestType: InterestType.Compound,
       startDate: '2025-12-01',
-      periods: [],
+
       dayCount: DayCountConvention.NOM_12,
     },
     {
@@ -103,7 +103,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.AtMaturity,
       interestType: InterestType.Compound,
       startDate: '2025-08-01',
-      periods: [],
+
       dayCount: DayCountConvention.NOM_12,
     },
     {
@@ -115,7 +115,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.SemiAnnually,
       interestType: InterestType.Compound,
       startDate: '2025-04-01',
-      periods: [],
+
       dayCount: DayCountConvention.NOM_12,
     },
     {
@@ -127,7 +127,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.Annually,
       interestType: InterestType.Compound,
       startDate: '2025-03-07',
-      periods: [],
+
       dayCount: DayCountConvention.NOM_12,
     },
     {
@@ -139,7 +139,7 @@ export const demoData: ExportFile = {
       interval: PayoutInterval.Annually,
       interestType: InterestType.Compound,
       startDate: '2025-06-01',
-      periods: [],
+
       dayCount: DayCountConvention.NOM_12,
     },
   ],

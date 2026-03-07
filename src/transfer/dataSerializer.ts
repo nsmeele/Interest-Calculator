@@ -1,5 +1,5 @@
 import type { BankAccount } from '../models/BankAccount';
-import type { ExportFile, ExportedResult } from '../models/ExportFile';
+import type { ExportFile, ExportedResult, StoredResult } from '../models/ExportFile';
 import { EXPORT_FORMAT_VERSION } from '../models/ExportFile';
 
 export function toExportedResult(r: BankAccount): ExportedResult {
@@ -12,13 +12,19 @@ export function toExportedResult(r: BankAccount): ExportedResult {
     interval: r.interval,
     interestType: r.interestType,
     startDate: r.startDate,
-    periods: r.periods,
     cashFlows: r.cashFlows,
     isOngoing: r.isOngoing,
     dayCount: r.dayCount,
     rateChanges: r.rateChanges.length > 0 ? r.rateChanges : undefined,
     isVariableRate: r.isVariableRate || undefined,
     currency: r.currency || undefined,
+  };
+}
+
+export function toStoredResult(r: BankAccount): StoredResult {
+  return {
+    ...toExportedResult(r),
+    periods: r.periods,
   };
 }
 

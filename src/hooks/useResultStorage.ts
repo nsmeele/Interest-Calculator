@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { BankAccount } from '../models/BankAccount';
-import type { ExportedResult } from '../models/ExportFile';
-import { toExportedResult } from '../transfer/dataSerializer';
+import type { ExportedResult, StoredResult } from '../models/ExportFile';
+import { toStoredResult } from '../transfer/dataSerializer';
 import { BankAccountInput } from '../models/BankAccountInput';
 import { AccountCalculator } from '../calculator/AccountCalculator';
 import { DayCountConvention } from '../enums/DayCountConvention';
@@ -11,13 +11,34 @@ const STORAGE_KEY = 'bank-account-results';
 
 const calc = new AccountCalculator();
 
-function reconstructResult(item: ExportedResult, ongoingDuration?: number): BankAccount {
+function recalculate(item: ExportedResult, ongoingDuration?: number): BankAccount {
   const cashFlows = item.cashFlows ?? [];
   const isOngoing = item.isOngoing ?? false;
   const dayCount = item.dayCount ?? DayCountConvention.NOM_12;
   const rateChanges = item.rateChanges ?? [];
   const isVariableRate = item.isVariableRate ?? rateChanges.length > 0;
-  let result: BankAccount;
+
+  const durationMonths = isOngoing && item.startDate
+    ? (ongoingDuration ?? Math.max(1, Math.ceil(daysBetween(item.startDate, todayISO()) / 30.44) + 12))
+    : item.durationMonths;
+
+  const input = new BankAccountInput(
+    item.startAmount, item.annualInterestRate, durationMonths,
+    item.interval, item.interestType, item.startDate, cashFlows, isOngoing, dayCount, rateChanges, isVariableRate,
+    item.currency,
+  );
+  const result = calc.calculate(input);
+
+  Object.assign(result, { id: item.id, timestamp: item.timestamp });
+  return result;
+}
+
+function restoreFromStorage(item: StoredResult, ongoingDuration?: number): BankAccount {
+  const cashFlows = item.cashFlows ?? [];
+  const isOngoing = item.isOngoing ?? false;
+  const dayCount = item.dayCount ?? DayCountConvention.NOM_12;
+  const rateChanges = item.rateChanges ?? [];
+  const isVariableRate = item.isVariableRate ?? rateChanges.length > 0;
 
   const durationMonths = isOngoing && item.startDate
     ? (ongoingDuration ?? Math.max(1, Math.ceil(daysBetween(item.startDate, todayISO()) / 30.44) + 12))
@@ -29,20 +50,15 @@ function reconstructResult(item: ExportedResult, ongoingDuration?: number): Bank
     || (import.meta.env.DEV && item.startDate);
 
   if (shouldRecalculate) {
-    const input = new BankAccountInput(
-      item.startAmount, item.annualInterestRate, durationMonths,
-      item.interval, item.interestType, item.startDate, cashFlows, isOngoing, dayCount, rateChanges, isVariableRate,
-      item.currency,
-    );
-    result = calc.calculate(input);
-  } else {
-    result = new BankAccount(
-      item.startAmount, item.annualInterestRate, durationMonths,
-      item.interval, item.interestType, item.startDate, item.periods,
-      cashFlows, isOngoing, dayCount, rateChanges, isVariableRate,
-      item.currency,
-    );
+    return recalculate(item, ongoingDuration);
   }
+
+  const result = new BankAccount(
+    item.startAmount, item.annualInterestRate, durationMonths,
+    item.interval, item.interestType, item.startDate, item.periods ?? [],
+    cashFlows, isOngoing, dayCount, rateChanges, isVariableRate,
+    item.currency,
+  );
 
   Object.assign(result, { id: item.id, timestamp: item.timestamp });
   return result;
@@ -52,8 +68,8 @@ function loadFromStorage(): BankAccount[] {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return [];
-    const parsed: ExportedResult[] = JSON.parse(data);
-    const results = parsed.map((item) => reconstructResult(item));
+    const parsed: StoredResult[] = JSON.parse(data);
+    const results = parsed.map((item) => restoreFromStorage(item));
 
     // Find the last month across all projections
     let maxKey = '';
@@ -70,9 +86,7 @@ function loadFromStorage(): BankAccount[] {
         const lastKey = [...r.calendarMonthProjection.keys()].sort().pop();
         if (lastKey && lastKey >= maxKey) return r;
         const months = Math.max(1, Math.ceil(daysBetween(r.startDate, `${maxKey}-28`) / 30.44));
-        const rebuilt = reconstructResult(parsed[i], months);
-        Object.assign(rebuilt, { id: r.id, timestamp: r.timestamp });
-        return rebuilt;
+        return restoreFromStorage(parsed[i], months);
       });
     }
 
@@ -83,7 +97,7 @@ function loadFromStorage(): BankAccount[] {
 }
 
 function saveToStorage(results: BankAccount[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(results.map(toExportedResult)));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(results.map(toStoredResult)));
 }
 
 export function useResultStorage() {
@@ -123,7 +137,7 @@ export function useResultStorage() {
   }, []);
 
   const replaceResults = useCallback((incoming: ExportedResult[]) => {
-    const reconstructed = incoming.map((item) => reconstructResult(item));
+    const reconstructed = incoming.map((item) => recalculate(item));
     saveToStorage(reconstructed);
     setResults(reconstructed);
   }, []);
@@ -131,7 +145,7 @@ export function useResultStorage() {
   const mergeResults = useCallback((incoming: ExportedResult[]) => {
     setResults((prev) => {
       const existingIds = new Set(prev.map((r) => r.id));
-      const newItems = incoming.filter((r) => !existingIds.has(r.id)).map((item) => reconstructResult(item));
+      const newItems = incoming.filter((r) => !existingIds.has(r.id)).map((item) => recalculate(item));
       const merged = [...prev, ...newItems];
       saveToStorage(merged);
       return merged;

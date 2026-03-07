@@ -1,6 +1,7 @@
 import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
 import { Currency } from '../enums/Currency';
+import { DayCountConvention } from '../enums/DayCountConvention';
 import { EXPORT_FORMAT_VERSION } from '../models/ExportFile';
 import type { ExportFile, ExportedResult } from '../models/ExportFile';
 
@@ -11,6 +12,7 @@ export type ValidationResult =
 const PAYOUT_INTERVAL_VALUES = Object.values(PayoutInterval) as string[];
 const INTEREST_TYPE_VALUES = Object.values(InterestType) as string[];
 const CURRENCY_VALUES = Object.values(Currency) as string[];
+const DAY_COUNT_VALUES = Object.values(DayCountConvention) as string[];
 const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -23,21 +25,6 @@ function isFiniteNumber(value: unknown): value is number {
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.length > 0;
-}
-
-function validatePeriodResult(value: unknown, index: number): string | null {
-  if (!isObject(value)) return `Periode ${index + 1}: geen geldig object.`;
-  const p = value as Record<string, unknown>;
-
-  if (!isFiniteNumber(p.period)) return `Periode ${index + 1}: 'period' is geen geldig getal.`;
-  if (typeof p.periodLabel !== 'string') return `Periode ${index + 1}: 'periodLabel' is geen tekst.`;
-  if (!isFiniteNumber(p.startBalance)) return `Periode ${index + 1}: 'startBalance' is geen geldig getal.`;
-  if (!isFiniteNumber(p.interestEarned)) return `Periode ${index + 1}: 'interestEarned' is geen geldig getal.`;
-  if (!isFiniteNumber(p.disbursed)) return `Periode ${index + 1}: 'disbursed' is geen geldig getal.`;
-  if (!isFiniteNumber(p.endBalance)) return `Periode ${index + 1}: 'endBalance' is geen geldig getal.`;
-  if (p.deposited !== undefined && !isFiniteNumber(p.deposited)) return `Periode ${index + 1}: 'deposited' is geen geldig getal.`;
-
-  return null;
 }
 
 function validateCashFlow(value: unknown, index: number): string | null {
@@ -92,14 +79,6 @@ function validateExportedResult(value: unknown, index: number): string | null {
     return `Rekening ${index + 1}: 'startDate' is geen geldige datum (YYYY-MM-DD).`;
   }
 
-  if (!Array.isArray(r.periods)) {
-    return `Rekening ${index + 1}: 'periods' moet een array zijn.`;
-  }
-  for (let i = 0; i < r.periods.length; i++) {
-    const err = validatePeriodResult(r.periods[i], i);
-    if (err) return `Rekening ${index + 1} > ${err}`;
-  }
-
   if (r.cashFlows !== undefined) {
     if (!Array.isArray(r.cashFlows)) return `Rekening ${index + 1}: 'cashFlows' moet een array zijn.`;
     for (let i = 0; i < r.cashFlows.length; i++) {
@@ -110,6 +89,10 @@ function validateExportedResult(value: unknown, index: number): string | null {
 
   if (r.isOngoing !== undefined && typeof r.isOngoing !== 'boolean') {
     return `Rekening ${index + 1}: 'isOngoing' moet een boolean zijn.`;
+  }
+
+  if (r.dayCount !== undefined && (typeof r.dayCount !== 'string' || !DAY_COUNT_VALUES.includes(r.dayCount))) {
+    return `Rekening ${index + 1}: 'dayCount' heeft een ongeldige waarde '${r.dayCount}'.`;
   }
 
   if (r.currency !== undefined) {
