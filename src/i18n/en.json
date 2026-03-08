@@ -158,6 +158,7 @@
     "disbursed": "Disbursed",
     "totalInvested": "Total invested",
     "interestLabel": "Interest",
+    "showZeroInterest": "Show accounts without interest this month",
     "removeFromPortfolio": "Remove from portfolio",
     "expired": "Expired",
     "upcoming": "Upcoming",
@@ -254,8 +255,7 @@
     "statusLabel": "Current status",
     "periodsLabel": "Period overview",
     "chartLabel": "Progression",
-    "monthBreakdownLabel": "Interest accrual this month",
-    "accruedThisMonth": "Accrued this month"
+    "monthBreakdownLabel": "Interest accrual this month"
   },
   "format": {
     "years_one": "{{count}} year",

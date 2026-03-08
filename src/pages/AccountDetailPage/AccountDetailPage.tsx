@@ -17,6 +17,7 @@ import { toMonthKey, todayISO, parseDate, addMonthsToISO } from '../../utils/dat
 import { getMonthDays } from '../../utils/monthDays';
 import CashFlowEditor, { type AutoCashFlow } from '../../components/CashFlowEditor';
 import InfoPopover from '../../components/InfoPopover';
+import { expandCashFlows } from '../../models/CashFlow';
 import RateChangeEditor from '../../components/RateChangeEditor';
 import AccountBalanceChart from '../../components/AccountBalanceChart';
 import { APP_NAME } from '../../constants/app';
@@ -109,20 +110,33 @@ export default function AccountDetailPage() {
     properties.push({ label: t('accounts.totalInterest'), value: formatCurrency(account.totalInterest, cur), highlight: true });
     properties.push({ label: t('accounts.endAmount'), value: formatCurrency(account.endAmount, cur) });
   }
-  properties.push({ label: t('detail.accruedThisMonth'), value: formatCurrency(account.interestThisMonth, cur), info: t('accounts.interestThisMonthInfo'), infoOnLabel: true });
+  properties.push({ label: t('accounts.interestThisMonth'), value: formatCurrency(account.interestThisMonth, cur), info: t('accounts.interestThisMonthInfo'), infoOnLabel: true });
+
+  const currentMonthKey = toMonthKey(todayISO());
+  const prevMonthKey = toMonthKey(addMonthsToISO(`${currentMonthKey}-01`, -1));
+  const nextMonthKey = toMonthKey(addMonthsToISO(`${currentMonthKey}-01`, 1));
+  const inWindow = (date: string) => {
+    const mk = toMonthKey(date);
+    return mk === prevMonthKey || mk === currentMonthKey || mk === nextMonthKey;
+  };
 
   const compoundPayouts: AutoCashFlow[] = account.interestType === InterestType.Compound
     ? account.periods
         .filter((p) => p.endDate && p.disbursed > 0)
         .map((p) => ({ date: p.endDate!, amount: p.disbursed, description: t('accounts.interest') }))
-        .filter((p) => {
-          const monthKey = toMonthKey(todayISO());
-          const prevMonthKey = toMonthKey(addMonthsToISO(`${monthKey}-01`, -1));
-          const nextMonthKey = toMonthKey(addMonthsToISO(`${monthKey}-01`, 1));
-          const pMonthKey = toMonthKey(p.date);
-          return pMonthKey === prevMonthKey || pMonthKey === monthKey || pMonthKey === nextMonthKey;
-        })
+        .filter((p) => inWindow(p.date))
     : [];
+
+  const recurringCashFlows: AutoCashFlow[] = account.cashFlows
+    .filter((cf) => cf.recurring)
+    .flatMap((cf) => {
+      const endISO = account.endDate ?? addMonthsToISO(account.startDate!, account.durationMonths);
+      return expandCashFlows([cf], endISO)
+        .filter((e) => inWindow(e.date))
+        .map((e) => ({ date: e.date, amount: e.amount, description: cf.description }));
+    });
+
+  const autoEntries = [...compoundPayouts, ...recurringCashFlows];
 
   return (
     <div className="app-background">
@@ -226,10 +240,10 @@ export default function AccountDetailPage() {
             <section className="detail-editors">
               {account.hasCashFlows && (
                 <CashFlowEditor
-                  cashFlows={account.cashFlows}
-                  onUpdate={(cfs) => handleUpdateCashFlows(account.id, cfs)}
+                  cashFlows={account.cashFlows.filter((cf) => !cf.recurring)}
+                  onUpdate={(cfs) => handleUpdateCashFlows(account.id, [...cfs, ...account.cashFlows.filter((cf) => cf.recurring)])}
                   currency={cur}
-                  autoEntries={compoundPayouts}
+                  autoEntries={autoEntries}
                 />
               )}
               {account.isVariableRate && (
