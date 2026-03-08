@@ -267,7 +267,7 @@
     "propertiesLabel": "Account details",
     "statusLabel": "Current status",
     "periodsLabel": "Period overview",
-    "chartLabel": "Progression",
+    "chartLabel": "Balance over time",
     "monthBreakdownLabel": "Interest accrual this month"
   },
   "chart": {

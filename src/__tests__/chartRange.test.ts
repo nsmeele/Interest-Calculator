@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { getRangeEndYear, getDefaultRangeForAccount, isPeriodEndDateInRange } from '../utils/chartRange';
 import { BankAccount } from '../models/BankAccount';
 import { PayoutInterval } from '../enums/PayoutInterval';
@@ -43,37 +43,37 @@ describe('getRangeEndYear', () => {
 });
 
 describe('getDefaultRangeForAccount', () => {
-  afterEach(() => { vi.useRealTimers(); });
-
   it('returns 1 for ongoing account', () => {
-    vi.setSystemTime(new Date('2026-03-08'));
     const account = makeAccount({ isOngoing: true });
     expect(getDefaultRangeForAccount(account)).toBe(1);
   });
 
-  it('returns smallest range covering end date', () => {
-    vi.setSystemTime(new Date('2026-03-08'));
-    // Ends 2027-01-01 → endYear=2027 → 2J (2026+2-1=2027 >= 2027)
+  it('returns smallest range covering end date from account start', () => {
+    // Start 2026-01-01, ends 2027-01-01 → endYear=2027 → 2J (2026+2-1=2027)
     const account = makeAccount({ durationMonths: 12 });
     expect(getDefaultRangeForAccount(account)).toBe(2);
   });
 
-  it('returns 1J when account ends within current year', () => {
-    vi.setSystemTime(new Date('2026-03-08'));
-    // Ends 2026-07-01 → endYear=2026 → 1J (2026+1-1=2026 >= 2026)
+  it('returns 1J when account ends within start year', () => {
+    // Start 2026-01-01, ends 2026-07-01 → endYear=2026 → 1J (2026+1-1=2026)
     const account = makeAccount({ durationMonths: 6 });
     expect(getDefaultRangeForAccount(account)).toBe(1);
   });
 
-  it('returns 5J when account ends in 4 years', () => {
-    vi.setSystemTime(new Date('2026-03-08'));
-    // Ends 2030-01-01 → endYear=2030 → 5J (2026+5-1=2030 >= 2030)
+  it('returns 5J when account ends in 4 years from start', () => {
+    // Start 2026-01-01, ends 2030-01-01 → endYear=2030 → 5J (2026+5-1=2030)
     const account = makeAccount({ durationMonths: 48 });
     expect(getDefaultRangeForAccount(account)).toBe(5);
   });
 
+  it('uses explicit startYear when provided', () => {
+    // Start 2026-01-01, ends 2030-01-01 → endYear=2030
+    // With startYear=2028: 3J (2028+3-1=2030)
+    const account = makeAccount({ durationMonths: 48 });
+    expect(getDefaultRangeForAccount(account, 2028)).toBe(3);
+  });
+
   it('returns 10J fallback for very long accounts', () => {
-    vi.setSystemTime(new Date('2026-03-08'));
     const account = makeAccount({ durationMonths: 240 }); // 20 years
     expect(getDefaultRangeForAccount(account)).toBe(10);
   });

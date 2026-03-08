@@ -35,6 +35,17 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle }: Po
   const [chartStartYear, setChartStartYear] = useState(currentYear);
   const [chartRange, setChartRange] = useState<ChartYearRange>(ChartYearRange.TwoYears);
 
+  const portfolioMinYear = useMemo(() => {
+    let min = Infinity;
+    for (const item of items) {
+      if (item.startDate) {
+        const y = parseInt(item.startDate.slice(0, 4), 10);
+        if (y < min) min = y;
+      }
+    }
+    return min === Infinity ? undefined : min;
+  }, [items]);
+
   const chartEndYear = getRangeEndYear(chartStartYear, chartRange);
   const chartItems = useMemo(
     () => items.map((item) => extendOngoingAccount(item, chartEndYear)),
@@ -92,6 +103,7 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle }: Po
         onStartYearChange={(year) => { setChartStartYear(year); setSelectedMonthKey(null); }}
         yearRange={chartRange}
         onRangeChange={(range) => { setChartRange(range); setSelectedMonthKey(null); }}
+        minYear={portfolioMinYear}
       />
 
       {selectedMonthKey ? (

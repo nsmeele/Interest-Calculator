@@ -44,9 +44,10 @@ interface PortfolioChartProps {
   onStartYearChange: (year: number) => void;
   yearRange: ChartYearRange;
   onRangeChange: (range: ChartYearRange) => void;
+  minYear?: number;
 }
 
-export default function PortfolioChart({ items, viewMode = 'accrued', selectedMonthKey = null, onMonthSelect, startYear, onStartYearChange, yearRange, onRangeChange }: PortfolioChartProps) {
+export default function PortfolioChart({ items, viewMode = 'accrued', selectedMonthKey = null, onMonthSelect, startYear, onStartYearChange, yearRange, onRangeChange, minYear }: PortfolioChartProps) {
   const { t } = useTranslation();
   const { currency: globalCurrency } = useLocale();
   const { theme } = useTheme();
@@ -88,7 +89,7 @@ export default function PortfolioChart({ items, viewMode = 'accrued', selectedMo
 
   return (
     <section className="portfolio-chart" aria-label={t('portfolio.chartAriaLabel')}>
-      <ChartRangeSelector startYear={startYear} onStartYearChange={onStartYearChange} value={yearRange} onChange={onRangeChange} />
+      <ChartRangeSelector startYear={startYear} onStartYearChange={onStartYearChange} value={yearRange} onChange={onRangeChange} minYear={minYear} />
       <div className="portfolio-chart__container" ref={containerRef} onClick={handleContainerClick}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>

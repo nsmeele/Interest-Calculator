@@ -13,50 +13,96 @@ export function formatPeriodLabel(date: string): string {
   return `${label} '${String(year).slice(2)}`;
 }
 
+function toMonthKey(date: string): string {
+  return date.slice(0, 7); // '2026-03-15' → '2026-03'
+}
+
 export function buildBalanceData(account: BankAccount, startYear: number, endYear: number): BalanceDataPoint[] {
   if (!account.startDate || account.periods.length === 0) return [];
 
   const isSimple = account.interestType === InterestType.Simple;
   const rangeStart = `${startYear}-01-01`;
+  const accountStartKey = toMonthKey(account.startDate);
 
-  // Determine opening balance: if account started before startYear,
-  // find the last period before the range and use its endBalance
-  let openingBalance = account.startAmount;
-  let openingLabel = account.startDate;
-  let cumulativeInterest = 0;
-
-  if (account.startDate < rangeStart) {
-    // Walk periods before range to find opening balance
-    for (const period of account.periods) {
-      if (!period.endDate || period.endDate >= rangeStart) break;
-      openingBalance = period.endBalance;
-      if (isSimple) cumulativeInterest += period.interestEarned;
-    }
-    openingLabel = `${startYear}-01-01`;
-    openingBalance += isSimple ? cumulativeInterest : 0;
-  }
-
-  const points: BalanceDataPoint[] = [];
-
-  // If account started after range start, add a zero-balance anchor at Jan 1
-  if (account.startDate > rangeStart) {
-    points.push({ label: formatPeriodLabel(rangeStart), balance: null });
-  }
-
-  points.push({ label: formatPeriodLabel(openingLabel), balance: openingBalance });
-
-  // Reset cumulative for in-range periods (already accounted for in openingBalance for simple)
-  let rangeCumulativeInterest = isSimple ? cumulativeInterest : 0;
+  // Build a map of monthKey → chart balance
+  // Simple: endBalance + cumulative disbursed (endBalance stays flat, disbursed tracks payouts)
+  // Compound: just endBalance (already includes compounded interest)
+  let cumulativeDisbursed = 0;
+  const periodBalances = new Map<string, number>();
 
   for (const period of account.periods) {
     if (!period.endDate) continue;
-    if (period.endDate < rangeStart) continue;
-    if (period.endDate > `${endYear}-12-31`) break;
-    if (isSimple) rangeCumulativeInterest += period.interestEarned;
-    points.push({
-      label: formatPeriodLabel(period.endDate),
-      balance: period.endBalance + (isSimple ? rangeCumulativeInterest : 0),
-    });
+    if (isSimple) cumulativeDisbursed += period.disbursed;
+    periodBalances.set(toMonthKey(period.endDate), period.endBalance + cumulativeDisbursed);
+  }
+
+  // Find opening balance if account started before range
+  let openingBalance = account.startAmount;
+  if (account.startDate < rangeStart) {
+    let preDisbursed = 0;
+    for (const period of account.periods) {
+      if (!period.endDate || period.endDate >= rangeStart) break;
+      openingBalance = period.endBalance;
+      if (isSimple) preDisbursed += period.disbursed;
+    }
+    openingBalance += preDisbursed;
+  }
+
+  // Determine the last month the account has data for
+  const lastPeriod = account.periods[account.periods.length - 1];
+  const accountEndKey = lastPeriod?.endDate ? toMonthKey(lastPeriod.endDate) : undefined;
+
+  // Generate monthly grid
+  const points: BalanceDataPoint[] = [];
+  let lastKnownBalance: number | null = null;
+
+  for (let y = startYear; y <= endYear; y++) {
+    for (let m = 1; m <= 12; m++) {
+      const key = `${y}-${String(m).padStart(2, '0')}`;
+      const label = formatPeriodLabel(`${key}-01`);
+
+      // Before account start: null
+      if (key < accountStartKey) {
+        points.push({ label, balance: null });
+        continue;
+      }
+
+      // Account start month
+      if (key === accountStartKey && account.startDate >= rangeStart) {
+        lastKnownBalance = account.startAmount;
+        points.push({ label, balance: lastKnownBalance });
+        // Also check if a period ends in this month
+        const periodBalance = periodBalances.get(key);
+        if (periodBalance !== undefined) lastKnownBalance = periodBalance;
+        continue;
+      }
+
+      // Opening balance at range start when account started before range
+      if (key === toMonthKey(rangeStart) && account.startDate < rangeStart) {
+        lastKnownBalance = openingBalance;
+        points.push({ label, balance: lastKnownBalance });
+        const periodBalance = periodBalances.get(key);
+        if (periodBalance !== undefined) lastKnownBalance = periodBalance;
+        continue;
+      }
+
+      // Period data available for this month
+      const periodBalance = periodBalances.get(key);
+      if (periodBalance !== undefined) {
+        lastKnownBalance = periodBalance;
+        points.push({ label, balance: lastKnownBalance });
+        continue;
+      }
+
+      // After account ends: null (line stops)
+      if (!account.isOngoing && accountEndKey && key > accountEndKey) {
+        points.push({ label, balance: null });
+      } else if (lastKnownBalance !== null) {
+        points.push({ label, balance: lastKnownBalance });
+      } else {
+        points.push({ label, balance: null });
+      }
+    }
   }
 
   return points;

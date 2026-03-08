@@ -267,7 +267,7 @@
     "propertiesLabel": "Rekeninggegevens",
     "statusLabel": "Huidige status",
     "periodsLabel": "Periodeoverzicht",
-    "chartLabel": "Verloop",
+    "chartLabel": "Saldoverloop",
     "monthBreakdownLabel": "Rente-opbouw deze maand"
   },
   "chart": {

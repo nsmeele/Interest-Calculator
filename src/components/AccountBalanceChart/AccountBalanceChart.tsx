@@ -45,9 +45,12 @@ interface AccountBalanceChartProps {
   onStartYearChange: (year: number) => void;
   yearRange: ChartYearRange;
   onRangeChange: (range: ChartYearRange) => void;
+  maxRange?: ChartYearRange;
+  availableYears?: number[];
+  minYear?: number;
 }
 
-export default function AccountBalanceChart({ account, currency, startYear, onStartYearChange, yearRange, onRangeChange }: AccountBalanceChartProps) {
+export default function AccountBalanceChart({ account, currency, startYear, onStartYearChange, yearRange, onRangeChange, maxRange, availableYears, minYear }: AccountBalanceChartProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const gradientId = useId();
@@ -70,7 +73,7 @@ export default function AccountBalanceChart({ account, currency, startYear, onSt
   return (
     <section className="account-chart" aria-label={t('detail.chartLabel')}>
       <h2>{t('detail.chartLabel')}</h2>
-      <ChartRangeSelector startYear={startYear} onStartYearChange={onStartYearChange} value={yearRange} onChange={onRangeChange} />
+      <ChartRangeSelector startYear={startYear} onStartYearChange={onStartYearChange} value={yearRange} onChange={onRangeChange} maxRange={maxRange} availableYears={availableYears} minYear={minYear} />
       <div className="account-chart__container" key={`${yMin}-${yMax}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>

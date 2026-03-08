@@ -10,17 +10,26 @@ export function getRangeEndYear(startYear: number, years: ChartYearRange): numbe
   return startYear + years - 1;
 }
 
-export function getDefaultRangeForAccount(account: BankAccount): ChartYearRange {
+export function getDefaultStartYear(account: BankAccount): number {
+  return account.startDate ? getYear(account.startDate) : currentYear();
+}
+
+export function getDefaultRangeForAccount(account: BankAccount, startYear?: number): ChartYearRange {
   if (!account.endDate) return CHART_YEAR_RANGES[0]; // 1J for ongoing
 
   const endYear = getYear(account.endDate);
-  const start = currentYear();
+  const start = startYear ?? getDefaultStartYear(account);
 
   for (const range of CHART_YEAR_RANGES) {
     if (start + range - 1 >= endYear) return range;
   }
 
   return CHART_YEAR_RANGES[CHART_YEAR_RANGES.length - 1]; // 10J fallback
+}
+
+export function getMaxRangeForAccount(account: BankAccount): ChartYearRange | undefined {
+  if (!account.endDate) return undefined; // ongoing: no limit
+  return getDefaultRangeForAccount(account); // based on account start year
 }
 
 export function isPeriodEndDateInRange(endDate: string, startYear: number, endYear: number): boolean {

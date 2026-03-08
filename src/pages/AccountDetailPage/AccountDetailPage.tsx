@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, Link } from 'react-router';
 import { ArrowLeftIcon, PencilIcon, XMarkIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -23,7 +23,7 @@ import { expandCashFlows, getRecurringAutoEntries } from '../../models/CashFlow'
 import { calculateDailyInterest } from '../../utils/dailyInterest';
 import RateChangeEditor from '../../components/RateChangeEditor';
 import AccountBalanceChart from '../../components/AccountBalanceChart';
-import { getDefaultRangeForAccount, getRangeEndYear, currentYear } from '../../utils/chartRange';
+import { getMaxRangeForAccount, getRangeEndYear } from '../../utils/chartRange';
 import { ChartYearRange } from '../../enums/ChartYearRange';
 import { extendOngoingAccount } from '../../utils/extendOngoingAccount';
 import { APP_NAME } from '../../constants/app';
@@ -46,10 +46,29 @@ export default function AccountDetailPage() {
 
   const currentMonthKey = toMonthKey(todayISO());
   const [editorMonthOffset, setEditorMonthOffset] = useState(0);
-  const [chartStartYear, setChartStartYear] = useState(currentYear);
+  const [chartStartYear, setChartStartYear] = useState(() => new Date().getFullYear());
   const [chartRangeOverride, setChartRangeOverride] = useState<ChartYearRange | null>(null);
-  const chartYearRange = chartRangeOverride
-    ?? (account ? getDefaultRangeForAccount(account) : ChartYearRange.OneYear);
+  const chartYearRange = chartRangeOverride ?? ChartYearRange.OneYear;
+
+  const chartAvailableYears = useMemo(() => {
+    if (!account?.startDate || !account.endDate) return undefined;
+    const startY = parseInt(account.startDate.slice(0, 4), 10);
+    const endY = parseInt(account.endDate.slice(0, 4), 10);
+    const years: number[] = [];
+    for (let y = startY; y <= endY; y++) years.push(y);
+    return years;
+  }, [account]);
+
+  const handleRangeChange = useCallback((range: ChartYearRange) => {
+    setChartRangeOverride(range);
+    if (account?.startDate && account.endDate) {
+      const accountStartYear = parseInt(account.startDate.slice(0, 4), 10);
+      const accountEndYear = parseInt(account.endDate.slice(0, 4), 10);
+      if (accountStartYear < chartStartYear && accountStartYear + range - 1 >= accountEndYear) {
+        setChartStartYear(accountStartYear);
+      }
+    }
+  }, [account, chartStartYear]);
 
   const chartAccount = useMemo(() => {
     if (!account) return account;
@@ -351,7 +370,7 @@ export default function AccountDetailPage() {
             </section>
           )}
 
-          <AccountBalanceChart account={chartAccount ?? account} currency={cur} startYear={chartStartYear} onStartYearChange={setChartStartYear} yearRange={chartYearRange} onRangeChange={setChartRangeOverride} />
+          <AccountBalanceChart account={chartAccount ?? account} currency={cur} startYear={chartStartYear} onStartYearChange={setChartStartYear} yearRange={chartYearRange} onRangeChange={handleRangeChange} maxRange={account ? getMaxRangeForAccount(account) : undefined} availableYears={chartAvailableYears} minYear={account.startDate ? parseInt(account.startDate.slice(0, 4), 10) : undefined} />
 
           {account.startDate && (() => {
             const days = getMonthDays(account, currentMonthKey);
