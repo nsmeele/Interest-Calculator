@@ -36,6 +36,9 @@
 - Gebruik code die al bestaat in plaats van nieuwe code te schrijven (DRY)
 - Schrijf unit tests voor nieuwe of aangepaste functionaliteit
 - Gebruik geen magic strings of getallen, definieer constanten of enums, kijk ook wat er al is
+- Test-driven-development: schrijf eerst tests, dan pas de implementatie
+- Documenteer belangrijke beslissingen in code comments of in de README
+- Update bestaande comments en documentatie als je code wijzigt, zodat alles up-to-date blijft
 
 ## Commit rules
 
