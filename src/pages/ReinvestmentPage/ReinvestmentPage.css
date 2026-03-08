@@ -1,0 +1,22 @@
+@reference "../../style.css";
+
+/* ─── Reinvestment Page ─── */
+.reinvest-page {
+  @apply pb-16;
+}
+
+.reinvest-page__hero {
+  @apply mb-6;
+}
+
+.reinvest-page__hero h1 {
+  @apply font-display text-2xl font-semibold text-navy-900 leading-tight tracking-[-0.03em] dark:text-navy-50 sm:text-3xl;
+}
+
+.reinvest-page__timeline {
+  @apply mb-6;
+}
+
+.reinvest-page__detail {
+  @apply animate-[fadeInUp_0.3s_ease_both];
+}

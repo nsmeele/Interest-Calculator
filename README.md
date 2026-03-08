@@ -24,6 +24,7 @@ Interest-Calculator geeft je dat overzicht:
 - **4 dagtellingmethodes** — NOM/12, ACT/365, ACT/ACT, 30/360
 - **6 uitbetalingsintervallen** — Dagelijks, maandelijks, per kwartaal, halfjaarlijks, jaarlijks of einde looptijd
 - **Portfolio-overzicht** — Meerdere rekeningen combineren met maandelijkse rente-tracking en grafiek
+- **Herbeleggingstool** — Overzicht van toekomstige vrijvallen (aflopende deposito's en rente-uitkeringen) van je portefeuille-rekeningen, met de mogelijkheid om vrijvallend geld toe te wijzen aan bestaande of nieuwe rekeningen
 - **Periode-details** — Per periode beginsaldo, rente, stortingen, uitbetaling en eindsaldo
 - **Opgebouwde rente** — Dagelijks bijgewerkte stand van opgebouwde en uitbetaalde rente
 - **Multi-valuta** — Ondersteuning voor EUR, USD, GBP, CHF, JPY en meer

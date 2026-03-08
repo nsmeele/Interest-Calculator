@@ -213,7 +213,7 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                 >
                   <td className="amount">
                     {formatCurrency(r.effectiveBalance, cur)}
-                    <span className="comparison-rate">@ {formatRate(r.annualInterestRate, cur)}%</span>
+                    <span className="comparison-rate">@ {formatRate(r.currentRate, cur)}%</span>
                   </td>
                   <td>
                     {r.isOngoing

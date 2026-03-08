@@ -4,6 +4,7 @@ import {Routes, Route, Link, useParams} from 'react-router';
 import BankAccountsOverview from './components/BankAccountsOverview';
 import PortfolioSummary from './components/PortfolioSummary';
 import AccountDetailPage from './pages/AccountDetailPage';
+import ReinvestmentPage from './pages/ReinvestmentPage';
 import ThemeToggle from './components/ThemeToggle/ThemeToggle';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import {useDataTransfer} from './hooks/useDataTransfer';
@@ -20,11 +21,13 @@ import {
     ChartBarIcon,
     ArrowUpTrayIcon,
     ArrowDownTrayIcon,
-    ChevronDownIcon
+    ChevronDownIcon,
+    ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import type {BankAccount} from './models/BankAccount';
 import {demoData} from './transfer/demoData';
 import {ModalProvider} from './context/ModalContext';
+import {ReinvestmentProvider} from './context/ReinvestmentProvider';
 import {APP_NAME, GITHUB_URL} from './constants/app';
 import {useDocumentMeta} from './hooks/useDocumentMeta';
 
@@ -36,10 +39,13 @@ export default function App() {
             <ThemeContext.Provider value={themeCtx}>
                 <AccountStoreProvider>
                     <ModalProvider>
-                        <Routes>
-                            <Route path="account/:id" element={<AccountDetailPage/>}/>
-                            <Route path="*" element={<AppContent/>}/>
-                        </Routes>
+                        <ReinvestmentProvider>
+                            <Routes>
+                                <Route path="account/:id" element={<AccountDetailPage/>}/>
+                                <Route path="reinvest" element={<ReinvestmentPage/>}/>
+                                <Route path="*" element={<AppContent/>}/>
+                            </Routes>
+                        </ReinvestmentProvider>
                     </ModalProvider>
                 </AccountStoreProvider>
             </ThemeContext.Provider>
@@ -219,6 +225,12 @@ function AppContent() {
                             </p>
                         </div>
                         <div className="hero-top__actions">
+                            {hasResults && (
+                                <Link to={`/${lang}/reinvest`} className="btn-action btn-action--muted">
+                                    <ArrowPathIcon aria-hidden="true"/>
+                                    {t('reinvest.navLabel')}
+                                </Link>
+                            )}
                             <button
                                 className="btn-guide-link"
                                 onClick={() => setShowGuide((v) => !v)}

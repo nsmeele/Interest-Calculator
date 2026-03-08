@@ -230,7 +230,7 @@ function PortfolioMonthDetail({
               >
                 <div className="portfolio-item-info">
                   <span className="portfolio-item-label">
-                    {formatAccountLabel(r.effectiveBalance, r.annualInterestRate, cur)}
+                    {formatAccountLabel(r.effectiveBalance, r.currentRate, cur)}
                     <span className="badge-interval">{getIntervalLabel(r.interval)}</span>
                     {status === 'expired' && <span className="badge-expired">{t('portfolio.expired')}</span>}
                     {status === 'upcoming' && <span className="badge-upcoming">{t('portfolio.upcoming')}</span>}

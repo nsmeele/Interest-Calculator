@@ -256,7 +256,7 @@ export default function AccountDetailPage() {
               <div className="header-accent" />
               <h1 className="detail-hero__title">
                 {formatCurrency(balance, cur)}
-                <span className="detail-hero__rate">@ {formatRate(account.annualInterestRate, cur)}%</span>
+                <span className="detail-hero__rate">@ {formatRate(account.currentRate, cur)}%</span>
               </h1>
               {account.nextPayoutDate && (
                 <div className="detail-hero__next-payout">

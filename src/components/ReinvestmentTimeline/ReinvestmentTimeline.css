@@ -1,0 +1,55 @@
+@reference "../../style.css";
+
+/* ─── Timeline ─── */
+.reinvest-timeline {
+  @apply flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6;
+  scrollbar-width: thin;
+}
+
+.reinvest-timeline__month {
+  @apply flex flex-col items-center gap-1 min-w-28 px-4 py-3 rounded-xl border border-navy-200/60 bg-white cursor-pointer font-body transition-all duration-200 shrink-0 dark:bg-navy-900 dark:border-navy-700/50;
+}
+
+.reinvest-timeline__month:hover {
+  @apply border-copper-300 bg-copper-100/30 dark:border-copper-500/40 dark:bg-copper-500/10;
+}
+
+.reinvest-timeline__month--active {
+  @apply border-copper-500 bg-copper-100/40 shadow-sm dark:border-copper-400 dark:bg-copper-500/15;
+}
+
+.reinvest-timeline__month--allocated {
+  @apply border-success/30 dark:border-success/20;
+}
+
+.reinvest-timeline__month--active.reinvest-timeline__month--allocated {
+  @apply border-success/50 bg-success-light/40 dark:border-success/40 dark:bg-success/10;
+}
+
+.reinvest-timeline__month-label {
+  @apply font-display text-sm font-semibold text-navy-800 capitalize dark:text-navy-100;
+}
+
+.reinvest-timeline__month-amount {
+  @apply text-base font-bold text-copper-600 dark:text-copper-400;
+}
+
+.reinvest-timeline__month-count {
+  @apply text-2xs text-navy-400 dark:text-navy-500;
+}
+
+.reinvest-timeline__month-badge {
+  @apply text-3xs font-semibold uppercase tracking-wider text-success px-2 py-0.5 rounded-full bg-success-light dark:bg-success/15;
+}
+
+.reinvest-timeline__empty {
+  @apply text-center py-10 px-4;
+}
+
+.reinvest-timeline__empty h3 {
+  @apply font-display text-lg font-semibold text-navy-800 mb-2 dark:text-navy-100;
+}
+
+.reinvest-timeline__empty p {
+  @apply text-sm text-navy-400 max-w-md mx-auto;
+}

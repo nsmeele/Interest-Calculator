@@ -98,6 +98,18 @@ export class BankAccount {
     return addMonthsToISO(this.startDate, this.durationMonths);
   }
 
+  get currentRate(): number {
+    if (this.rateChanges.length === 0) return this.annualInterestRate;
+    const today = todayISO();
+    let rate = this.annualInterestRate;
+    for (const rc of [...this.rateChanges].sort((a, b) => a.date.localeCompare(b.date))) {
+      if (isBeforeDate(rc.date, today) || rc.date === today) {
+        rate = rc.annualInterestRate;
+      }
+    }
+    return rate;
+  }
+
   get hasNotStartedYet(): boolean {
     if (!this.startDate) return false;
     return !isBeforeDate(this.startDate, todayISO());
