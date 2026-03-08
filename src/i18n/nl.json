@@ -134,7 +134,9 @@
     "empty": "Nog geen transacties",
     "delete": "Verwijderen",
     "deleteTransaction": "Verwijder transactie {{description}}",
-    "automatic": "automatisch"
+    "automatic": "automatisch",
+    "endDate": "Einddatum",
+    "errorExceedsBalance": "Opname overschrijdt het saldo op {{date}}. Maximaal beschikbaar: {{max}}."
   },
   "rateChange": {
     "title": "Rentewijzigingen",

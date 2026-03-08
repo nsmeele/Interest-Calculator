@@ -67,21 +67,21 @@ describe('SimpleInterestStrategy', () => {
   it('adjusts principal on deposit', () => {
     const result = strategy.calculate(makeInput(), { 3: 5000 });
     expect(result[2].deposited).toBe(5000);
-    expect(result[2].startBalance).toBe(15000);
+    expect(result[2].startBalance).toBe(10000);
     expect(result[2].interestEarned).toBeCloseTo(15000 * 0.05 / 12, 2);
   });
 
   it('adjusts principal on withdrawal', () => {
     const result = strategy.calculate(makeInput(), { 2: -4000 });
     expect(result[1].deposited).toBe(-4000);
-    expect(result[1].startBalance).toBe(6000);
+    expect(result[1].startBalance).toBe(10000);
     expect(result[1].interestEarned).toBeCloseTo(6000 * 0.05 / 12, 2);
   });
 
-  it('clamps withdrawal to prevent negative balance', () => {
+  it('skips withdrawal that exceeds balance', () => {
     const result = strategy.calculate(makeInput({ startAmount: 1000 }), { 1: -5000 });
-    expect(result[0].deposited).toBe(-1000);
-    expect(result[0].startBalance).toBe(0);
-    expect(result[0].interestEarned).toBe(0);
+    expect(result[0].deposited).toBe(0);
+    expect(result[0].startBalance).toBe(1000);
+    expect(result[0].interestEarned).toBeCloseTo(1000 * 0.05 / 12, 2);
   });
 });

@@ -7,6 +7,7 @@ import { type CashFlow, expandCashFlows } from './CashFlow';
 import type { RateChange } from './RateChange';
 import { addMonthsToISO, todayISO, isBeforeDate, addDayISO, getNextMonthStart, getNextBoundaryStart, INTERVAL_BOUNDARIES, toMonthKey, daysBetween } from '../utils/date';
 import { calculateDailyInterest } from '../utils/dailyInterest';
+import { applyWithdrawal } from '../utils/applyWithdrawal';
 
 
 export interface PeriodResult {
@@ -184,7 +185,8 @@ export class BankAccount {
         let startBalance = period.startBalance;
         for (const cf of allCashFlows) {
           if (cf.date >= periodStart && cf.date < cursor) {
-            startBalance = Math.max(0, startBalance + Math.max(-startBalance, cf.amount));
+            const { newBalance } = applyWithdrawal(startBalance, cf.amount);
+            startBalance = newBalance;
           }
         }
 

@@ -13,11 +13,12 @@ import { getDayCountLabel, getDayCountDescription } from '../../enums/DayCountCo
 import { getAccountTypeLabel } from '../../enums/AccountType';
 import type { Currency } from '../../enums/Currency';
 import { formatCurrency, formatDuration, formatDate, formatRate } from '../../utils/format';
-import { toMonthKey, todayISO, parseDate, addMonthsToISO } from '../../utils/date';
+import { toMonthKey, todayISO, parseDate, addMonthsToISO, addDayISO } from '../../utils/date';
 import { getMonthDays } from '../../utils/monthDays';
 import CashFlowEditor, { type AutoCashFlow } from '../../components/CashFlowEditor';
 import InfoPopover from '../../components/InfoPopover';
 import { expandCashFlows } from '../../models/CashFlow';
+import { calculateDailyInterest } from '../../utils/dailyInterest';
 import RateChangeEditor from '../../components/RateChangeEditor';
 import AccountBalanceChart from '../../components/AccountBalanceChart';
 import { APP_NAME } from '../../constants/app';
@@ -138,6 +139,44 @@ export default function AccountDetailPage() {
 
   const autoEntries = [...compoundPayouts, ...recurringCashFlows];
 
+  const getProjectedBalance = (targetDate: string): number => {
+    if (!account.startDate || account.periods.length === 0) return account.startAmount;
+
+    const endISO = account.endDate ?? addMonthsToISO(account.startDate, account.durationMonths);
+    const allCashFlows = expandCashFlows(account.cashFlows, endISO);
+
+    for (let i = 0; i < account.periods.length; i++) {
+      const periodStart = i === 0 ? account.startDate : account.periods[i - 1].endDate!;
+      const periodEnd = account.periods[i].endDate;
+
+      if (!periodEnd) continue;
+      if (targetDate < periodStart) {
+        return i === 0 ? account.startAmount : account.periods[i - 1].endBalance;
+      }
+
+      if (targetDate >= periodStart && targetDate < periodEnd) {
+        const periodCashFlows = allCashFlows.filter((cf) => cf.date >= periodStart && cf.date < targetDate);
+        const { endBalance } = calculateDailyInterest(
+          periodStart, targetDate, account.periods[i].startBalance,
+          periodCashFlows, account.annualInterestRate, account.dayCount, account.rateChanges,
+        );
+        return endBalance;
+      }
+    }
+
+    return account.periods[account.periods.length - 1].endBalance;
+  };
+
+  const entryBalances = new Map<string, number>();
+  if (account.startDate) {
+    const dates = new Set<string>();
+    for (const cf of account.cashFlows.filter((cf) => !cf.recurring)) dates.add(cf.date);
+    for (const ae of autoEntries) dates.add(ae.date);
+    for (const date of dates) {
+      entryBalances.set(date, getProjectedBalance(addDayISO(date)));
+    }
+  }
+
   return (
     <div className="app-background">
       <div className="app-container">
@@ -244,6 +283,8 @@ export default function AccountDetailPage() {
                   onUpdate={(cfs) => handleUpdateCashFlows(account.id, [...cfs, ...account.cashFlows.filter((cf) => cf.recurring)])}
                   currency={cur}
                   autoEntries={autoEntries}
+                  getProjectedBalance={account.startDate ? getProjectedBalance : undefined}
+                  balances={entryBalances}
                 />
               )}
               {account.isVariableRate && (

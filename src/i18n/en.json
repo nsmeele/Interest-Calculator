@@ -134,7 +134,9 @@
     "empty": "No transactions yet",
     "delete": "Delete",
     "deleteTransaction": "Delete transaction {{description}}",
-    "automatic": "automatic"
+    "automatic": "automatic",
+    "endDate": "End date",
+    "errorExceedsBalance": "Withdrawal exceeds the balance on {{date}}. Maximum available: {{max}}."
   },
   "rateChange": {
     "title": "Rate changes",

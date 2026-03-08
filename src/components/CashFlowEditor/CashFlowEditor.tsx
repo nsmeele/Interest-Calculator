@@ -17,14 +17,17 @@ interface CashFlowEditorProps {
   onUpdate: (cashFlows: CashFlow[]) => void;
   currency: string;
   autoEntries?: AutoCashFlow[];
+  getProjectedBalance?: (date: string) => number;
+  balances?: Map<string, number>;
 }
 
 const INITIAL_FORM = {
   isWithdrawal: false, date: '', amount: '', description: '',
-  isRecurring: false, intervalMonths: 1,
+  isRecurring: false, intervalMonths: 1, endDate: '',
+  amountError: '',
 };
 
-export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntries = [] }: CashFlowEditorProps) {
+export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntries = [], getProjectedBalance, balances }: CashFlowEditorProps) {
   const { t } = useTranslation();
   const [isAdding, setIsAdding] = useState(false);
   const [form, setForm] = useState(INITIAL_FORM);
@@ -40,12 +43,31 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
     const parsedAmount = parseFloat(form.amount.replace(',', '.'));
     if (!form.date || isNaN(parsedAmount) || parsedAmount <= 0) return;
 
+    if (form.isWithdrawal && !form.isRecurring && getProjectedBalance) {
+      const available = getProjectedBalance(form.date);
+      if (parsedAmount > available) {
+        setForm((prev) => ({
+          ...prev,
+          amountError: t('cashflow.errorExceedsBalance', {
+            date: formatDate(form.date),
+            max: formatCurrency(available, currency),
+          }),
+        }));
+        return;
+      }
+    }
+
     const newCashFlow: CashFlow = {
       id: crypto.randomUUID(),
       date: form.date,
       amount: form.isWithdrawal ? -parsedAmount : parsedAmount,
       description: form.description || (form.isWithdrawal ? t('cashflow.withdrawalType') : t('cashflow.depositType')),
-      ...(form.isRecurring ? { recurring: { intervalMonths: form.intervalMonths } } : {}),
+      ...(form.isRecurring ? {
+        recurring: {
+          intervalMonths: form.intervalMonths,
+          ...(form.endDate ? { endDate: form.endDate } : {}),
+        },
+      } : {}),
     };
 
     onUpdate([...cashFlows, newCashFlow].sort((a, b) => a.date.localeCompare(b.date)));
@@ -120,12 +142,13 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
                   id="cf-amount"
                   type="text"
                   inputMode="decimal"
-                  className="form-input"
+                  className={`form-input${form.amountError ? ' form-input--error' : ''}`}
                   value={form.amount}
-                  onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
+                  onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value, amountError: '' }))}
                   placeholder="0,00"
                 />
               </div>
+              {form.amountError && <span className="form-error" role="alert">{form.amountError}</span>}
             </div>
             <div>
               <label className="form-label" htmlFor="cf-desc">{t('cashflow.description')}</label>
@@ -150,15 +173,27 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
               {t('cashflow.recurring')}
             </label>
             {form.isRecurring && (
-              <select
-                className="cashflow-editor__recurring-select"
-                value={form.intervalMonths}
-                onChange={(e) => setForm((prev) => ({ ...prev, intervalMonths: Number(e.target.value) }))}
-              >
-                {recurringOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
+              <>
+                <select
+                  className="cashflow-editor__recurring-select"
+                  value={form.intervalMonths}
+                  onChange={(e) => setForm((prev) => ({ ...prev, intervalMonths: Number(e.target.value) }))}
+                >
+                  {recurringOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                <div className="cashflow-editor__end-date">
+                  <label className="form-label" htmlFor="cf-end-date">{t('cashflow.endDate')}</label>
+                  <input
+                    id="cf-end-date"
+                    type="date"
+                    className="form-input"
+                    value={form.endDate}
+                    onChange={(e) => setForm((prev) => ({ ...prev, endDate: e.target.value }))}
+                  />
+                </div>
+              </>
             )}
           </div>
 
@@ -183,6 +218,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
           {allEntries.map((entry) => {
             if (entry.type === 'auto') {
               const { date: d, amount: amt, description: desc } = entry.entry;
+              const bal = balances?.get(d);
               return (
                 <div key={`auto-${d}`} className="cashflow-item cashflow-item--auto">
                   <span className="cashflow-item__date">{formatDate(d)}</span>
@@ -193,11 +229,13 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
                   <span className="cashflow-item__amount cashflow-item__amount--deposit">
                     +{formatCurrency(amt, currency)}
                   </span>
+                  {bal != null && <span className="cashflow-item__balance">{formatCurrency(bal, currency)}</span>}
                   <span className="btn-icon-spacer" />
                 </div>
               );
             }
             const cf = entry.cf;
+            const cfBal = balances?.get(cf.date);
             return (
               <div key={cf.id} className="cashflow-item">
                 <span className="cashflow-item__date">{formatDate(cf.date)}</span>
@@ -212,6 +250,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
                 <span className={`cashflow-item__amount${cf.amount >= 0 ? ' cashflow-item__amount--deposit' : ' cashflow-item__amount--withdrawal'}`}>
                   {cf.amount >= 0 ? '+' : '\u2212'}{formatCurrency(Math.abs(cf.amount), currency)}
                 </span>
+                {cfBal != null && <span className="cashflow-item__balance">{formatCurrency(cfBal, currency)}</span>}
                 <button
                   className="btn-icon"
                   title={t('cashflow.delete')}

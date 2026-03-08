@@ -5,6 +5,7 @@ import { PayoutInterval, getPeriodsPerYear } from '../enums/PayoutInterval';
 import { addMonthsToISO } from './date';
 import { calculateDailyInterest } from './dailyInterest';
 import { yearFraction } from './dayCount';
+import { applyWithdrawal } from './applyWithdrawal';
 
 export function hasAdjustments(adj: BalanceAdjustments): boolean {
   return Object.keys(adj).length > 0;
@@ -62,6 +63,7 @@ export function calculatePeriods(
   const periods: PeriodResult[] = [];
 
   let balance = input.startAmount;
+  const stoppedSources = new Set<string>();
 
   for (let i = 1; i <= totalPeriods; i++) {
     const cashFlowsForPeriod = periodCashFlows?.[i];
@@ -71,7 +73,7 @@ export function calculatePeriods(
     const hasRateChanges = input.rateChanges.length > 0;
 
     if ((cashFlowsForPeriod?.length || hasRateChanges) && periodStartDate && periodEndDate) {
-      const result = calculateDailyInterest(periodStartDate, periodEndDate, balance, cashFlowsForPeriod ?? [], input.annualInterestRate, input.dayCount, input.rateChanges);
+      const result = calculateDailyInterest(periodStartDate, periodEndDate, balance, cashFlowsForPeriod ?? [], input.annualInterestRate, input.dayCount, input.rateChanges, stoppedSources);
       const endBalance = compound ? result.endBalance + result.interestEarned : result.endBalance;
 
       periods.push({
@@ -88,8 +90,9 @@ export function calculatePeriods(
       balance = endBalance;
     } else {
       const adjustment = adjustments[i] ?? 0;
-      const deposited = Math.max(-balance, adjustment);
-      balance = Math.max(0, balance + deposited);
+      const periodStartBalance = balance;
+      const { newBalance, applied } = applyWithdrawal(balance, adjustment);
+      balance = newBalance;
 
       const interestFraction = periodStartDate && periodEndDate
         ? yearFraction(periodStartDate, periodEndDate, input.dayCount)
@@ -100,11 +103,11 @@ export function calculatePeriods(
       periods.push({
         period: i,
         periodLabel: `Periode ${i}`,
-        startBalance: balance,
+        startBalance: periodStartBalance,
         interestEarned,
         disbursed: interestEarned,
         endBalance,
-        deposited,
+        deposited: applied,
         endDate: periodEndDate,
       });
 
@@ -139,6 +142,7 @@ export function calculatePeriodsWithSchedule(
   const rate = input.annualInterestRate / 100;
   const periods: PeriodResult[] = [];
   let balance = input.startAmount;
+  const stoppedSources = new Set<string>();
 
   for (let i = 0; i < schedule.length; i++) {
     const entry = schedule[i];
@@ -148,7 +152,7 @@ export function calculatePeriodsWithSchedule(
     const hasRateChanges = input.rateChanges.length > 0;
 
     if (cashFlowsForPeriod?.length || hasRateChanges) {
-      const result = calculateDailyInterest(entry.startDate, entry.endDate, balance, cashFlowsForPeriod ?? [], input.annualInterestRate, input.dayCount, input.rateChanges);
+      const result = calculateDailyInterest(entry.startDate, entry.endDate, balance, cashFlowsForPeriod ?? [], input.annualInterestRate, input.dayCount, input.rateChanges, stoppedSources);
       const endBalance = compound ? result.endBalance + result.interestEarned : result.endBalance;
 
       periods.push({
@@ -165,8 +169,9 @@ export function calculatePeriodsWithSchedule(
       balance = endBalance;
     } else {
       const adjustment = adjustments[periodIndex] ?? 0;
-      const deposited = Math.max(-balance, adjustment);
-      balance = Math.max(0, balance + deposited);
+      const periodStartBalance = balance;
+      const { newBalance, applied } = applyWithdrawal(balance, adjustment);
+      balance = newBalance;
 
       const periodFraction = yearFraction(entry.startDate, entry.endDate, input.dayCount);
       const interestEarned = balance * rate * periodFraction;
@@ -175,11 +180,11 @@ export function calculatePeriodsWithSchedule(
       periods.push({
         period: periodIndex,
         periodLabel: entry.label,
-        startBalance: balance,
+        startBalance: periodStartBalance,
         interestEarned,
         disbursed: interestEarned,
         endBalance,
-        deposited,
+        deposited: applied,
         endDate: entry.endDate,
       });
 

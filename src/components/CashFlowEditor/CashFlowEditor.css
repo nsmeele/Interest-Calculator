@@ -64,6 +64,18 @@
   @apply py-1.5 px-2 text-xs rounded-md bg-navy-50 border border-navy-200 text-navy-700 font-body dark:bg-navy-800 dark:border-navy-600 dark:text-navy-200;
 }
 
+.cashflow-editor__end-date {
+  @apply flex items-center gap-1.5;
+}
+
+.cashflow-editor__end-date .form-label {
+  @apply mb-0 text-xs whitespace-nowrap;
+}
+
+.cashflow-editor__end-date .form-input {
+  @apply py-1.5 text-xs;
+}
+
 .cashflow-editor__actions {
   @apply flex justify-end mt-3;
 }
@@ -115,6 +127,12 @@
 
 .cashflow-item__amount--withdrawal {
   @apply text-danger;
+}
+
+.cashflow-item__balance {
+  @apply text-xs tabular-nums whitespace-nowrap text-navy-400 dark:text-navy-500;
+  min-width: 4.5rem;
+  text-align: right;
 }
 
 .cashflow-item__badge--auto {

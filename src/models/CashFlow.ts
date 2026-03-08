@@ -7,12 +7,14 @@ export interface CashFlow {
   description: string;
   recurring?: {
     intervalMonths: number;
+    endDate?: string;
   };
 }
 
 export interface ExpandedCashFlow {
   date: string;
   amount: number;
+  sourceId?: string;
 }
 
 export function expandCashFlows(
@@ -25,9 +27,11 @@ export function expandCashFlows(
   for (const cf of cashFlows) {
     if (cf.recurring) {
       let current = parseDate(cf.date);
+      const recurringEnd = cf.recurring.endDate ? parseDate(cf.recurring.endDate) : end;
+      const effectiveEnd = recurringEnd < end ? recurringEnd : end;
 
-      while (current <= end) {
-        expanded.push({ date: toISO(current), amount: cf.amount });
+      while (current <= effectiveEnd) {
+        expanded.push({ date: toISO(current), amount: cf.amount, sourceId: cf.id });
         current = addMonthsToDate(current, cf.recurring.intervalMonths);
       }
     } else {
@@ -35,5 +39,10 @@ export function expandCashFlows(
     }
   }
 
-  return expanded.sort((a, b) => a.date.localeCompare(b.date));
+  // Sort by date, deposits before withdrawals on same date
+  return expanded.sort((a, b) => {
+    const dateCompare = a.date.localeCompare(b.date);
+    if (dateCompare !== 0) return dateCompare;
+    return b.amount - a.amount;
+  });
 }

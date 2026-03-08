@@ -3,6 +3,7 @@ import type { RateChange } from '../models/RateChange';
 import { DayCountConvention } from '../enums/DayCountConvention';
 import { yearFraction } from './dayCount';
 import { getRateForDate } from './rateChange';
+import { applyWithdrawal } from './applyWithdrawal';
 
 export interface DailyInterestResult {
   interestEarned: number;
@@ -18,6 +19,7 @@ export function calculateDailyInterest(
   annualRate: number,
   dayCount: DayCountConvention = DayCountConvention.NOM_12,
   rateChanges: RateChange[] = [],
+  stoppedSources?: Set<string>,
 ): DailyInterestResult {
   // Build unified boundary dates from cash flows + rate changes
   const boundarySet = new Set<string>();
@@ -43,6 +45,7 @@ export function calculateDailyInterest(
   let interestEarned = 0;
   let totalDeposited = 0;
   let segmentStart = periodStart;
+  stoppedSources ??= new Set<string>();
 
   for (const boundary of boundaries) {
     const rate = getRateForDate(rateChanges, annualRate, segmentStart) / 100;
@@ -52,9 +55,14 @@ export function calculateDailyInterest(
     const cfs = cfByDate.get(boundary);
     if (cfs) {
       for (const cf of cfs) {
-        const clamped = Math.max(-balance, cf.amount);
-        balance = Math.max(0, balance + clamped);
-        totalDeposited += clamped;
+        if (cf.sourceId && stoppedSources.has(cf.sourceId)) continue;
+
+        const result = applyWithdrawal(balance, cf.amount);
+        if (result.skipped && cf.sourceId) {
+          stoppedSources.add(cf.sourceId);
+        }
+        balance = result.newBalance;
+        totalDeposited += result.applied;
       }
     }
 

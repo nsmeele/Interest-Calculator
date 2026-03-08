@@ -31,11 +31,7 @@
   @apply w-2 h-2 rounded-full flex-shrink-0;
 }
 
-.account-chart__tooltip-dot--accrued {
-  @apply bg-copper-500 dark:bg-copper-400;
-}
-
-.account-chart__tooltip-dot--disbursed {
+.account-chart__tooltip-dot--balance {
   @apply bg-navy-500 dark:bg-navy-300;
 }
 

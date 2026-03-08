@@ -63,20 +63,20 @@ describe('CompoundInterestStrategy', () => {
   it('applies positive balance adjustment (deposit)', () => {
     const result = strategy.calculate(makeInput(), { 3: 5000 });
     expect(result[2].deposited).toBe(5000);
-    expect(result[2].startBalance).toBeCloseTo(result[1].endBalance + 5000, 2);
+    expect(result[2].startBalance).toBeCloseTo(result[1].endBalance, 2);
   });
 
   it('applies negative balance adjustment (withdrawal)', () => {
     const result = strategy.calculate(makeInput(), { 2: -3000 });
     expect(result[1].deposited).toBe(-3000);
-    expect(result[1].startBalance).toBeCloseTo(result[0].endBalance - 3000, 2);
+    expect(result[1].startBalance).toBeCloseTo(result[0].endBalance, 2);
   });
 
-  it('clamps withdrawal to prevent negative balance', () => {
+  it('skips withdrawal that exceeds balance', () => {
     const result = strategy.calculate(makeInput({ startAmount: 1000 }), { 1: -5000 });
-    expect(result[0].deposited).toBe(-1000);
-    expect(result[0].startBalance).toBe(0);
-    expect(result[0].interestEarned).toBe(0);
+    expect(result[0].deposited).toBe(0);
+    expect(result[0].startBalance).toBe(1000);
+    expect(result[0].interestEarned).toBeCloseTo(1000 * 0.05 / 12, 2);
   });
 
   it('switches AtMaturity to monthly periods when adjustments exist', () => {
