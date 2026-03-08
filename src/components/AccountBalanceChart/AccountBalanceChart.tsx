@@ -1,16 +1,14 @@
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { BankAccount } from '../../models/BankAccount';
-import { InterestType } from '../../enums/InterestType';
+import type { ChartYearRange } from '../../enums/ChartYearRange';
 import { formatCurrency } from '../../utils/format';
 import { useTheme } from '../../hooks/useTheme';
+import { buildBalanceData } from '../../utils/balanceChart';
+import { getRangeEndYear } from '../../utils/chartRange';
+import ChartRangeSelector from '../ChartRangeSelector';
 import './AccountBalanceChart.css';
-
-interface BalanceDataPoint {
-  label: string;
-  balance: number;
-}
 
 interface ChartTooltipProps {
   active?: boolean;
@@ -40,49 +38,28 @@ const chartColors = {
   dark:  { grid: '#163058', tick: '#7ba3db', axis: '#163058', balance: '#7ba3db' },
 };
 
-function formatPeriodLabel(date: string): string {
-  const [year, month] = date.split('-').map(Number);
-  const d = new Date(year, month - 1, 1);
-  const label = new Intl.DateTimeFormat('nl-NL', { month: 'short' }).format(d);
-  return `${label} '${String(year).slice(2)}`;
-}
-
-function buildBalanceData(account: BankAccount): BalanceDataPoint[] {
-  if (!account.startDate || account.periods.length === 0) return [];
-
-  const isSimple = account.interestType === InterestType.Simple;
-  const points: BalanceDataPoint[] = [
-    { label: formatPeriodLabel(account.startDate), balance: account.startAmount },
-  ];
-
-  let cumulativeInterest = 0;
-  for (const period of account.periods) {
-    if (!period.endDate) continue;
-    if (isSimple) cumulativeInterest += period.interestEarned;
-    points.push({
-      label: formatPeriodLabel(period.endDate),
-      balance: period.endBalance + (isSimple ? cumulativeInterest : 0),
-    });
-  }
-
-  return points;
-}
-
 interface AccountBalanceChartProps {
   account: BankAccount;
   currency: string;
+  startYear: number;
+  onStartYearChange: (year: number) => void;
+  yearRange: ChartYearRange;
+  onRangeChange: (range: ChartYearRange) => void;
 }
 
-export default function AccountBalanceChart({ account, currency }: AccountBalanceChartProps) {
+export default function AccountBalanceChart({ account, currency, startYear, onStartYearChange, yearRange, onRangeChange }: AccountBalanceChartProps) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const gradientId = useId();
   const colors = chartColors[theme];
-  const data = useMemo(() => buildBalanceData(account), [account]);
+  const endYear = getRangeEndYear(startYear, yearRange);
+  const data = useMemo(() => buildBalanceData(account, startYear, endYear), [account, startYear, endYear]);
 
   if (data.length < 2) return null;
 
-  const minBalance = Math.min(...data.map((d) => d.balance));
-  const maxBalance = Math.max(...data.map((d) => d.balance));
+  const numericBalances = data.map((d) => d.balance).filter((b): b is number => b !== null);
+  const minBalance = Math.min(...numericBalances);
+  const maxBalance = Math.max(...numericBalances);
   const padding = (maxBalance - minBalance) * 0.1 || maxBalance * 0.02;
   const yMin = Math.floor((minBalance - padding) / 100) * 100;
   const yMax = Math.ceil((maxBalance + padding) / 100) * 100;
@@ -93,11 +70,12 @@ export default function AccountBalanceChart({ account, currency }: AccountBalanc
   return (
     <section className="account-chart" aria-label={t('detail.chartLabel')}>
       <h2>{t('detail.chartLabel')}</h2>
-      <div className="account-chart__container">
+      <ChartRangeSelector startYear={startYear} onStartYearChange={onStartYearChange} value={yearRange} onChange={onRangeChange} />
+      <div className="account-chart__container" key={`${yMin}-${yMax}`}>
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
+          <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
             <defs>
-              <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={colors.balance} stopOpacity={0.25} />
                 <stop offset="100%" stopColor={colors.balance} stopOpacity={0.03} />
               </linearGradient>
@@ -128,7 +106,7 @@ export default function AccountBalanceChart({ account, currency }: AccountBalanc
               dataKey="balance"
               stroke={colors.balance}
               strokeWidth={2}
-              fill="url(#balanceGradient)"
+              fill={`url(#${gradientId})`}
               animationDuration={600}
               animationEasing="ease-out"
             />

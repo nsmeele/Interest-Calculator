@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildPortfolioChartData } from '../utils/interest';
+import { buildPortfolioChartData, filterPortfolioChartData } from '../utils/interest';
 import { BankAccount } from '../models/BankAccount';
 import { PayoutInterval } from '../enums/PayoutInterval';
 import { InterestType } from '../enums/InterestType';
@@ -136,5 +136,84 @@ describe('buildPortfolioChartData', () => {
     }] });
     const data = buildPortfolioChartData([result]);
     expect(data[0].label).toContain("'25");
+  });
+});
+
+describe('filterPortfolioChartData', () => {
+  it('preserves interest values for months within range', () => {
+    const data = [
+      { monthKey: '2025-11', label: "nov '25", interest: 50 },
+      { monthKey: '2025-12', label: "dec '25", interest: 60 },
+      { monthKey: '2026-06', label: "jun '26", interest: 70 },
+    ];
+    const filtered = filterPortfolioChartData(data, 2025, 2026);
+    const nov = filtered.find((d) => d.monthKey === '2025-11');
+    const dec = filtered.find((d) => d.monthKey === '2025-12');
+    const jun = filtered.find((d) => d.monthKey === '2026-06');
+    expect(nov?.interest).toBe(50);
+    expect(dec?.interest).toBe(60);
+    expect(jun?.interest).toBe(70);
+  });
+
+  it('excludes months past end year and fills up to end year', () => {
+    const data = [
+      { monthKey: '2026-01', label: "jan '26", interest: 50 },
+      { monthKey: '2026-12', label: "dec '26", interest: 50 },
+      { monthKey: '2027-01', label: "jan '27", interest: 50 },
+      { monthKey: '2027-06', label: "jun '27", interest: 50 },
+    ];
+    const filtered = filterPortfolioChartData(data, 2026, 2026);
+    // Jan 2026 through Dec 2026 = 12 months
+    expect(filtered).toHaveLength(12);
+    expect(filtered[0].monthKey).toBe('2026-01');
+    expect(filtered[0].interest).toBe(50);
+    expect(filtered[11].monthKey).toBe('2026-12');
+    expect(filtered[11].interest).toBe(50);
+    // Months past 2026 are excluded
+    expect(filtered.find((d) => d.monthKey === '2027-01')).toBeUndefined();
+  });
+
+  it('returns empty for empty input data', () => {
+    const filtered = filterPortfolioChartData([], 2025, 2026);
+    expect(filtered).toHaveLength(0);
+  });
+
+  it('fills full range from startYear to endYear', () => {
+    const data = [
+      { monthKey: '2025-06', label: "jun '25", interest: 50 },
+      { monthKey: '2025-07', label: "jul '25", interest: 50 },
+    ];
+    const filtered = filterPortfolioChartData(data, 2025, 2026);
+    // Jan 2025 through Dec 2026 = 24 months
+    expect(filtered).toHaveLength(24);
+    expect(filtered[0].monthKey).toBe('2025-01');
+    expect(filtered[0].interest).toBe(0);
+    expect(filtered[5].monthKey).toBe('2025-06');
+    expect(filtered[5].interest).toBe(50);
+    expect(filtered[23].monthKey).toBe('2026-12');
+    expect(filtered[23].interest).toBe(0);
+  });
+
+  it('fills gaps between data points with zeros', () => {
+    const data = [
+      { monthKey: '2026-01', label: "jan '26", interest: 100 },
+      { monthKey: '2026-03', label: "mrt '26", interest: 200 },
+    ];
+    const filtered = filterPortfolioChartData(data, 2026, 2026);
+    expect(filtered).toHaveLength(12);
+    expect(filtered[0].interest).toBe(100); // Jan
+    expect(filtered[1].interest).toBe(0);   // Feb (gap)
+    expect(filtered[2].interest).toBe(200); // Mar
+  });
+
+  it('start year 2024 with 5J range covers through Dec 2029', () => {
+    const data = [
+      { monthKey: '2025-06', label: "jun '25", interest: 100 },
+    ];
+    const filtered = filterPortfolioChartData(data, 2024, 2029);
+    // Jan 2024 through Dec 2029 = 72 months
+    expect(filtered).toHaveLength(72);
+    expect(filtered[0].monthKey).toBe('2024-01');
+    expect(filtered[71].monthKey).toBe('2029-12');
   });
 });

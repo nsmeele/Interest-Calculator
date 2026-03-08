@@ -10,7 +10,7 @@
 }
 
 .account-chart__container {
-  @apply w-full h-48 sm:h-64;
+  @apply w-full h-48 overflow-visible sm:h-64;
 }
 
 /* ─── Tooltip ─── */

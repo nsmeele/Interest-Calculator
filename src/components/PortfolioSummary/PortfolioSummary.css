@@ -163,3 +163,8 @@
 .portfolio-breakdown__empty {
   @apply text-xs text-navy-400 py-2;
 }
+
+/* ─── Chart Click Hint ─── */
+.portfolio-click-hint {
+  @apply text-xs text-navy-400 italic text-center py-4 dark:text-navy-500;
+}

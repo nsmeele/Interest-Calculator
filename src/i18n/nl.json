@@ -178,7 +178,8 @@
     "showInactive": "Toon verlopen en toekomstige rekeningen",
     "showZeroInterest": "Toon rekeningen zonder rente deze maand",
     "chartAriaLabel": "Maandelijkse rente-opbrengst grafiek",
-    "mixedCurrencies": "Totalen niet beschikbaar bij gemengde valuta's"
+    "mixedCurrencies": "Totalen niet beschikbaar bij gemengde valuta's",
+    "chartClickHint": "Klik op een maand in de grafiek"
   },
   "exportModal": {
     "title": "Gegevens exporteren",
@@ -268,6 +269,11 @@
     "periodsLabel": "Periodeoverzicht",
     "chartLabel": "Verloop",
     "monthBreakdownLabel": "Rente-opbouw deze maand"
+  },
+  "chart": {
+    "rangeLabel": "Tijdsperiode",
+    "yearSuffix": "J",
+    "startYearLabel": "Startjaar"
   },
   "format": {
     "years_one": "{{count}} jaar",

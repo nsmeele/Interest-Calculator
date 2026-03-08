@@ -1,6 +1,7 @@
 import type { BankAccount } from '../models/BankAccount';
 import { addMonthsToISO, toMonthKey } from './date';
 
+
 export interface ChartDataPoint {
   monthKey: string;
   label: string;
@@ -51,4 +52,32 @@ export function buildPortfolioChartData(
     label: formatMonthLabel(monthKey),
     interest: combined.get(monthKey) ?? 0,
   }));
+}
+
+export function filterPortfolioChartData(
+  data: ChartDataPoint[],
+  startYear: number,
+  endYear: number,
+): ChartDataPoint[] {
+  if (data.length === 0) return [];
+
+  const dataMap = new Map<string, number>();
+  for (const d of data) {
+    dataMap.set(d.monthKey, d.interest);
+  }
+
+  const result: ChartDataPoint[] = [];
+  let cursor = `${startYear}-01-01`;
+
+  while (toMonthKey(cursor) <= `${endYear}-12`) {
+    const monthKey = toMonthKey(cursor);
+    result.push({
+      monthKey,
+      label: formatMonthLabel(monthKey),
+      interest: dataMap.get(monthKey) ?? 0,
+    });
+    cursor = addMonthsToISO(cursor, 1);
+  }
+
+  return result;
 }

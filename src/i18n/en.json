@@ -178,7 +178,8 @@
     "cumulativeInterest": "Accrued",
     "showInactive": "Show expired and upcoming accounts",
     "chartAriaLabel": "Monthly interest earnings chart",
-    "mixedCurrencies": "Totals unavailable with mixed currencies"
+    "mixedCurrencies": "Totals unavailable with mixed currencies",
+    "chartClickHint": "Click a month in the chart"
   },
   "exportModal": {
     "title": "Export data",
@@ -268,6 +269,11 @@
     "periodsLabel": "Period overview",
     "chartLabel": "Progression",
     "monthBreakdownLabel": "Interest accrual this month"
+  },
+  "chart": {
+    "rangeLabel": "Time period",
+    "yearSuffix": "Y",
+    "startYearLabel": "Start year"
   },
   "format": {
     "years_one": "{{count}} year",

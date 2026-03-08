@@ -23,6 +23,9 @@ import { expandCashFlows, getRecurringAutoEntries } from '../../models/CashFlow'
 import { calculateDailyInterest } from '../../utils/dailyInterest';
 import RateChangeEditor from '../../components/RateChangeEditor';
 import AccountBalanceChart from '../../components/AccountBalanceChart';
+import { getDefaultRangeForAccount, getRangeEndYear, currentYear } from '../../utils/chartRange';
+import { ChartYearRange } from '../../enums/ChartYearRange';
+import { extendOngoingAccount } from '../../utils/extendOngoingAccount';
 import { APP_NAME } from '../../constants/app';
 import './AccountDetailPage.css';
 
@@ -43,6 +46,16 @@ export default function AccountDetailPage() {
 
   const currentMonthKey = toMonthKey(todayISO());
   const [editorMonthOffset, setEditorMonthOffset] = useState(0);
+  const [chartStartYear, setChartStartYear] = useState(currentYear);
+  const [chartRangeOverride, setChartRangeOverride] = useState<ChartYearRange | null>(null);
+  const chartYearRange = chartRangeOverride
+    ?? (account ? getDefaultRangeForAccount(account) : ChartYearRange.OneYear);
+
+  const chartAccount = useMemo(() => {
+    if (!account) return account;
+    const endYear = getRangeEndYear(chartStartYear, chartYearRange);
+    return extendOngoingAccount(account, endYear);
+  }, [account, chartStartYear, chartYearRange]);
 
   const editorMonthKey = useMemo(() => {
     if (editorMonthOffset === 0) return currentMonthKey;
@@ -338,7 +351,7 @@ export default function AccountDetailPage() {
             </section>
           )}
 
-          <AccountBalanceChart account={account} currency={cur} />
+          <AccountBalanceChart account={chartAccount ?? account} currency={cur} startYear={chartStartYear} onStartYearChange={setChartStartYear} yearRange={chartYearRange} onRangeChange={setChartRangeOverride} />
 
           {account.startDate && (() => {
             const days = getMonthDays(account, currentMonthKey);
