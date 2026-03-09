@@ -31,8 +31,8 @@ export default function Modal({ titleId, title, onClose, onConfirm, confirmLabel
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal__header">
-          <h2 id={titleId}>{title}</h2>
-          <button className="modal__close" onClick={onClose} aria-label={t('modal.close')}>
+          <h2 className="card-title" id={titleId}>{title}</h2>
+          <button className="btn-icon" onClick={onClose} aria-label={t('modal.close')}>
             <XMarkIcon aria-hidden="true" />
           </button>
         </div>

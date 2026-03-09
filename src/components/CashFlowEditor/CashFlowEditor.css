@@ -1,31 +1,6 @@
 @reference "../../style.css";
 
 /* ─── CashFlow Editor ─── */
-.cashflow-editor {
-  @apply py-4 px-3 border-t border-navy-200/40 dark:border-navy-700/40 sm:py-5 sm:px-4;
-}
-
-.cashflow-editor__header {
-  @apply flex items-center justify-between mb-3;
-}
-
-.cashflow-editor__header h3 {
-  @apply font-body text-xs font-semibold text-navy-500 uppercase tracking-[0.07em] dark:text-navy-400;
-}
-
-.cashflow-editor__add-btn {
-  @apply inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg
-         text-copper-600 bg-copper-100/60 border-none cursor-pointer font-body
-         transition-all duration-200 hover:bg-copper-200/80 active:scale-[0.97] dark:text-copper-400 dark:bg-copper-500/15 dark:hover:bg-copper-500/25;
-}
-
-.cashflow-editor__add-btn--active {
-  @apply text-navy-500 bg-navy-100 dark:text-navy-400 dark:bg-navy-800;
-}
-
-.cashflow-editor__form {
-  @apply mb-4 p-3 rounded-lg bg-navy-100/40 animate-[expandReveal_0.25s_ease] dark:bg-navy-800/40 sm:p-4;
-}
 
 .cashflow-editor__type-toggle {
   @apply flex gap-1 p-0.5 rounded-lg bg-navy-200/50 mb-3 dark:bg-navy-700/50;
@@ -44,12 +19,8 @@
   @apply text-danger bg-danger-light shadow-sm;
 }
 
-.cashflow-editor__fields {
+.cashflow-editor .editor__fields {
   @apply grid grid-cols-1 gap-2 sm:grid-cols-[140px_120px_1fr] sm:gap-3;
-}
-
-.cashflow-editor__fields .form-input {
-  @apply py-2 text-sm;
 }
 
 .cashflow-editor__recurring {
@@ -76,45 +47,12 @@
   @apply py-1.5 text-xs;
 }
 
-.cashflow-editor__actions {
-  @apply flex justify-end mt-3;
-}
-
-.cashflow-editor__submit {
-  @apply px-4 py-2 text-xs font-semibold rounded-lg cursor-pointer border-none font-body
-         text-white bg-navy-800 transition-all duration-200
-         hover:bg-navy-700 active:scale-[0.97] dark:bg-copper-500 dark:text-navy-950 dark:hover:bg-copper-400;
-}
-
-.cashflow-editor__list {
-  @apply flex flex-col;
-}
-
-.cashflow-editor__empty {
-  @apply text-center py-6 text-xs text-navy-400;
-}
-
-.cashflow-item {
-  @apply flex items-center gap-2 py-2 px-1 border-b border-navy-100
-         transition-colors duration-150 hover:bg-copper-500/3 dark:border-navy-700 dark:hover:bg-copper-500/6 sm:gap-3 sm:py-2.5 sm:px-2;
-}
-
-.cashflow-item:last-child {
-  @apply border-b-0;
-}
-
-.cashflow-item__date {
-  @apply text-xs text-navy-500 font-medium tabular-nums whitespace-nowrap dark:text-navy-400;
-  min-width: 5rem;
-}
-
 .cashflow-item__desc {
   @apply flex-1 text-sm text-navy-700 truncate min-w-0 dark:text-navy-200;
 }
 
 .cashflow-item__badge {
-  @apply inline-block text-3xs font-bold uppercase tracking-wide
-         py-px px-1.5 rounded-full text-navy-600 bg-navy-100 ml-2 align-middle whitespace-nowrap dark:text-navy-300 dark:bg-navy-700;
+  @apply text-3xs text-navy-600 bg-navy-100 ml-2 align-middle whitespace-nowrap dark:text-navy-300 dark:bg-navy-700;
 }
 
 .cashflow-item__amount {

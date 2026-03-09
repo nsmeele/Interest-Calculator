@@ -78,6 +78,7 @@ success-light -> #0f2418
 | Element          | Font    | Grootte              | Gewicht  | Kleur (light / dark)           |
 |------------------|---------|----------------------|----------|--------------------------------|
 | H1               | Display | `2xl` / `3xl` (lg)  | 600      | navy-900 / navy-50             |
+| H2 (card-title)  | Display | `base` / `lg` (sm)  | 600      | navy-900 / navy-50             |
 | H2 (sectie)      | Display | `lg` / `xl` (sm)    | 600      | navy-900 / navy-50             |
 | Tagline          | Display | `sm` / `lg` (sm)    | 500      | copper-600 / copper-400        |
 | Body             | Body    | `base`               | 400      | navy-900 / navy-100            |
@@ -128,7 +129,9 @@ border-radius: 1rem (rounded-2xl)
 
 ## Componenten
 
-### Cards (`.portfolio-section`, `.results-section`)
+### Cards (`.card`)
+
+Universele container voor secties, panels en detail-blokken.
 
 ```css
 padding: 1rem / 1.5rem (sm) / 2rem (lg, alleen results)
@@ -137,6 +140,20 @@ background: white / navy-900 (dark)
 border: 1px solid navy-200/60 / navy-700/50 (dark)
 shadow: sm (light only)
 ```
+
+### Card Title (`.card-title`)
+
+Universele heading-stijl voor alle card/section/modal titels.
+
+```
+Font: display, base / lg (sm), 600
+Kleur: navy-900 / navy-50 (dark)
+```
+
+Wordt gecombineerd met context-specifieke overrides:
+- `section-header__title h2`: text-lg / text-xl (sm) — grotere variant
+- `modal__header h2`: text-lg — vaste grootte
+- Component h2's: enkel mb-4 override voor spacing
 
 ### Buttons
 
@@ -165,14 +182,24 @@ Achtergrond: navy-800 (light) / copper-500 (dark)
 Varianten: --muted (outlined), --danger (red outlined)
 ```
 
-#### Icon (`.btn-icon`, `.btn-portfolio`)
+#### Icon (`.btn-icon`)
+
+Universele icon-button. Alle icon-only buttons (close, edit, delete, navigatie, portfolio toggle) gebruiken deze basis.
 
 ```
 Afmetingen: 2.25rem x 2.25rem (36px)
 Border-radius: 0.5rem
 Achtergrond: transparant
-Active: scale 0.95 / 0.90
+Hover: navy-700 tekst, navy-100 bg
+Active: scale 0.95
 ```
+
+Modifiers:
+- `--danger`: rode hover (danger tekst + danger-light bg) — voor delete/remove acties
+- `--copper`: copper hover — voor accent-acties (portfolio toggle, theme, GitHub link)
+- `--copper.--active`: copper tekst permanent zichtbaar (bijv. actieve portfolio-ster)
+
+Child: `.btn-icon__icon` (w-4.5 h-4.5) voor SVG icons die geen Heroicons zijn
 
 #### Secondary (`.btn-secondary`)
 
@@ -180,6 +207,32 @@ Active: scale 0.95 / 0.90
 Full-width, navy-100 bg, navy-700 tekst
 Dark: navy-800 bg, navy-200 tekst
 ```
+
+### Info Box (`.info-box`)
+
+Lichtgekleurde container voor formulieren, waarschuwingen en informatieve content.
+
+```
+Background: navy-100/50 (light) / navy-800/50 (dark)
+Border: 1px solid navy-200/50 / navy-700/40 (dark)
+Border-radius: xl
+Padding: 1rem / 1.25rem (sm)
+```
+
+Modifier: `--copper` voor copper-getinte variant (waarschuwingen).
+
+### Editor (`.editor`)
+
+Universeel patroon voor inline editors (cashflow, rate changes). Gedeelde classes:
+- `.editor__header` — flex header met titel en add-knop
+- `.editor__add-btn` — toggle knop (idle/actief)
+- `.editor__form` — formulier container (combineert met `.info-box`)
+- `.editor__fields` — grid layout voor velden
+- `.editor__actions` — rechts-uitgelijnde actie-rij
+- `.editor__list` — lijst container
+- `.editor__empty` — lege-staat tekst
+- `.editor-item` — lijst-rij
+- `.editor-item__date` — datum in lijst-rij
 
 ### Forms
 
@@ -203,6 +256,48 @@ Font: xs, 600, uppercase
 Letter-spacing: 0.07em
 Margin-bottom: 0.375rem
 Focus-within: copper-600 / copper-400 (dark)
+```
+
+#### Input met affix (`.form-input-affix`)
+
+Container voor inputs met prefix/suffix symbolen (valuta, percentage).
+
+```
+Varianten: --prefix, --suffix
+Child .affix: absoluut gepositioneerd label
+Input: extra padding links/rechts voor affix ruimte
+```
+
+#### Compact input (`.form-input-compact`)
+
+Kleinere input voor toolbars en inline controls (chart range, jaar selectie).
+
+```
+Padding: 0.25rem 0.5rem
+Font: xs
+Background: transparant
+Border: 1px solid navy-200 / navy-600 (dark)
+```
+
+#### Toolbar select (`.toolbar-select`)
+
+Gestylede `<select>` voor header toolbars (valuta, taal).
+
+```
+Font: xs, 600
+Background: transparant
+Hover: navy-700 / navy-200 (dark)
+```
+
+#### Option Card (`.option-card`)
+
+Card-achtige selecteerbare optie (import modal).
+
+```
+Border: 1.5px solid navy-200 / navy-600 (dark)
+Border-radius: lg
+Cursor: pointer
+Hover: border navy-300 / navy-500 (dark)
 ```
 
 #### Radio selector (`.interval-option`)
@@ -245,17 +340,35 @@ Kleiner: text-xs / text-sm (sm)
 Eerste kolom: left-aligned, navy-500 kleur
 ```
 
-### Badges
+### Badges (`.badge`)
+
+Universele badge class voor alle pill-labels in de app.
 
 ```
 Font: 2xs, 700, uppercase, tracking-wide
 Padding: 1px 6px
 Border-radius: full (pill)
-Varianten:
-  - Default: navy-500 text, navy-100 bg
-  - Ongoing: sky-600 text, sky-500/10 bg
-  - Complete: success text, success-light bg
-  - Expired: danger text, danger-light bg
+Default: navy-500 text, navy-100 bg / navy-300 text, navy-700 bg (dark)
+```
+
+Context-specifieke kleurvarianten via component CSS:
+- Ongoing: sky-600 text, sky-500/10 bg
+- Complete: success text, success-light bg
+- Expired/upcoming: danger text, danger-light bg
+- Transfer: copper-600 text, copper-100 bg
+- Auto: emerald kleuren
+
+### Chart Tooltip (`.chart-tooltip`)
+
+Universele tooltip voor Recharts charts (account balance, portfolio).
+
+```
+Background: navy-800 / navy-700 (dark)
+Tekst: navy-100
+Padding: 0.5rem 0.75rem
+Border-radius: lg
+Font: xs
+Shadow: lg
 ```
 
 ### Popover / Tooltip
@@ -286,7 +399,7 @@ Standaard `duration-200` (200ms) voor de meeste interacties. Uitzondering:
 
 - **Buttons**: kleur/achtergrond verandering + optioneel shadow
 - **Tabelrijen**: `copper-500/4%` achtergrond
-- **Icon buttons**: kleur naar copper-500, achtergrond toevoegen
+- **Icon buttons**: navy hover (default), copper hover (`--copper`), danger hover (`--danger`)
 - **Links**: kleur naar copper-600
 
 ### Active/pressed
@@ -391,7 +504,9 @@ CSS variabelen voor Recharts integratie:
 
 ---
 
-## Scrollbars (WebKit)
+## Scrollbars (`.scrollbar-thin`)
+
+Universele class voor dunne scrollbars op overflow-containers (tabellen, lijsten).
 
 ```css
 height: 6px

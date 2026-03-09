@@ -30,7 +30,7 @@ export default function MonthNav({
   return (
     <div className="month-nav">
       <button
-        className="month-nav__btn"
+        className="btn-icon month-nav__btn"
         onClick={onPrev}
         disabled={disablePrev}
         aria-label={t('monthNav.prevMonth')}
@@ -45,7 +45,7 @@ export default function MonthNav({
         }
       </div>
       <button
-        className="month-nav__btn"
+        className="btn-icon month-nav__btn"
         onClick={onNext}
         disabled={disableNext}
         aria-label={t('monthNav.nextMonth')}

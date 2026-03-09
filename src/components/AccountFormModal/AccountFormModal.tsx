@@ -28,10 +28,10 @@ export default function AccountFormModal({ editingResult, onResult, onClose }: A
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal__header">
-          <h2 id="account-form-modal-title">
+          <h2 className="card-title" id="account-form-modal-title">
             {editingResult ? t('form.editTitle') : t('form.newTitle')}
           </h2>
-          <button className="modal__close" onClick={onClose} aria-label={t('modal.close')}>
+          <button className="btn-icon" onClick={onClose} aria-label={t('modal.close')}>
             <XMarkIcon aria-hidden="true" />
           </button>
         </div>

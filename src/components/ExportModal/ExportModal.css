@@ -9,7 +9,7 @@
 }
 
 .export-modal__warning {
-  @apply flex gap-3 text-sm text-navy-500 leading-relaxed px-3.5 py-3 rounded-lg bg-copper-100/50 border-l-2 border-copper-400 dark:text-navy-300 dark:bg-copper-500/10;
+  @apply flex gap-3 text-sm text-navy-500 leading-relaxed px-3.5 dark:text-navy-300;
 }
 
 .export-modal__warning-icon {

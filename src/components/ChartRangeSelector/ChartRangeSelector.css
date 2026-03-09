@@ -5,11 +5,7 @@
 }
 
 .chart-range__year-input {
-  @apply w-16 px-2 py-1 text-2xs font-semibold font-body tabular-nums text-center
-         rounded-md border border-navy-200 bg-transparent
-         text-navy-600 transition-colors duration-150
-         focus:outline-none focus:border-copper-400 focus:ring-1 focus:ring-copper-400/30
-         dark:border-navy-600 dark:text-navy-300 dark:focus:border-copper-400;
+  @apply w-16;
   -moz-appearance: textfield;
 }
 
@@ -20,11 +16,7 @@
 }
 
 .chart-range__year-select {
-  @apply w-16 px-2 py-1 text-2xs font-semibold font-body tabular-nums text-center
-         rounded-md border border-navy-200 bg-transparent
-         text-navy-600 transition-colors duration-150 cursor-pointer
-         focus:outline-none focus:border-copper-400 focus:ring-1 focus:ring-copper-400/30
-         dark:border-navy-600 dark:text-navy-300 dark:focus:border-copper-400;
+  @apply w-16 cursor-pointer;
 }
 
 .chart-range__btn {

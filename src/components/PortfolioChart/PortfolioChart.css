@@ -1,42 +1,14 @@
 @reference "../../style.css";
 
-/* ─── Chart Theme Variables ─── */
-:root {
-  --chart-grid: #dce6f5;
-  --chart-tick: #4a7cc4;
-  --chart-axis: #dce6f5;
-  --chart-stroke: #c8956c;
-  --chart-fill-start: rgba(200, 149, 108, 0.3);
-  --chart-fill-end: rgba(200, 149, 108, 0.03);
-}
-
-[data-theme="dark"] {
-  --chart-grid: #163058;
-  --chart-tick: #7ba3db;
-  --chart-axis: #163058;
-  --chart-stroke: #d4a87e;
-  --chart-fill-start: rgba(212, 168, 126, 0.35);
-  --chart-fill-end: rgba(212, 168, 126, 0.03);
-}
-
 /* ─── Portfolio Chart ─── */
 .portfolio-chart {
   @apply my-3 -mx-1 sm:my-4;
 }
 
-.portfolio-chart__container {
-  @apply w-full h-40 cursor-pointer sm:h-48;
+.portfolio-chart .chart-container {
+  @apply cursor-pointer;
 }
 
-.portfolio-chart__tooltip {
-  @apply bg-navy-900 text-white text-xs rounded-lg px-3 py-2 border border-navy-700;
-  box-shadow: 0 4px 16px rgba(10, 22, 40, 0.25);
-}
-
-.portfolio-chart__tooltip-label {
-  @apply text-navy-300 mb-0.5 capitalize;
-}
-
-.portfolio-chart__tooltip-value {
-  @apply font-bold text-copper-300 tabular-nums;
+.portfolio-chart .chart-tooltip__value {
+  @apply text-copper-300;
 }

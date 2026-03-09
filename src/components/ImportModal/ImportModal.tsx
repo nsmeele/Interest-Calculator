@@ -40,8 +40,8 @@ export default function ImportModal({ preview, onConfirm, onCancel }: ImportModa
       </div>
 
       <fieldset className="import-mode">
-        <legend className="import-mode__legend">{t('importModal.modeQuestion')}</legend>
-        <label className={`import-mode__option${mode === 'replace' ? ' import-mode__option--active' : ''}`}>
+        <legend className="form-label import-mode__legend">{t('importModal.modeQuestion')}</legend>
+        <label className={`option-card import-mode__option${mode === 'replace' ? ' import-mode__option--active' : ''}`}>
           <input
             type="radio"
             name="import-mode"
@@ -54,7 +54,7 @@ export default function ImportModal({ preview, onConfirm, onCancel }: ImportModa
             <span className="import-mode__option-desc">{t('importModal.replaceDesc')}</span>
           </div>
         </label>
-        <label className={`import-mode__option${mode === 'merge' ? ' import-mode__option--active' : ''}`}>
+        <label className={`option-card import-mode__option${mode === 'merge' ? ' import-mode__option--active' : ''}`}>
           <input
             type="radio"
             name="import-mode"

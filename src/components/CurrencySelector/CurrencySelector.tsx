@@ -10,7 +10,7 @@ export default function CurrencySelector() {
   return (
     <div className="currency-selector">
       <select
-        className="currency-selector__select"
+        className="toolbar-select currency-selector__select"
         value={currency}
         onChange={(e) => setCurrency(e.target.value as Currency)}
         aria-label={t('currency.ariaLabel')}

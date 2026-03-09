@@ -154,10 +154,10 @@ export default function ReinvestmentDetail({ events }: ReinvestmentDetailProps) 
         const isFullyAllocated = remaining <= 0;
 
         return (
-          <div key={`${event.accountId}-${event.date}-${event.type}`} className="reinvest-detail__event">
+          <div key={`${event.accountId}-${event.date}-${event.type}`} className="card reinvest-detail__event">
             <div className="reinvest-detail__event-header">
               <div className="reinvest-detail__event-info">
-                <span className={`reinvest-detail__type-badge reinvest-detail__type-badge--${event.type}`}>
+                <span className={`badge reinvest-detail__type-badge reinvest-detail__type-badge--${event.type}`}>
                   {t(`reinvest.${event.type}`)}
                 </span>
                 <span className="reinvest-detail__event-date">{formatDate(event.date)}</span>
@@ -207,14 +207,14 @@ export default function ReinvestmentDetail({ events }: ReinvestmentDetailProps) 
                           {formatCurrency(alloc.amount, cur)}
                         </span>
                         <button
-                          className="btn-icon btn-icon--edit"
+                          className="btn-icon"
                           onClick={() => handleEditAllocation(alloc.id, idx)}
                           aria-label={t('reinvest.editAllocation')}
                         >
                           <PencilIcon aria-hidden="true" />
                         </button>
                         <button
-                          className="btn-icon"
+                          className="btn-icon btn-icon--danger"
                           onClick={() => { removeAllocation(alloc.id); handleCancelForm(); }}
                           aria-label={t('reinvest.deleteAllocation')}
                         >
@@ -268,8 +268,8 @@ export default function ReinvestmentDetail({ events }: ReinvestmentDetailProps) 
                     <label className="form-label" htmlFor={`amount-${idx}`}>
                       {t('reinvest.allocationAmount')}
                     </label>
-                    <div className="form-input-prefix">
-                      <span className="prefix" aria-hidden="true">&euro;</span>
+                    <div className="form-input-affix form-input-affix--prefix">
+                      <span className="affix" aria-hidden="true">&euro;</span>
                       <input
                         id={`amount-${idx}`}
                         type="text"

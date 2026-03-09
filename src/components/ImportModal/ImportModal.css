@@ -23,15 +23,15 @@
 }
 
 .import-mode__legend {
-  @apply text-xs font-semibold text-navy-600 uppercase mb-3 tracking-[0.07em] dark:text-navy-300;
+  @apply mb-3;
 }
 
 .import-mode__option {
-  @apply flex items-start gap-3 p-3.5 rounded-lg cursor-pointer border-[1.5px] border-solid border-navy-200 mb-2 transition-all duration-200 dark:border-navy-600;
+  @apply flex items-start gap-3 p-3.5 mb-2;
 }
 
 .import-mode__option:hover {
-  @apply border-navy-300 bg-navy-100/30 dark:border-navy-500 dark:bg-navy-800/30;
+  @apply bg-navy-100/30 dark:bg-navy-800/30;
 }
 
 .import-mode__option--active {

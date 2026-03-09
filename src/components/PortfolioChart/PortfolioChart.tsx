@@ -9,6 +9,7 @@ import { formatCurrency } from '../../utils/format';
 import { useLocale } from '../../context/useLocale';
 import { DEFAULT_CURRENCY } from '../../enums/Currency';
 import { useTheme } from '../../hooks/useTheme';
+import { getChartColors } from '../../utils/chartColors';
 import ChartRangeSelector from '../ChartRangeSelector';
 import './PortfolioChart.css';
 
@@ -23,16 +24,16 @@ function ChartTooltip({ active, payload, currency = DEFAULT_CURRENCY }: ChartToo
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="portfolio-chart__tooltip">
-      <div className="portfolio-chart__tooltip-label">{payload[0].payload.label}</div>
-      <div className="portfolio-chart__tooltip-value">{formatCurrency(payload[0].value as number, currency)}</div>
+    <div className="chart-tooltip">
+      <div className="chart-tooltip__label">{payload[0].payload.label}</div>
+      <div className="chart-tooltip__value">{formatCurrency(payload[0].value as number, currency)}</div>
     </div>
   );
 }
 
-const chartColors = {
-  light: { grid: '#dce6f5', tick: '#4a7cc4', axis: '#dce6f5', stroke: '#c8956c', dotStroke: '#eef3fa', refLine: 'rgba(200,149,108,0.4)' },
-  dark:  { grid: '#163058', tick: '#7ba3db', axis: '#163058', stroke: '#d4a87e', dotStroke: '#0f2240', refLine: 'rgba(212,168,126,0.45)' },
+const portfolioColors = {
+  light: { stroke: '#c8956c', dotStroke: '#eef3fa', refLine: 'rgba(200,149,108,0.4)' },
+  dark:  { stroke: '#d4a87e', dotStroke: '#0f2240', refLine: 'rgba(212,168,126,0.45)' },
 };
 
 interface PortfolioChartProps {
@@ -52,7 +53,8 @@ export default function PortfolioChart({ items, viewMode = 'accrued', selectedMo
   const { currency: globalCurrency } = useLocale();
   const { theme } = useTheme();
   const gradientId = useId();
-  const colors = chartColors[theme];
+  const base = getChartColors();
+  const colors = portfolioColors[theme];
   const endYear = getRangeEndYear(startYear, yearRange);
   const data = useMemo(() => {
     const raw = buildPortfolioChartData(items, viewMode);
@@ -83,7 +85,7 @@ export default function PortfolioChart({ items, viewMode = 'accrued', selectedMo
   return (
     <section className="portfolio-chart" aria-label={t('portfolio.chartAriaLabel')}>
       <ChartRangeSelector startYear={startYear} onStartYearChange={onStartYearChange} value={yearRange} onChange={onRangeChange} minYear={minYear} />
-      <div className="portfolio-chart__container">
+      <div className="chart-container">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -12 }} onClick={handleChartClick}>
             <defs>
@@ -92,17 +94,17 @@ export default function PortfolioChart({ items, viewMode = 'accrued', selectedMo
                 <stop offset="100%" stopColor={colors.stroke} stopOpacity={0.03} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={base.grid} vertical={false} />
             <XAxis
               dataKey="monthKey"
-              tick={{ fontSize: 10, fill: colors.tick }}
+              tick={{ fontSize: 10, fill: base.tick }}
               tickLine={false}
-              axisLine={{ stroke: colors.axis }}
+              axisLine={{ stroke: base.axis }}
               interval={tickInterval}
               tickFormatter={(key: string) => labelMap.get(key) ?? key}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: colors.tick }}
+              tick={{ fontSize: 10, fill: base.tick }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(v: number) => formatCurrency(Math.round(v), globalCurrency)}

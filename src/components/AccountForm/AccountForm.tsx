@@ -210,7 +210,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
           <div className="form-group">
             <label className="form-label">{t('form.duration')}</label>
             <div className="form-row">
-              <div className="form-input-suffix">
+              <div className="form-input-affix form-input-affix--suffix">
                 <input
                   type="number"
                   min="0"
@@ -220,9 +220,9 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                   onChange={(e) => { updateForm({ years: e.target.value }); clearError('duration'); }}
                   placeholder="5"
                 />
-                <span className="suffix">{t('form.yearsSuffix')}</span>
+                <span className="affix">{t('form.yearsSuffix')}</span>
               </div>
-              <div className="form-input-suffix">
+              <div className="form-input-affix form-input-affix--suffix">
                 <input
                   type="number"
                   min="0"
@@ -232,7 +232,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                   onChange={(e) => { updateForm({ months: e.target.value }); clearError('duration'); }}
                   placeholder="0"
                 />
-                <span className="suffix">{t('form.monthsSuffix')}</span>
+                <span className="affix">{t('form.monthsSuffix')}</span>
               </div>
             </div>
             {form.errors.duration && <span className="form-error">{form.errors.duration}</span>}
@@ -282,8 +282,8 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label className="form-label" htmlFor="startAmount">{t('form.deposit')}</label>
-              <div className="form-input-prefix">
-                <span className="prefix">{CURRENCY_SYMBOLS[form.accountCurrency || globalCurrency]}</span>
+              <div className="form-input-affix form-input-affix--prefix">
+                <span className="affix">{CURRENCY_SYMBOLS[form.accountCurrency || globalCurrency]}</span>
                 <input
                   id="startAmount"
                   type="text"
@@ -324,7 +324,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
 
             <div className="form-group">
               <label className="form-label" htmlFor="interestRate">{t('form.annualRate')}</label>
-              <div className="form-input-suffix">
+              <div className="form-input-affix form-input-affix--suffix">
                 <input
                   id="interestRate"
                   type="text"
@@ -334,7 +334,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                   onChange={(e) => { updateForm({ interestRate: e.target.value }); clearError('interestRate'); }}
                   placeholder="3,5"
                 />
-                <span className="suffix">%</span>
+                <span className="affix">%</span>
               </div>
               {form.errors.interestRate && <span className="form-error">{form.errors.interestRate}</span>}
             </div>
@@ -536,7 +536,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                       <span className="form-hint">{t('transferSettings.noticePeriodHint')}</span>
                     </label>
                     <div className="form-row">
-                      <div className="form-input-suffix">
+                      <div className="form-input-affix form-input-affix--suffix">
                         <input
                           id="noticePeriodValue"
                           type="number"
@@ -546,7 +546,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                           onChange={(e) => updateForm({ noticePeriodValue: e.target.value })}
                           placeholder="0"
                         />
-                        <span className="suffix">{form.noticePeriodUnit === NoticePeriodUnit.Months ? t('form.monthsSuffix') : t('transferSettings.daysSuffix')}</span>
+                        <span className="affix">{form.noticePeriodUnit === NoticePeriodUnit.Months ? t('form.monthsSuffix') : t('transferSettings.daysSuffix')}</span>
                       </div>
                       <select
                         id="noticePeriodUnit"
@@ -567,7 +567,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                       {t('transferSettings.processingDays')}
                       <span className="form-hint">{t('transferSettings.processingDaysHint')}</span>
                     </label>
-                    <div className="form-input-suffix">
+                    <div className="form-input-affix form-input-affix--suffix">
                       <input
                         id="processingDays"
                         type="number"
@@ -577,7 +577,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
                         onChange={(e) => updateForm({ processingDays: e.target.value })}
                         placeholder="0"
                       />
-                      <span className="suffix">{t('transferSettings.businessDaysSuffix')}</span>
+                      <span className="affix">{t('transferSettings.businessDaysSuffix')}</span>
                     </div>
                   </div>
                 </fieldset>

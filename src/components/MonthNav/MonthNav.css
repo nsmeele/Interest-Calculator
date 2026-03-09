@@ -6,7 +6,7 @@
 }
 
 .month-nav__btn {
-  @apply inline-flex items-center justify-center w-9 h-9 p-0 text-base bg-transparent border-none rounded-lg cursor-pointer text-navy-500 transition-all duration-200 hover:text-copper-600 hover:bg-copper-100/60 active:scale-90 disabled:opacity-20 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-navy-400 dark:text-navy-400 dark:hover:text-copper-400 dark:hover:bg-copper-500/15;
+  @apply disabled:opacity-20 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-navy-400;
 }
 
 .month-nav__label {

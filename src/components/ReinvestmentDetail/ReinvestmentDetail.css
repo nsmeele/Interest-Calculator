@@ -5,9 +5,6 @@
   @apply flex flex-col gap-4;
 }
 
-.reinvest-detail__event {
-  @apply p-4 rounded-2xl bg-white border border-navy-200/60 dark:bg-navy-900 dark:border-navy-700/50 sm:p-6;
-}
 
 .reinvest-detail__event-header {
   @apply flex items-center justify-between gap-3 mb-3;
@@ -18,7 +15,7 @@
 }
 
 .reinvest-detail__type-badge {
-  @apply text-2xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full;
+  @apply px-2.5 py-1;
 }
 
 .reinvest-detail__type-badge--maturity {

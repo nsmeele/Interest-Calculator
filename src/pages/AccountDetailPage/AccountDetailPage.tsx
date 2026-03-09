@@ -333,7 +333,7 @@ export default function AccountDetailPage() {
             </div>
           </div>
 
-          <section className="detail-properties" aria-label={t('detail.propertiesLabel')}>
+          <section className="card detail-properties" aria-label={t('detail.propertiesLabel')}>
             <dl className="detail-properties__grid">
               {properties.map(({ label, value, highlight, badge, info, infoOnLabel }) => (
                 <div key={label} className={`detail-properties__item${highlight ? ' detail-properties__item--highlight' : ''}`}>
@@ -344,7 +344,7 @@ export default function AccountDetailPage() {
                     )}
                   </dt>
                   <dd>
-                    {badge ? <span className="comparison-badge comparison-badge--ongoing">{badge}</span> : value}
+                    {badge ? <span className="badge comparison-badge comparison-badge--ongoing">{badge}</span> : value}
                     {info && !infoOnLabel && (
                       <InfoPopover label={t('accounts.infoAbout', { label })}>{info}</InfoPopover>
                     )}
@@ -380,7 +380,7 @@ export default function AccountDetailPage() {
           )}
 
           {(account.hasCashFlows || account.isVariableRate) && (
-            <section className="detail-editors">
+            <section className="card detail-editors">
               <MonthNav
                 selectedMonthKey={editorMonthKey}
                 isCurrentMonth={editorIsCurrentMonth}
@@ -423,9 +423,9 @@ export default function AccountDetailPage() {
             const days = getMonthDays(account, currentMonthKey);
             if (days.length === 0) return null;
             return (
-              <details className="detail-month-breakdown" aria-label={t('detail.monthBreakdownLabel')}>
-                <summary className="detail-collapsible__summary"><h2>{t('detail.monthBreakdownLabel')}</h2><ChevronRightIcon className="detail-collapsible__icon" aria-hidden="true" /></summary>
-                <div className="period-table-wrapper">
+              <details className="card detail-month-breakdown" aria-label={t('detail.monthBreakdownLabel')}>
+                <summary className="detail-collapsible__summary"><h2 className="card-title">{t('detail.monthBreakdownLabel')}</h2><ChevronRightIcon className="detail-collapsible__icon" aria-hidden="true" /></summary>
+                <div className="period-table-wrapper scrollbar-thin">
                   <table className="period-table">
                     <thead>
                       <tr>
@@ -453,9 +453,9 @@ export default function AccountDetailPage() {
             );
           })()}
 
-            <details className="detail-periods" aria-label={t('detail.periodsLabel')}>
-              <summary className="detail-collapsible__summary"><h2>{t('accounts.period')}</h2><ChevronRightIcon className="detail-collapsible__icon" aria-hidden="true" /></summary>
-              <div className="period-table-wrapper">
+            <details className="card detail-periods" aria-label={t('detail.periodsLabel')}>
+              <summary className="detail-collapsible__summary"><h2 className="card-title">{t('accounts.period')}</h2><ChevronRightIcon className="detail-collapsible__icon" aria-hidden="true" /></summary>
+              <div className="period-table-wrapper scrollbar-thin">
                 <table className="period-table">
                   <thead>
                     <tr>

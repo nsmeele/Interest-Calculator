@@ -87,8 +87,9 @@
   @apply opacity-50;
 }
 
+/* badges use .badge from style.css */
 .badge-expired {
-  @apply inline-block text-2xs font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-danger bg-danger-light ml-2 align-middle;
+  @apply text-danger bg-danger-light ml-2 align-middle;
 }
 
 .portfolio-item--upcoming {
@@ -96,11 +97,11 @@
 }
 
 .badge-upcoming {
-  @apply inline-block text-2xs font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-navy-600 bg-navy-100 ml-2 align-middle dark:text-navy-300 dark:bg-navy-700;
+  @apply text-navy-600 bg-navy-100 ml-2 align-middle dark:text-navy-300 dark:bg-navy-700;
 }
 
 .badge-interval {
-  @apply inline-block text-2xs font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-navy-500 bg-navy-100 ml-2 align-middle dark:text-navy-400 dark:bg-navy-800;
+  @apply text-navy-500 bg-navy-100 ml-2 align-middle dark:text-navy-400 dark:bg-navy-800;
 }
 
 .portfolio-item-amount {

@@ -5,6 +5,7 @@ import type { BankAccount } from '../../models/BankAccount';
 import type { ChartYearRange } from '../../enums/ChartYearRange';
 import { formatCurrency } from '../../utils/format';
 import { useTheme } from '../../hooks/useTheme';
+import { getChartColors } from '../../utils/chartColors';
 import { buildBalanceData } from '../../utils/balanceChart';
 import { getRangeEndYear } from '../../utils/chartRange';
 import ChartRangeSelector from '../ChartRangeSelector';
@@ -22,8 +23,8 @@ function ChartTooltip({ active, payload, label, currency, balanceLabel }: ChartT
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="account-chart__tooltip">
-      <div className="account-chart__tooltip-label">{label}</div>
+    <div className="chart-tooltip">
+      <div className="chart-tooltip__label">{label}</div>
       <div className="account-chart__tooltip-row">
         <span className="account-chart__tooltip-dot account-chart__tooltip-dot--balance" />
         <span className="account-chart__tooltip-name">{balanceLabel}</span>
@@ -33,9 +34,9 @@ function ChartTooltip({ active, payload, label, currency, balanceLabel }: ChartT
   );
 }
 
-const chartColors = {
-  light: { grid: '#dce6f5', tick: '#4a7cc4', axis: '#dce6f5', balance: '#2a5494' },
-  dark:  { grid: '#163058', tick: '#7ba3db', axis: '#163058', balance: '#7ba3db' },
+const balanceColors = {
+  light: '#2a5494',
+  dark:  '#7ba3db',
 };
 
 interface AccountBalanceChartProps {
@@ -54,7 +55,8 @@ export default function AccountBalanceChart({ account, currency, startYear, onSt
   const { t } = useTranslation();
   const { theme } = useTheme();
   const gradientId = useId();
-  const colors = chartColors[theme];
+  const base = getChartColors();
+  const balance = balanceColors[theme];
   const endYear = getRangeEndYear(startYear, yearRange);
   const data = useMemo(() => buildBalanceData(account, startYear, endYear), [account, startYear, endYear]);
 
@@ -71,29 +73,29 @@ export default function AccountBalanceChart({ account, currency, startYear, onSt
   const tickInterval = data.length <= maxLabelCount ? 0 : Math.ceil(data.length / maxLabelCount) - 1;
 
   return (
-    <section className="account-chart" aria-label={t('detail.chartLabel')}>
-      <h2>{t('detail.chartLabel')}</h2>
+    <section className="card account-chart" aria-label={t('detail.chartLabel')}>
+      <h2 className="card-title">{t('detail.chartLabel')}</h2>
       <ChartRangeSelector startYear={startYear} onStartYearChange={onStartYearChange} value={yearRange} onChange={onRangeChange} maxRange={maxRange} availableYears={availableYears} minYear={minYear} />
-      <div className="account-chart__container" key={`${yMin}-${yMax}`}>
+      <div className="chart-container" key={`${yMin}-${yMax}`}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={colors.balance} stopOpacity={0.25} />
-                <stop offset="100%" stopColor={colors.balance} stopOpacity={0.03} />
+                <stop offset="0%" stopColor={balance} stopOpacity={0.25} />
+                <stop offset="100%" stopColor={balance} stopOpacity={0.03} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={base.grid} vertical={false} />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: colors.tick }}
+              tick={{ fontSize: 10, fill: base.tick }}
               tickLine={false}
-              axisLine={{ stroke: colors.axis }}
+              axisLine={{ stroke: base.axis }}
               interval={tickInterval}
             />
             <YAxis
               domain={[yMin, yMax]}
-              tick={{ fontSize: 10, fill: colors.tick }}
+              tick={{ fontSize: 10, fill: base.tick }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(v: number) => formatCurrency(Math.round(v), currency)}
@@ -107,7 +109,7 @@ export default function AccountBalanceChart({ account, currency, startYear, onSt
             <Area
               type="monotone"
               dataKey="balance"
-              stroke={colors.balance}
+              stroke={balance}
               strokeWidth={2}
               fill={`url(#${gradientId})`}
               animationDuration={600}

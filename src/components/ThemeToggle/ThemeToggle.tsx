@@ -9,12 +9,12 @@ export default function ThemeToggle() {
 
   return (
     <button
-      className="theme-toggle"
+      className="btn-icon btn-icon--copper"
       onClick={toggleTheme}
       aria-label={isDark ? t('theme.switchToLight') : t('theme.switchToDark')}
       title={isDark ? t('theme.light') : t('theme.dark')}
     >
-      <svg className="theme-toggle__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg className="btn-icon__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         {isDark ? (
           <>
             <circle cx="12" cy="12" r="5" />

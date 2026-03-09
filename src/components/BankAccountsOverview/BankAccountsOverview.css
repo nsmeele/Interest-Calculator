@@ -2,7 +2,7 @@
 
 /* ─── Empty State ─── */
 .empty-state {
-  @apply text-center py-10 px-5 animate-[fadeInUp_0.5s_ease_both] rounded-2xl bg-white border border-navy-200/60 shadow-sm dark:bg-navy-900 dark:border-navy-700/50 dark:shadow-none sm:py-16 sm:px-8;
+  @apply text-center py-10 px-5 animate-[fadeInUp_0.5s_ease_both] sm:py-16 sm:px-8;
 }
 
 .empty-state__icon {
@@ -107,7 +107,7 @@
 
 /* ─── Comparison Badge ─── */
 .comparison-badge {
-  @apply inline-block text-2xs font-bold uppercase tracking-wide py-px px-1.5 rounded-full text-navy-500 bg-navy-100 mr-1 last:mr-0 dark:text-navy-400 dark:bg-navy-800;
+  @apply text-navy-500 bg-navy-100 mr-1 last:mr-0 dark:text-navy-400 dark:bg-navy-800;
 }
 
 .comparison-badge--upcoming {
@@ -156,23 +156,3 @@
   @apply text-xs text-danger font-medium mt-3 px-1;
 }
 
-/* ─── Scrollbar ─── */
-.period-table-wrapper::-webkit-scrollbar,
-.comparison-table-wrapper-inner::-webkit-scrollbar {
-  @apply h-1.5;
-}
-
-.period-table-wrapper::-webkit-scrollbar-track,
-.comparison-table-wrapper-inner::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-.period-table-wrapper::-webkit-scrollbar-thumb,
-.comparison-table-wrapper-inner::-webkit-scrollbar-thumb {
-  @apply bg-navy-300/50 rounded-full dark:bg-navy-600/50;
-}
-
-.period-table-wrapper::-webkit-scrollbar-thumb:hover,
-.comparison-table-wrapper-inner::-webkit-scrollbar-thumb:hover {
-  @apply bg-navy-300 dark:bg-navy-600;
-}

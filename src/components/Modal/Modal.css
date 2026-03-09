@@ -22,13 +22,8 @@
 }
 
 .modal__header h2 {
-  @apply font-display text-lg font-semibold text-navy-900 dark:text-navy-50;
+  @apply text-lg;
 }
-
-.modal__close {
-  @apply inline-flex items-center justify-center w-9 h-9 p-0 text-lg bg-transparent border-none rounded-lg cursor-pointer text-navy-400 transition-all duration-200 hover:text-navy-700 hover:bg-navy-100 active:scale-95 dark:hover:text-navy-200 dark:hover:bg-navy-800;
-}
-
 
 .modal__body {
   @apply px-6 pb-4;

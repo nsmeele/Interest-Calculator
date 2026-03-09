@@ -1,70 +1,8 @@
 @reference "../../style.css";
 
 /* ─── RateChange Editor ─── */
-.rate-change-editor {
-  @apply py-4 px-3 border-t border-navy-200/40 dark:border-navy-700/40 sm:py-5 sm:px-4;
-}
-
-.rate-change-editor__header {
-  @apply flex items-center justify-between mb-3;
-}
-
-.rate-change-editor__header h3 {
-  @apply font-body text-xs font-semibold text-navy-500 uppercase tracking-[0.07em] dark:text-navy-400;
-}
-
-.rate-change-editor__add-btn {
-  @apply inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg
-         text-copper-600 bg-copper-100/60 border-none cursor-pointer font-body
-         transition-all duration-200 hover:bg-copper-200/80 active:scale-[0.97] dark:text-copper-400 dark:bg-copper-500/15 dark:hover:bg-copper-500/25;
-}
-
-.rate-change-editor__add-btn--active {
-  @apply text-navy-500 bg-navy-100 dark:text-navy-400 dark:bg-navy-800;
-}
-
-.rate-change-editor__form {
-  @apply mb-4 p-3 rounded-lg bg-navy-100/40 animate-[expandReveal_0.25s_ease] dark:bg-navy-800/40 sm:p-4;
-}
-
-.rate-change-editor__fields {
+.rate-change-editor .editor__fields {
   @apply grid grid-cols-1 gap-2 sm:grid-cols-[140px_1fr] sm:gap-3;
-}
-
-.rate-change-editor__fields .form-input {
-  @apply py-2 text-sm;
-}
-
-.rate-change-editor__actions {
-  @apply flex justify-end mt-3;
-}
-
-.rate-change-editor__submit {
-  @apply px-4 py-2 text-xs font-semibold rounded-lg cursor-pointer border-none font-body
-         text-white bg-navy-800 transition-all duration-200
-         hover:bg-navy-700 active:scale-[0.97] dark:bg-copper-500 dark:text-navy-950 dark:hover:bg-copper-400;
-}
-
-.rate-change-editor__list {
-  @apply flex flex-col;
-}
-
-.rate-change-editor__empty {
-  @apply text-center py-6 text-xs text-navy-400;
-}
-
-.rate-change-item {
-  @apply flex items-center gap-2 py-2 px-1 border-b border-navy-100
-         transition-colors duration-150 hover:bg-copper-500/3 dark:border-navy-700 dark:hover:bg-copper-500/6 sm:gap-3 sm:py-2.5 sm:px-2;
-}
-
-.rate-change-item:last-child {
-  @apply border-b-0;
-}
-
-.rate-change-item__date {
-  @apply text-xs text-navy-500 font-medium tabular-nums whitespace-nowrap dark:text-navy-400;
-  min-width: 5rem;
 }
 
 .rate-change-item__rate {

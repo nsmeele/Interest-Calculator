@@ -149,8 +149,8 @@ export default function TransferModal({ sourceAccount, onClose, getProjectedBala
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal__header">
-          <h2 id="transfer-modal-title">{editingTransfer ? t('transfer.editTitle') : t('transfer.title')}</h2>
-          <button className="modal__close" onClick={onClose} aria-label={t('modal.close')}>
+          <h2 className="card-title" id="transfer-modal-title">{editingTransfer ? t('transfer.editTitle') : t('transfer.title')}</h2>
+          <button className="btn-icon" onClick={onClose} aria-label={t('modal.close')}>
             <XMarkIcon aria-hidden="true" />
           </button>
         </div>
@@ -185,8 +185,8 @@ export default function TransferModal({ sourceAccount, onClose, getProjectedBala
                   <label className="form-label" htmlFor="transferAmount">
                     {t('transfer.amount')}
                   </label>
-                  <div className="form-input-prefix">
-                    <span className="prefix">{CURRENCY_SYMBOLS[cur]}</span>
+                  <div className="form-input-affix form-input-affix--prefix">
+                    <span className="affix">{CURRENCY_SYMBOLS[cur]}</span>
                     <input
                       id="transferAmount"
                       type="text"
@@ -234,7 +234,7 @@ export default function TransferModal({ sourceAccount, onClose, getProjectedBala
                 </div>
 
                 {transferDates && (
-                  <div className="transfer-modal__dates">
+                  <div className="info-box transfer-modal__dates">
                     <div className="transfer-modal__date-row">
                       <span className="transfer-modal__date-label">{t('transfer.withdrawalDate')}</span>
                       <span className="transfer-modal__date-value">{formatDate(transferDates.withdrawalDate)}</span>

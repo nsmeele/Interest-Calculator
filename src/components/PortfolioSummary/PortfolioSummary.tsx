@@ -54,10 +54,10 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle }: Po
 
   if (items.length === 0) {
     return (
-      <section className="portfolio-section" aria-label={t('portfolio.title')}>
+      <section className="card" aria-label={t('portfolio.title')}>
         <div className="section-header">
           <div className="section-header__title">
-            <h2>{t('portfolio.title')}</h2>
+            <h2 className="card-title">{t('portfolio.title')}</h2>
           </div>
         </div>
         <div className="portfolio-empty">
@@ -69,10 +69,10 @@ export default function PortfolioSummary({ results, portfolioIds, onToggle }: Po
   }
 
   return (
-    <section className="portfolio-section" aria-label={t('portfolio.title')}>
+    <section className="card" aria-label={t('portfolio.title')}>
       <div className="section-header">
         <div className="section-header__title">
-          <h2>
+          <h2 className="card-title">
             {t('portfolio.title')}
             <span className="results-count">{items.length}</span>
           </h2>
@@ -231,9 +231,9 @@ function PortfolioMonthDetail({
                 <div className="portfolio-item-info">
                   <span className="portfolio-item-label">
                     {formatAccountLabel(r.effectiveBalance, r.currentRate, cur)}
-                    <span className="badge-interval">{getIntervalLabel(r.interval)}</span>
-                    {status === 'expired' && <span className="badge-expired">{t('portfolio.expired')}</span>}
-                    {status === 'upcoming' && <span className="badge-upcoming">{t('portfolio.upcoming')}</span>}
+                    <span className="badge badge-interval">{getIntervalLabel(r.interval)}</span>
+                    {status === 'expired' && <span className="badge badge-expired">{t('portfolio.expired')}</span>}
+                    {status === 'upcoming' && <span className="badge badge-upcoming">{t('portfolio.upcoming')}</span>}
                   </span>
                 </div>
                 <div className="portfolio-item-amount">
@@ -248,7 +248,7 @@ function PortfolioMonthDetail({
                   <ChevronDownIcon aria-hidden="true" />
                 </span>
                 <button
-                  className="btn-icon"
+                  className="btn-icon btn-icon--danger"
                   title={t('portfolio.removeFromPortfolio')}
                   onClick={(e) => { e.stopPropagation(); onToggle(r.id); }}
                   aria-label={t('portfolio.removeFromPortfolio')}

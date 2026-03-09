@@ -23,7 +23,7 @@ export default function ExportModal({ resultCount, onConfirm, onCancel }: Export
       <p className="export-modal__count">
         {t('exportModal.count', { count: resultCount })}
       </p>
-      <p className="export-modal__warning">
+      <p className="info-box info-box--copper export-modal__warning">
         <ExclamationTriangleIcon className="export-modal__warning-icon" aria-hidden="true" />
         {t('exportModal.warning')}
       </p>

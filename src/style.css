@@ -100,12 +100,39 @@ body {
   @apply hidden w-px h-5 bg-navy-200/70 dark:bg-navy-700/60 sm:block;
 }
 
-.toolbar-icon-link {
-  @apply inline-flex items-center justify-center w-9 h-9 rounded-lg text-navy-400 transition-all duration-200 hover:text-copper-500 hover:bg-navy-100 active:scale-90 dark:text-navy-400 dark:hover:text-copper-400 dark:hover:bg-navy-800;
+
+.toolbar-select {
+  @apply px-2 py-1 text-xs font-medium cursor-pointer border-0 text-navy-500 bg-navy-100 transition-all duration-150 dark:text-navy-300 dark:bg-navy-800;
 }
 
-.toolbar-icon-link__icon {
-  @apply w-4.5 h-4.5;
+.toolbar-select:hover {
+  @apply bg-navy-200 text-navy-700 dark:bg-navy-700 dark:text-navy-200;
+}
+
+/* ─── Option Card ─── */
+.option-card {
+  @apply rounded-lg cursor-pointer border-[1.5px] border-solid border-navy-200 transition-all duration-200 dark:border-navy-600;
+}
+
+.option-card:hover {
+  @apply border-navy-300 dark:border-navy-500;
+}
+
+/* ─── Info Box ─── */
+.info-box {
+  @apply p-3 rounded-lg bg-navy-100/40 dark:bg-navy-800/40;
+}
+
+.info-box--copper {
+  @apply bg-copper-100/50 border-l-2 border-copper-400 dark:bg-copper-500/10;
+}
+
+.form-input-compact {
+  @apply px-2 py-1 text-2xs font-semibold font-body tabular-nums text-center
+         rounded-md border border-navy-200 bg-transparent
+         text-navy-600 transition-colors duration-150
+         focus:outline-none focus:border-copper-400 focus:ring-1 focus:ring-copper-400/30
+         dark:border-navy-600 dark:text-navy-300 dark:focus:border-copper-400;
 }
 
 .toolbar-dropdown {
@@ -160,18 +187,6 @@ body {
 
 .hero-top__actions {
   @apply flex items-center gap-2 flex-wrap sm:gap-3;
-}
-
-.btn-start {
-  @apply inline-flex items-center px-5 py-2.5 text-sm font-semibold rounded-lg cursor-pointer border-none text-white font-body tracking-[0.01em] bg-linear-to-br from-navy-800 to-navy-900 transition-all duration-200 dark:from-copper-500 dark:to-copper-600 dark:text-navy-950;
-}
-
-.btn-start:hover {
-  @apply bg-linear-to-br from-navy-700 to-navy-800 shadow-md dark:from-copper-400 dark:to-copper-500;
-}
-
-.btn-start:active {
-  @apply scale-[0.98] opacity-90;
 }
 
 .btn-guide-link {
@@ -289,13 +304,18 @@ body {
 }
 
 
+/* ─── Card Title ─── */
+.card-title {
+  @apply font-display text-base font-semibold text-navy-900 dark:text-navy-50 sm:text-lg;
+}
+
 /* ─── Section Header ─── */
 .section-header {
   @apply flex flex-col gap-3 mb-5 sm:flex-row sm:items-center sm:justify-between sm:mb-6;
 }
 
 .section-header__title h2 {
-  @apply font-display text-lg font-semibold text-navy-900 dark:text-navy-50 sm:text-xl;
+  @apply text-lg sm:text-xl;
 }
 
 .section-header__actions {
@@ -344,9 +364,13 @@ body {
   @apply lg:flex-none lg:w-sidebar;
 }
 
-/* ─── Section Card ─── */
-.portfolio-section {
+/* ─── Card ─── */
+.card {
   @apply p-4 rounded-2xl bg-white border border-navy-200/60 shadow-sm dark:bg-navy-900 dark:border-navy-700/50 dark:shadow-none sm:p-6;
+}
+
+.card--flush {
+  @apply p-0 sm:p-0;
 }
 
 /* ─── Form ─── */
@@ -426,35 +450,31 @@ body {
   @apply grid grid-cols-2 gap-3;
 }
 
-.form-input-prefix {
+.form-input-affix {
   @apply relative;
 }
 
-.form-input-prefix .prefix {
-  @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-navy-400 font-medium pointer-events-none text-base transition-colors duration-200;
+.form-input-affix .affix {
+  @apply absolute top-1/2 -translate-y-1/2 text-navy-400 font-medium pointer-events-none text-base transition-colors duration-200;
 }
 
-.form-input-prefix:focus-within .prefix {
+.form-input-affix:focus-within .affix {
   @apply text-copper-500 dark:text-copper-400;
 }
 
-.form-input-prefix .form-input {
+.form-input-affix--prefix .affix {
+  @apply left-3.5;
+}
+
+.form-input-affix--prefix .form-input {
   @apply pl-8;
 }
 
-.form-input-suffix {
-  @apply relative;
+.form-input-affix--suffix .affix {
+  @apply right-3.5;
 }
 
-.form-input-suffix .suffix {
-  @apply absolute right-3.5 top-1/2 -translate-y-1/2 text-navy-400 font-medium pointer-events-none text-base transition-colors duration-200;
-}
-
-.form-input-suffix:focus-within .suffix {
-  @apply text-copper-500 dark:text-copper-400;
-}
-
-.form-input-suffix .form-input {
+.form-input-affix--suffix .form-input {
   @apply pr-8;
 }
 
@@ -484,33 +504,147 @@ body {
 }
 
 .btn-icon {
-  @apply inline-flex items-center justify-center w-9 h-9 p-0 text-sm bg-transparent border-none rounded-lg cursor-pointer text-navy-400 transition-all duration-200 hover:text-danger hover:bg-danger-light active:scale-95;
+  @apply inline-flex items-center justify-center w-9 h-9 p-0 bg-transparent border-none rounded-lg cursor-pointer text-navy-400 transition-all duration-200 hover:text-navy-700 hover:bg-navy-100 active:scale-95 dark:hover:text-navy-200 dark:hover:bg-navy-800;
 }
 
-.btn-icon--edit {
-  @apply hover:text-navy-600 hover:bg-navy-100 dark:hover:text-navy-200 dark:hover:bg-navy-700;
+.btn-icon--danger {
+  @apply hover:text-danger hover:bg-danger-light dark:hover:text-danger dark:hover:bg-danger-light;
 }
 
-.btn-portfolio {
-  @apply inline-flex items-center justify-center w-9 h-9 p-0 bg-transparent border-none rounded-lg cursor-pointer text-navy-400 text-sm transition-all duration-200 hover:text-copper-500 hover:bg-copper-100 active:scale-90 dark:hover:text-copper-400 dark:hover:bg-copper-500/15;
+.btn-icon--copper {
+  @apply hover:text-copper-500 hover:bg-copper-100 dark:hover:text-copper-400 dark:hover:bg-copper-500/15;
 }
 
-
-.btn-portfolio--active {
+.btn-icon--copper.btn-icon--active {
   @apply text-copper-500 dark:text-copper-400;
 }
 
-.btn-portfolio--active:hover {
+.btn-icon--copper.btn-icon--active:hover {
   @apply text-copper-600 dark:text-copper-300;
+}
+
+.btn-icon__icon {
+  @apply w-4.5 h-4.5;
 }
 
 /* ─── Results Section ─── */
 .results-section {
-  @apply min-w-0 overflow-hidden animate-[fadeInUp_0.4s_ease_both] p-4 rounded-2xl bg-white border border-navy-200/60 shadow-sm dark:bg-navy-900 dark:border-navy-700/50 dark:shadow-none sm:p-6 lg:p-8;
+  @apply min-w-0 overflow-hidden animate-[fadeInUp_0.4s_ease_both] lg:p-8;
 }
 
 .results-count {
   @apply inline-flex items-center justify-center min-w-6 h-6 px-2 text-xs font-bold rounded-full ml-2 text-copper-600 bg-copper-100 dark:text-copper-400 dark:bg-copper-500/15;
+}
+
+/* ─── Scrollbar ─── */
+.scrollbar-thin::-webkit-scrollbar {
+  @apply h-1.5;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-navy-300/50 rounded-full dark:bg-navy-600/50;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  @apply bg-navy-300 dark:bg-navy-600;
+}
+
+
+/* ─── Editor (shared by rate-change / cashflow) ─── */
+.editor {
+  @apply py-4 px-3 border-t border-navy-200/40 dark:border-navy-700/40 sm:py-5 sm:px-4;
+}
+
+.editor__header {
+  @apply flex items-center justify-between mb-3;
+}
+
+.editor__header h3 {
+  @apply font-body text-xs font-semibold text-navy-500 uppercase tracking-[0.07em] dark:text-navy-400;
+}
+
+.editor__add-btn {
+  @apply inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg
+         text-copper-600 bg-copper-100/60 border-none cursor-pointer font-body
+         transition-all duration-200 hover:bg-copper-200/80 active:scale-[0.97] dark:text-copper-400 dark:bg-copper-500/15 dark:hover:bg-copper-500/25;
+}
+
+.editor__add-btn--active {
+  @apply text-navy-500 bg-navy-100 dark:text-navy-400 dark:bg-navy-800;
+}
+
+.editor__form {
+  @apply mb-4 animate-[expandReveal_0.25s_ease] sm:p-4;
+}
+
+.editor__fields .form-input {
+  @apply py-2 text-sm;
+}
+
+.editor__actions {
+  @apply flex justify-end mt-3;
+}
+
+
+.editor__list {
+  @apply flex flex-col;
+}
+
+.editor__empty {
+  @apply text-center py-6 text-xs text-navy-400;
+}
+
+.editor-item {
+  @apply flex items-center gap-2 py-2 px-1 border-b border-navy-100
+         transition-colors duration-150 hover:bg-copper-500/3 dark:border-navy-700 dark:hover:bg-copper-500/6 sm:gap-3 sm:py-2.5 sm:px-2;
+}
+
+.editor-item:last-child {
+  @apply border-b-0;
+}
+
+.editor-item__date {
+  @apply text-xs text-navy-500 font-medium tabular-nums whitespace-nowrap dark:text-navy-400;
+  min-width: 5rem;
+}
+
+/* ─── Badge ─── */
+.badge {
+  @apply inline-block text-2xs font-bold uppercase tracking-wide py-px px-1.5 rounded-full;
+}
+
+/* ─── Chart ─── */
+:root {
+  --chart-grid: #dce6f5;
+  --chart-tick: #4a7cc4;
+  --chart-axis: #dce6f5;
+}
+
+[data-theme="dark"] {
+  --chart-grid: #163058;
+  --chart-tick: #7ba3db;
+  --chart-axis: #163058;
+}
+
+.chart-tooltip {
+  @apply bg-navy-900 text-white text-xs rounded-lg px-3 py-2 border border-navy-700;
+  box-shadow: 0 4px 16px rgba(10, 22, 40, 0.25);
+}
+
+.chart-tooltip__label {
+  @apply text-navy-300 mb-0.5 capitalize;
+}
+
+.chart-tooltip__value {
+  @apply font-bold text-white tabular-nums;
+}
+
+.chart-container {
+  @apply w-full h-40 sm:h-48;
 }
 
 /* ─── Popover ─── */

@@ -24,7 +24,7 @@ export default function ChartRangeSelector({ startYear, onStartYearChange, value
     <div className="chart-range">
       {availableYears ? (
         <select
-          className="chart-range__year-select"
+          className="form-input-compact chart-range__year-select"
           value={startYear}
           onChange={(e) => onStartYearChange(Number(e.target.value))}
           aria-label={t('chart.startYearLabel')}
@@ -36,7 +36,7 @@ export default function ChartRangeSelector({ startYear, onStartYearChange, value
       ) : (
         <input
           type="number"
-          className="chart-range__year-input"
+          className="form-input-compact chart-range__year-input"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onBlur={() => {

@@ -65,11 +65,11 @@ export default function RateChangeEditor({ rateChanges, currency, onUpdate, sele
     .sort((a, b) => a.date.localeCompare(b.date));
 
   return (
-    <div className="rate-change-editor">
-      <div className="rate-change-editor__header">
+    <div className="rate-change-editor editor">
+      <div className="editor__header">
         <h3>{t('rateChange.title')}</h3>
         <button
-          className={`rate-change-editor__add-btn${mode.status === 'adding' ? ' rate-change-editor__add-btn--active' : ''}`}
+          className={`editor__add-btn${mode.status === 'adding' ? ' editor__add-btn--active' : ''}`}
           onClick={() => {
             if (mode.status === 'idle') {
               setMode({ status: 'adding' });
@@ -84,8 +84,8 @@ export default function RateChangeEditor({ rateChanges, currency, onUpdate, sele
       </div>
 
       {mode.status !== 'idle' && (
-        <form className="rate-change-editor__form" onSubmit={handleSubmit}>
-          <div className="rate-change-editor__fields">
+        <form className="info-box editor__form" onSubmit={handleSubmit}>
+          <div className="editor__fields">
             <div>
               <label className="form-label" htmlFor="rc-date">{t('rateChange.effectiveDate')}</label>
               <input
@@ -99,7 +99,7 @@ export default function RateChangeEditor({ rateChanges, currency, onUpdate, sele
             </div>
             <div>
               <label className="form-label" htmlFor="rc-rate">{t('rateChange.newRate')}</label>
-              <div className="form-input-suffix">
+              <div className="form-input-affix form-input-affix--suffix">
                 <input
                   id="rc-rate"
                   type="text"
@@ -109,16 +109,16 @@ export default function RateChangeEditor({ rateChanges, currency, onUpdate, sele
                   onChange={(e) => updateField('rate', e.target.value)}
                   placeholder="3,5"
                 />
-                <span className="suffix">%</span>
+                <span className="affix">%</span>
               </div>
               {form.errors.rate && <span className="form-error">{form.errors.rate}</span>}
             </div>
           </div>
 
-          <div className="rate-change-editor__actions">
+          <div className="editor__actions">
             <button
               type="submit"
-              className="rate-change-editor__submit"
+              className="btn-action"
             >
               {mode.status === 'editing' ? t('rateChange.save') : t('rateChange.add')}
             </button>
@@ -127,17 +127,17 @@ export default function RateChangeEditor({ rateChanges, currency, onUpdate, sele
       )}
 
       {sorted.length === 0 && mode.status === 'idle' && (
-        <div className="rate-change-editor__empty">{t('rateChange.empty')}</div>
+        <div className="editor__empty">{t('rateChange.empty')}</div>
       )}
 
       {sorted.length > 0 && (
-        <div className="rate-change-editor__list">
+        <div className="editor__list">
           {sorted.map((rc) => (
-            <div key={rc.id} className="rate-change-item">
-              <span className="rate-change-item__date">{formatDate(rc.date)}</span>
+            <div key={rc.id} className="editor-item">
+              <span className="editor-item__date">{formatDate(rc.date)}</span>
               <span className="rate-change-item__rate">{formatRate(rc.annualInterestRate, currency)}%</span>
               <button
-                className="btn-icon btn-icon--edit"
+                className="btn-icon"
                 title={t('rateChange.edit')}
                 onClick={() => handleEdit(rc)}
                 aria-label={t('rateChange.editRateChange', { date: formatDate(rc.date) })}
@@ -145,7 +145,7 @@ export default function RateChangeEditor({ rateChanges, currency, onUpdate, sele
                 <PencilIcon aria-hidden="true" />
               </button>
               <button
-                className="btn-icon"
+                className="btn-icon btn-icon--danger"
                 title={t('rateChange.delete')}
                 onClick={() => handleRemove(rc.id)}
                 aria-label={t('rateChange.deleteRateChange', { date: formatDate(rc.date) })}

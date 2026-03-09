@@ -111,11 +111,11 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
   });
 
   return (
-    <div className="cashflow-editor">
-      <div className="cashflow-editor__header">
+    <div className="cashflow-editor editor">
+      <div className="editor__header">
         <h3>{t('cashflow.title')}</h3>
         <button
-          className={`cashflow-editor__add-btn${mode.status === 'adding' ? ' cashflow-editor__add-btn--active' : ''}`}
+          className={`editor__add-btn${mode.status === 'adding' ? ' editor__add-btn--active' : ''}`}
           onClick={() => {
             if (mode.status === 'idle') {
               setMode({ status: 'adding' });
@@ -130,7 +130,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
       </div>
 
       {mode.status !== 'idle' && (
-        <div className="cashflow-editor__form">
+        <div className="info-box editor__form">
           <div className="cashflow-editor__type-toggle">
             <button
               type="button"
@@ -148,7 +148,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
             </button>
           </div>
 
-          <div className="cashflow-editor__fields">
+          <div className="editor__fields">
             <div>
               <label className="form-label" htmlFor="cf-date">{t('cashflow.date')}</label>
               <input
@@ -161,8 +161,8 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
             </div>
             <div>
               <label className="form-label" htmlFor="cf-amount">{t('cashflow.amount')}</label>
-              <div className="form-input-prefix">
-                <span className="prefix">{CURRENCY_SYMBOLS[currency as Currency] ?? currency}</span>
+              <div className="form-input-affix form-input-affix--prefix">
+                <span className="affix">{CURRENCY_SYMBOLS[currency as Currency] ?? currency}</span>
                 <input
                   id="cf-amount"
                   type="text"
@@ -222,10 +222,10 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
             )}
           </div>
 
-          <div className="cashflow-editor__actions">
+          <div className="editor__actions">
             <button
               type="button"
-              className="cashflow-editor__submit"
+              className="btn-action"
               onClick={handleSubmit}
             >
               {mode.status === 'editing' ? t('cashflow.save') : t('cashflow.add')}
@@ -235,21 +235,21 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
       )}
 
       {allEntries.length === 0 && mode.status === 'idle' && (
-        <div className="cashflow-editor__empty">{t('cashflow.empty')}</div>
+        <div className="editor__empty">{t('cashflow.empty')}</div>
       )}
 
       {allEntries.length > 0 && (
-        <div className="cashflow-editor__list">
+        <div className="editor__list">
           {allEntries.map((entry) => {
             if (entry.type === 'auto') {
               const { date: d, amount: amt, description: desc } = entry.entry;
               const bal = balances?.get(d);
               return (
-                <div key={`auto-${d}`} className="cashflow-item cashflow-item--auto">
-                  <span className="cashflow-item__date">{formatDate(d)}</span>
+                <div key={`auto-${d}`} className="editor-item cashflow-item cashflow-item--auto">
+                  <span className="editor-item__date">{formatDate(d)}</span>
                   <span className="cashflow-item__desc">
                     {desc}
-                    <span className="cashflow-item__badge cashflow-item__badge--auto">{t('cashflow.automatic')}</span>
+                    <span className="badge cashflow-item__badge cashflow-item__badge--auto">{t('cashflow.automatic')}</span>
                   </span>
                   <span className="cashflow-item__amount cashflow-item__amount--deposit">
                     +{formatCurrency(amt, currency)}
@@ -267,16 +267,16 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
 
             const content = (
               <>
-                <span className="cashflow-item__date">{formatDate(cf.date)}</span>
+                <span className="editor-item__date">{formatDate(cf.date)}</span>
                 <span className="cashflow-item__desc">
                   {cf.description}
                   {cf.recurring && (
-                    <span className="cashflow-item__badge">
+                    <span className="badge cashflow-item__badge">
                       {recurringOptions.find((o) => o.value === cf.recurring!.intervalMonths)?.label ?? t('cashflow.recurring')}
                     </span>
                   )}
                   {isTransfer && (
-                    <span className="cashflow-item__badge cashflow-item__badge--transfer">{t('transfer.badge')}</span>
+                    <span className="badge cashflow-item__badge cashflow-item__badge--transfer">{t('transfer.badge')}</span>
                   )}
                 </span>
                 <span className={`cashflow-item__amount${cf.amount >= 0 ? ' cashflow-item__amount--deposit' : ' cashflow-item__amount--withdrawal'}`}>
@@ -287,7 +287,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
                   <>
                     {onTransferEdit && (
                       <button
-                        className="btn-icon btn-icon--edit"
+                        className="btn-icon"
                         title={t('cashflow.edit')}
                         onClick={(e) => { e.preventDefault(); onTransferEdit(cf.transferId!); }}
                         aria-label={t('transfer.editTransfer')}
@@ -297,7 +297,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
                     )}
                     {onTransferDelete && (
                       <button
-                        className="btn-icon"
+                        className="btn-icon btn-icon--danger"
                         title={t('cashflow.delete')}
                         onClick={(e) => { e.preventDefault(); onTransferDelete(cf.transferId!); }}
                         aria-label={t('transfer.deleteTransfer')}
@@ -309,7 +309,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
                 ) : (
                   <>
                     <button
-                      className="btn-icon btn-icon--edit"
+                      className="btn-icon"
                       title={t('cashflow.edit')}
                       onClick={() => handleEdit(cf)}
                       aria-label={t('cashflow.editTransaction', { description: cf.description })}
@@ -317,7 +317,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
                       <PencilIcon aria-hidden="true" />
                     </button>
                     <button
-                      className="btn-icon"
+                      className="btn-icon btn-icon--danger"
                       title={t('cashflow.delete')}
                       onClick={() => handleRemove(cf.id)}
                       aria-label={t('cashflow.deleteTransaction', { description: cf.description })}
@@ -334,7 +334,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
                 <Link
                   key={cf.id}
                   to={transferLink}
-                  className="cashflow-item cashflow-item--transfer cashflow-item--link"
+                  className="editor-item cashflow-item cashflow-item--transfer cashflow-item--link"
                   aria-label={t('transfer.goToCounterAccount')}
                 >
                   {content}
@@ -343,7 +343,7 @@ export default function CashFlowEditor({ cashFlows, onUpdate, currency, autoEntr
             }
 
             return (
-              <div key={cf.id} className={`cashflow-item${isTransfer ? ' cashflow-item--transfer' : ''}`}>
+              <div key={cf.id} className={`editor-item cashflow-item${isTransfer ? ' cashflow-item--transfer' : ''}`}>
                 {content}
               </div>
             );

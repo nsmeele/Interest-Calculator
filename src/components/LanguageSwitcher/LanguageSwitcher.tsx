@@ -12,7 +12,7 @@ export default function LanguageSwitcher() {
         <Link
           key={code}
           to={`/${code}`}
-          className={`language-switcher__btn${language === code ? ' language-switcher__btn--active' : ''}`}
+          className={`toolbar-select language-switcher__btn${language === code ? ' language-switcher__btn--active' : ''}`}
           aria-current={language === code ? 'page' : undefined}
           lang={code}
         >

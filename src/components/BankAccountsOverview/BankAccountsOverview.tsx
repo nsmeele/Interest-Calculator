@@ -132,7 +132,7 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
 
   if (results.length === 0) {
     return (
-      <section className="empty-state" aria-label={t('accounts.ariaLabelEmpty')}>
+      <section className="card empty-state" aria-label={t('accounts.ariaLabelEmpty')}>
         <PlusIcon className="empty-state__icon" aria-hidden="true" />
         <h3>{t('accounts.emptyTitle')}</h3>
         <p>{t('accounts.emptyDescription')}</p>
@@ -156,10 +156,10 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
   const sorted = sortAccounts(results, sortState);
 
   return (
-    <section className="results-section" aria-label={t('accounts.sectionLabel')}>
+    <section className="card results-section" aria-label={t('accounts.sectionLabel')}>
       <div className="section-header">
         <div className="section-header__title">
-          <h2>
+          <h2 className="card-title">
             {t('accounts.sectionLabel')}
             <span className="results-count">{results.length}</span>
           </h2>
@@ -171,7 +171,7 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
           </button>
         </div>
       </div>
-      <div className="comparison-table-wrapper-inner">
+      <div className="comparison-table-wrapper-inner scrollbar-thin">
           <table className="comparison-table">
           <thead>
             <tr>
@@ -217,18 +217,18 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                   </td>
                   <td>
                     {r.isOngoing
-                      ? <span className="comparison-badge comparison-badge--ongoing">{t('accounts.ongoing')}</span>
+                      ? <span className="badge comparison-badge comparison-badge--ongoing">{t('accounts.ongoing')}</span>
                       : <>
                           {r.endDate && formatDate(r.endDate)}{' '}
-                          <span className="comparison-badge">{formatDurationShort(r.durationMonths)}</span>
+                          <span className="badge comparison-badge">{formatDurationShort(r.durationMonths)}</span>
                           {r.hasExpired && (
-                            <span className="comparison-badge comparison-badge--complete">{t('accounts.completed')}</span>
+                            <span className="badge comparison-badge comparison-badge--complete">{t('accounts.completed')}</span>
                           )}
                         </>
                     }
                   </td>
                   <td>
-                    {getIntervalLabel(r.interval)} <span className="comparison-badge">{getInterestTypeLabel(r.interestType)}</span>
+                    {getIntervalLabel(r.interval)} <span className="badge comparison-badge">{getInterestTypeLabel(r.interestType)}</span>
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
                     <div className="comparison-actions">
@@ -241,7 +241,7 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                       <PencilIcon aria-hidden="true" />
                     </button>
                     <button
-                      className={`btn-portfolio${portfolioIds.has(r.id) ? ' btn-portfolio--active' : ''}`}
+                      className={`btn-icon btn-icon--copper${portfolioIds.has(r.id) ? ' btn-icon--active' : ''}`}
                       title={portfolioIds.has(r.id) ? t('accounts.removeFromPortfolio') : t('accounts.addToPortfolio')}
                       onClick={() => onTogglePortfolio(r.id)}
                       aria-label={portfolioIds.has(r.id) ? t('accounts.removeFromPortfolio') : t('accounts.addToPortfolio')}
@@ -259,7 +259,7 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                       </button>
                     )}
                     <button
-                      className="btn-icon"
+                      className="btn-icon btn-icon--danger"
                       title={t('accounts.delete')}
                       onClick={() => handleRemove(r.id)}
                       aria-label={t('accounts.delete')}
