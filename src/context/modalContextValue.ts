@@ -5,7 +5,7 @@ import type { BankAccount } from '../models/BankAccount';
 export type ModalState =
   | { type: 'import'; preview: ImportPreview; onConfirm: (mode: ImportMode) => void; onCancel?: () => void }
   | { type: 'export'; resultCount: number; onConfirm: () => void }
-  | { type: 'account'; editingResult: BankAccount | null; onResult: (result: BankAccount) => void }
+  | { type: 'account'; editingResult: BankAccount | null; onResult: (result: BankAccount) => void; initialAmount?: number; initialStartDate?: string }
   | { type: 'confirm'; title: string; message: string; confirmLabel: string; onConfirm: () => void }
   | null;
 

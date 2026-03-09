@@ -28,6 +28,7 @@ import { getMaxRangeForAccount, getRangeEndYear } from '../../utils/chartRange';
 import { ChartYearRange } from '../../enums/ChartYearRange';
 import { extendOngoingAccount } from '../../utils/extendOngoingAccount';
 import { useTransfer } from '../../context/useTransfer';
+import { useReinvestment } from '../../context/useReinvestment';
 import TransferModal from '../../components/TransferModal';
 import { APP_NAME } from '../../constants/app';
 import './AccountDetailPage.css';
@@ -45,6 +46,7 @@ export default function AccountDetailPage() {
   } = useAccountStore();
   const { openModal } = useModal();
   const { transfers, getTransfersForAccount, deleteTransfer } = useTransfer();
+  const { removeAllocationsForAccount } = useReinvestment();
   const account = results.find((r) => r.id === id);
 
   const currentMonthKey = toMonthKey(todayISO());
@@ -131,11 +133,11 @@ export default function AccountDetailPage() {
       message: t('accounts.confirmDeleteMessage'),
       confirmLabel: t('accounts.confirmDeleteButton'),
       onConfirm: () => {
-        // Clean up transfers linked to this account
         const accountTransfers = getTransfersForAccount(account.id);
         for (const t of accountTransfers) {
           deleteTransfer(t.id);
         }
+        removeAllocationsForAccount(account.id);
         removeResult(account.id);
         navigate(`/${lang}`);
       },

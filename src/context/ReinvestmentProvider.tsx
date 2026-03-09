@@ -71,6 +71,20 @@ export function ReinvestmentProvider({ children }: { children: ReactNode }) {
     updateRaw(id, { targetAccountId, amount, targetCashFlowId: cashFlowId });
   }, [allocations, results, handleUpdateCashFlows, updateRaw]);
 
+  const removeAllocationsForAccount = useCallback((accountId: string) => {
+    const affected = allocations.filter((a) => a.sourceAccountId === accountId || a.targetAccountId === accountId);
+    for (const alloc of affected) {
+      // Only clean up cashflows on OTHER accounts (source allocations inject into target)
+      if (alloc.sourceAccountId === accountId && alloc.targetCashFlowId) {
+        const target = results.find((r) => r.id === alloc.targetAccountId);
+        if (target) {
+          handleUpdateCashFlows(target.id, target.cashFlows.filter((cf) => cf.id !== alloc.targetCashFlowId));
+        }
+      }
+      removeRaw(alloc.id);
+    }
+  }, [allocations, results, handleUpdateCashFlows, removeRaw]);
+
   const getAllocationsForEvent = useCallback((accountId: string, date: string) => {
     return allocations.filter((a) => a.sourceAccountId === accountId && a.sourceDate === date);
   }, [allocations]);
@@ -88,9 +102,10 @@ export function ReinvestmentProvider({ children }: { children: ReactNode }) {
     addAllocation,
     removeAllocation,
     editAllocation,
+    removeAllocationsForAccount,
     getAllocationsForEvent,
     getRemainingAmount,
-  }), [allocations, addAllocation, removeAllocation, editAllocation, getAllocationsForEvent, getRemainingAmount]);
+  }), [allocations, addAllocation, removeAllocation, editAllocation, removeAllocationsForAccount, getAllocationsForEvent, getRemainingAmount]);
 
   return (
     <ReinvestmentContext.Provider value={value}>

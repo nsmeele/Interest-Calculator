@@ -30,6 +30,7 @@ import {ModalProvider} from './context/ModalContext';
 import {ReinvestmentProvider} from './context/ReinvestmentProvider';
 import {TransferProvider} from './context/TransferProvider';
 import {useTransfer} from './context/useTransfer';
+import {useReinvestment} from './context/useReinvestment';
 import {APP_NAME, GITHUB_URL} from './constants/app';
 import {useDocumentMeta} from './hooks/useDocumentMeta';
 
@@ -67,7 +68,8 @@ function AppContent() {
         portfolioIds, togglePortfolio, clearPortfolio,
         replacePortfolio, mergePortfolio,
     } = useAccountStore();
-    const { transfers, replaceTransfers, mergeTransfers } = useTransfer();
+    const { transfers, replaceTransfers, mergeTransfers, getTransfersForAccount, deleteTransfer } = useTransfer();
+    const { removeAllocationsForAccount } = useReinvestment();
     const transfer = useDataTransfer(results, portfolioIds, replaceResults, mergeResults, replacePortfolio, mergePortfolio, transfers, replaceTransfers, mergeTransfers);
     const {openModal} = useModal();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -124,6 +126,15 @@ function AppContent() {
             resultCount: results.length,
             onConfirm: () => transfer.handleExport(),
         });
+    }
+
+    function handleRemoveAccount(id: string) {
+        const accountTransfers = getTransfersForAccount(id);
+        for (const t of accountTransfers) {
+            deleteTransfer(t.id);
+        }
+        removeAllocationsForAccount(id);
+        removeResult(id);
     }
 
     const hasResults = results.length > 0;
@@ -285,7 +296,7 @@ function AppContent() {
                     <div className={`main-section${effectiveMobileTab === 'accounts' ? ' main-section--active' : ''}`}>
                         <BankAccountsOverview
                             results={results}
-                            onRemove={removeResult}
+                            onRemove={handleRemoveAccount}
                             portfolioIds={portfolioIds}
                             onTogglePortfolio={togglePortfolio}
                             onEdit={handleEdit}

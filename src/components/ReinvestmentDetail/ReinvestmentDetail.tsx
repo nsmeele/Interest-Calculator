@@ -29,7 +29,7 @@ const INITIAL_FORM: AllocationFormState = {
 export default function ReinvestmentDetail({ events }: ReinvestmentDetailProps) {
   const { t } = useTranslation();
   const { currency } = useLocale();
-  const { results, addResult } = useAccountStore();
+  const { results, addResult, togglePortfolio } = useAccountStore();
   const { addAllocation, removeAllocation, editAllocation, getAllocationsForEvent, getRemainingAmount } = useReinvestment();
   const { openModal } = useModal();
 
@@ -119,16 +119,20 @@ export default function ReinvestmentDetail({ events }: ReinvestmentDetailProps) 
 
   function handleNewAccount(event: MaturityEvent) {
     const remaining = getRemainingAmount(event);
+    if (remaining <= 0) return;
     openModal({
       type: 'account',
       editingResult: null,
+      initialAmount: remaining,
+      initialStartDate: event.date,
       onResult: (newAccount) => {
         addResult(newAccount);
+        togglePortfolio(newAccount.id);
         addAllocation({
           sourceAccountId: event.accountId,
           sourceDate: event.date,
           sourceType: event.type,
-          amount: remaining,
+          amount: newAccount.startAmount,
           targetAccountId: newAccount.id,
         });
         setShowForm(false);

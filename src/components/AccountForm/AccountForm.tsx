@@ -21,6 +21,8 @@ interface AccountFormProps {
   onResult: (result: BankAccount) => void;
   editingResult?: BankAccount | null;
   onCancelEdit?: () => void;
+  initialAmount?: number;
+  initialStartDate?: string;
 }
 
 const calculator = new AccountCalculator();
@@ -76,10 +78,19 @@ function createInitialForm(globalCurrency: Currency): FormState {
   };
 }
 
-export default function AccountForm({ onResult, editingResult, onCancelEdit }: AccountFormProps) {
+export default function AccountForm({ onResult, editingResult, onCancelEdit, initialAmount, initialStartDate }: AccountFormProps) {
   const { t } = useTranslation();
   const { currency: globalCurrency } = useLocale();
-  const [form, setForm] = useState(() => createInitialForm(globalCurrency));
+  const [form, setForm] = useState(() => {
+    const initial = createInitialForm(globalCurrency);
+    if (initialAmount !== undefined) {
+      initial.startAmount = formatAmountInput(initialAmount, globalCurrency);
+    }
+    if (initialStartDate) {
+      initial.startDate = initialStartDate;
+    }
+    return initial;
+  });
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const activeCurrency = form.accountCurrency || globalCurrency;
@@ -160,14 +171,8 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
       next.interestRate = t('form.errorRateNegative');
     }
 
-    if (isDeposit && !form.startDate) {
+    if (!form.startDate) {
       next.startDate = t('form.errorStartDateRequired');
-    } else if (form.isOngoing) {
-      if (!form.startDate) {
-        next.startDate = t('form.errorStartDateRequired');
-      }
-    } else if (form.useCustomEndDate && form.endDate && !form.startDate) {
-      next.endDate = t('form.errorStartDateMissing');
     } else if (form.useCustomEndDate && durationFromDates !== null && durationFromDates <= 0) {
       next.endDate = t('form.errorEndDateBeforeStart');
     } else if (!hasDurationFromDates) {
@@ -310,7 +315,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit }: A
 
             <div className="form-group">
               <label className="form-label" htmlFor="startDate">
-                {t('form.startDate')} {form.isOngoing ? '' : t('form.optional')}
+                {t('form.startDate')}
               </label>
               <input
                 id="startDate"

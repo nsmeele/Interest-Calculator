@@ -7,6 +7,7 @@ export interface ReinvestmentContextValue {
   addAllocation: (alloc: Omit<ReinvestmentAllocation, 'id'>) => ReinvestmentAllocation;
   removeAllocation: (id: string) => void;
   editAllocation: (id: string, targetAccountId: string, amount: number) => void;
+  removeAllocationsForAccount: (accountId: string) => void;
   getAllocationsForEvent: (accountId: string, date: string) => ReinvestmentAllocation[];
   getRemainingAmount: (event: MaturityEvent) => number;
 }

@@ -10,9 +10,11 @@ interface AccountFormModalProps {
   editingResult: BankAccount | null;
   onResult: (result: BankAccount) => void;
   onClose: () => void;
+  initialAmount?: number;
+  initialStartDate?: string;
 }
 
-export default function AccountFormModal({ editingResult, onResult, onClose }: AccountFormModalProps) {
+export default function AccountFormModal({ editingResult, onResult, onClose, initialAmount, initialStartDate }: AccountFormModalProps) {
   const { t } = useTranslation();
   const panelRef = useRef<HTMLDivElement>(null);
   useFocusTrap(panelRef, onClose);
@@ -41,6 +43,8 @@ export default function AccountFormModal({ editingResult, onResult, onClose }: A
             onResult={onResult}
             editingResult={editingResult}
             onCancelEdit={onClose}
+            initialAmount={initialAmount}
+            initialStartDate={initialStartDate}
           />
         </div>
       </div>

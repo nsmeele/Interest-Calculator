@@ -42,6 +42,8 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       {modal?.type === 'account' && (
         <AccountFormModal
           editingResult={modal.editingResult}
+          initialAmount={modal.initialAmount}
+          initialStartDate={modal.initialStartDate}
           onResult={(result) => {
             modal.onResult(result);
             closeModal();
