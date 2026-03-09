@@ -307,7 +307,14 @@
     "errorAmountRequired": "Enter an amount",
     "errorAmountExceeds": "Amount exceeds remaining amount",
     "errorSameAccount": "Target account cannot be the same as source",
-    "navLabel": "Reinvestment"
+    "navLabel": "Reinvestment",
+    "distribution": {
+      "title": "Asset distribution",
+      "chartAriaLabel": "Bar chart showing variable and fixed asset distribution",
+      "variable": "Variable",
+      "fixed": "Fixed",
+      "total": "Total"
+    }
   },
   "noticePeriodUnit": {
     "days": "Days",

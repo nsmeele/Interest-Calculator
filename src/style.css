@@ -643,6 +643,18 @@ body {
   @apply font-bold text-white tabular-nums;
 }
 
+.chart-tooltip__row {
+  @apply flex justify-between gap-4;
+}
+
+.chart-tooltip__row-label {
+  @apply text-navy-300;
+}
+
+.chart-tooltip__row--total {
+  @apply border-t border-navy-700 mt-1 pt-1;
+}
+
 .chart-container {
   @apply w-full h-40 sm:h-48;
 }

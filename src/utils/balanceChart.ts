@@ -1,5 +1,7 @@
 import type { BankAccount } from '../models/BankAccount';
+import { expandCashFlows } from '../models/CashFlow';
 import { InterestType } from '../enums/InterestType';
+import { addMonthsToISO, endOfMonthISO } from './date';
 
 export interface BalanceDataPoint {
   label: string;
@@ -17,8 +19,27 @@ function toMonthKey(date: string): string {
   return date.slice(0, 7); // '2026-03-15' → '2026-03'
 }
 
-export function buildBalanceData(account: BankAccount, startYear: number, endYear: number): BalanceDataPoint[] {
-  if (!account.startDate || account.periods.length === 0) return [];
+/** Sums cashflow amounts within a date range (inclusive). */
+function sumCashFlowsInRange(
+  expanded: { date: string; amount: number }[],
+  from: string,
+  to: string,
+): number {
+  let sum = 0;
+  for (const cf of expanded) {
+    if (cf.date >= from && cf.date <= to) sum += cf.amount;
+  }
+  return sum;
+}
+
+/** Returns a map of monthKey → balance for each month in the range. */
+export function buildMonthlyBalanceMap(
+  account: BankAccount,
+  startYear: number,
+  endYear: number,
+): Map<string, number | null> {
+  const map = new Map<string, number | null>();
+  if (!account.startDate || account.periods.length === 0) return map;
 
   const isSimple = account.interestType === InterestType.Simple;
   const rangeStart = `${startYear}-01-01`;
@@ -52,58 +73,69 @@ export function buildBalanceData(account: BankAccount, startYear: number, endYea
   const lastPeriod = account.periods[account.periods.length - 1];
   const accountEndKey = lastPeriod?.endDate ? toMonthKey(lastPeriod.endDate) : undefined;
 
+  // Expand cashflows for mid-period balance calculation
+  const endISO = account.isOngoing
+    ? addMonthsToISO(account.startDate, account.durationMonths)
+    : (account.endDate ?? addMonthsToISO(account.startDate, account.durationMonths));
+  const expanded = expandCashFlows(account.cashFlows, endISO);
+
   // Generate monthly grid
-  const points: BalanceDataPoint[] = [];
   let lastKnownBalance: number | null = null;
 
   for (let y = startYear; y <= endYear; y++) {
     for (let m = 1; m <= 12; m++) {
       const key = `${y}-${String(m).padStart(2, '0')}`;
-      const label = formatPeriodLabel(`${key}-01`);
 
       // Before account start: null
       if (key < accountStartKey) {
-        points.push({ label, balance: null });
+        map.set(key, null);
         continue;
       }
 
-      // Account start month
-      if (key === accountStartKey && account.startDate >= rangeStart) {
-        lastKnownBalance = account.startAmount;
-        points.push({ label, balance: lastKnownBalance });
-        // Also check if a period ends in this month
-        const periodBalance = periodBalances.get(key);
-        if (periodBalance !== undefined) lastKnownBalance = periodBalance;
+      // After account ends: null
+      if (!account.isOngoing && accountEndKey && key > accountEndKey) {
+        map.set(key, null);
         continue;
       }
 
-      // Opening balance at range start when account started before range
-      if (key === toMonthKey(rangeStart) && account.startDate < rangeStart) {
-        lastKnownBalance = openingBalance;
-        points.push({ label, balance: lastKnownBalance });
-        const periodBalance = periodBalances.get(key);
-        if (periodBalance !== undefined) lastKnownBalance = periodBalance;
-        continue;
-      }
-
-      // Period data available for this month
+      // Period end in this month: use period balance (authoritative)
       const periodBalance = periodBalances.get(key);
       if (periodBalance !== undefined) {
         lastKnownBalance = periodBalance;
-        points.push({ label, balance: lastKnownBalance });
+        map.set(key, lastKnownBalance);
         continue;
       }
 
-      // After account ends: null (line stops)
-      if (!account.isOngoing && accountEndKey && key > accountEndKey) {
-        points.push({ label, balance: null });
+      // No period end — calculate balance from base + cashflows
+      const monthEnd = endOfMonthISO(`${key}-01`);
+
+      if (key === accountStartKey && account.startDate >= rangeStart) {
+        // Account start month: startAmount + cashflows in this month
+        lastKnownBalance = account.startAmount
+          + sumCashFlowsInRange(expanded, account.startDate, monthEnd);
+      } else if (key === toMonthKey(rangeStart) && account.startDate < rangeStart) {
+        // First month of range when account started earlier
+        lastKnownBalance = openingBalance
+          + sumCashFlowsInRange(expanded, `${key}-01`, monthEnd);
       } else if (lastKnownBalance !== null) {
-        points.push({ label, balance: lastKnownBalance });
-      } else {
-        points.push({ label, balance: null });
+        // Carry forward + any cashflows in this month
+        lastKnownBalance += sumCashFlowsInRange(expanded, `${key}-01`, monthEnd);
       }
+
+      map.set(key, lastKnownBalance);
     }
   }
 
+  return map;
+}
+
+export function buildBalanceData(account: BankAccount, startYear: number, endYear: number): BalanceDataPoint[] {
+  const balanceMap = buildMonthlyBalanceMap(account, startYear, endYear);
+  if (balanceMap.size === 0) return [];
+
+  const points: BalanceDataPoint[] = [];
+  for (const [key, balance] of balanceMap) {
+    points.push({ label: formatPeriodLabel(`${key}-01`), balance });
+  }
   return points;
 }

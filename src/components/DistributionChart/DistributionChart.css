@@ -1,0 +1,10 @@
+@reference "../../style.css";
+
+/* ─── Distribution Chart ─── */
+.distribution-chart {
+  @apply my-3 -mx-1 sm:my-4;
+}
+
+.distribution-chart__title {
+  @apply font-display text-lg font-semibold text-navy-900 mb-2 dark:text-navy-50;
+}

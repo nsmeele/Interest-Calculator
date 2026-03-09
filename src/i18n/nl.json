@@ -307,7 +307,14 @@
     "errorAmountRequired": "Vul een bedrag in",
     "errorAmountExceeds": "Bedrag overschrijdt het resterende bedrag",
     "errorSameAccount": "Doelrekening kan niet dezelfde als de bron zijn",
-    "navLabel": "Herbelegging"
+    "navLabel": "Herbelegging",
+    "distribution": {
+      "title": "Verdeling vermogen",
+      "chartAriaLabel": "Staafdiagram verdeling variabel en vast geld",
+      "variable": "Variabel",
+      "fixed": "Vast",
+      "total": "Totaal"
+    }
   },
   "noticePeriodUnit": {
     "days": "Dagen",

@@ -3,10 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useAccountStore } from '../../context/useAccountStore';
+import { useReinvestment } from '../../context/useReinvestment';
 import { useDocumentMeta } from '../../hooks/useDocumentMeta';
 import { collectMaturities } from '../../utils/collectMaturities';
+import { currentYear } from '../../utils/chartRange';
+import { ChartYearRange } from '../../enums/ChartYearRange';
 import ReinvestmentTimeline from '../../components/ReinvestmentTimeline';
 import ReinvestmentDetail from '../../components/ReinvestmentDetail';
+import DistributionChart from '../../components/DistributionChart';
 import { APP_NAME } from '../../constants/app';
 import './ReinvestmentPage.css';
 
@@ -15,8 +19,16 @@ export default function ReinvestmentPage() {
   const { t } = useTranslation();
   const { lang } = useParams();
   const { results, portfolioIds } = useAccountStore();
+  const { allocations } = useReinvestment();
+
+  const portfolioItems = useMemo(
+    () => results.filter((r) => portfolioIds.has(r.id)),
+    [results, portfolioIds],
+  );
 
   const events = useMemo(() => collectMaturities(results, portfolioIds), [results, portfolioIds]);
+  const [chartStartYear, setChartStartYear] = useState(currentYear);
+  const [chartRange, setChartRange] = useState(ChartYearRange.OneYear);
   const [selectedMonthKey, setSelectedMonthKey] = useState<string | null>(() => {
     if (events.length === 0) return null;
     return events[0].monthKey;
@@ -45,6 +57,18 @@ export default function ReinvestmentPage() {
             <div className="header-accent" />
             <h1>{t('reinvest.title')}</h1>
           </div>
+
+          {portfolioItems.length > 0 && (
+            <DistributionChart
+              items={portfolioItems}
+              events={events}
+              allocations={allocations}
+              startYear={chartStartYear}
+              onStartYearChange={setChartStartYear}
+              yearRange={chartRange}
+              onRangeChange={setChartRange}
+            />
+          )}
 
           <section className="reinvest-page__timeline" aria-label={t('reinvest.timelineTitle')}>
             <ReinvestmentTimeline
