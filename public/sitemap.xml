@@ -3,12 +3,18 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://nsmeele.github.io/Interest-Calculator/en</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://nsmeele.github.io/Interest-Calculator/en" />
     <xhtml:link rel="alternate" hreflang="nl" href="https://nsmeele.github.io/Interest-Calculator/nl" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nsmeele.github.io/Interest-Calculator/en" />
   </url>
   <url>
     <loc>https://nsmeele.github.io/Interest-Calculator/nl</loc>
+    <lastmod>2026-03-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://nsmeele.github.io/Interest-Calculator/en" />
     <xhtml:link rel="alternate" hreflang="nl" href="https://nsmeele.github.io/Interest-Calculator/nl" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nsmeele.github.io/Interest-Calculator/en" />

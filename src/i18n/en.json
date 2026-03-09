@@ -1,7 +1,8 @@
 {
   "meta": {
-    "title": "Interest Calculator - Calculate Your Savings Interest",
-    "description": "Easily calculate your savings interest with our free interest calculator. Compare accounts, view your portfolio and plan your financial future."
+    "title": "Interest Calculator - See What Your Savings Earn",
+    "description": "How much interest do you earn each month? Keep track of your savings accounts and deposits, and see exactly what you make. Free and no sign-up needed.",
+    "keywords": "interest calculator, savings accounts, deposit tracker, portfolio overview, interest income, reinvestment, multiple banks, savings comparison, financial planning"
   },
   "app": {
     "tagline": "Master your interest.",
