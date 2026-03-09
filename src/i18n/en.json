@@ -373,5 +373,53 @@
     "yearsShort": "{{count}} yr",
     "monthsShort": "{{count}} mo",
     "yearsMonthsShort": "{{years}} yr {{months}} mo"
+  },
+  "fire": {
+    "navLabel": "FIRE",
+    "backToOverview": "Back to overview",
+    "title": "FIRE Calculator",
+    "subtitle": "When can you stop working?",
+    "description": "Discover how much you need to save to retire early. Compare different retirement ages side by side.",
+    "meta": {
+      "title": "FIRE Calculator - When Can You Retire Early?",
+      "description": "Find out how much you need to retire at 40, 50, or 60. Compare required savings across multiple retirement ages with the FIRE calculator."
+    },
+    "form": {
+      "currentAge": "Current age",
+      "currentSavings": "Current savings",
+      "monthlyIncome": "Monthly income (net)",
+      "monthlyExpenses": "Monthly expenses",
+      "expectedReturn": "Expected annual return",
+      "expectedReturnHint": "Historical average for a globally diversified index fund is ~7% before inflation.",
+      "inflation": "Expected inflation",
+      "inflationHint": "Long-term ECB target is 2%. Used to adjust your future cost of living.",
+      "safeWithdrawalRate": "Safe withdrawal rate",
+      "safeWithdrawalRateHint": "The 4% rule: withdraw 4% of your nest egg per year. Your savings should last 30+ years.",
+      "advanced": "Advanced settings",
+      "calculate": "Calculate",
+      "errorAgeRequired": "Enter your age",
+      "errorAgeRange": "Age must be between 18 and 80",
+      "errorSavingsRequired": "Enter your current savings",
+      "errorSavingsNegative": "Savings cannot be negative",
+      "errorIncomeRequired": "Enter your monthly income",
+      "errorIncomePositive": "Income must be greater than 0",
+      "errorExpensesRequired": "Enter your monthly expenses",
+      "errorExpensesPositive": "Expenses must be greater than 0",
+      "errorExpensesExceedIncome": "Expenses cannot exceed your income"
+    },
+    "results": {
+      "title": "Retirement age comparison",
+      "retireAt": "Retire at {{age}}",
+      "yearsToGo": "{{years}} years to go",
+      "requiredNestEgg": "Required nest egg",
+      "monthlySavingsNeeded": "Monthly savings needed",
+      "yourContributions": "Your contributions",
+      "investmentReturns": "Investment returns",
+      "feasible": "Feasible",
+      "infeasible": "Not feasible with current income",
+      "alreadyFire": "You're already FIRE!",
+      "shortfall": "Shortfall",
+      "projected": "Projected savings"
+    }
   }
 }

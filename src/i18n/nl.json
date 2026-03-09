@@ -373,5 +373,53 @@
     "yearsShort": "{{count}} jr",
     "monthsShort": "{{count}} mnd",
     "yearsMonthsShort": "{{years}} jr {{months}} mnd"
+  },
+  "fire": {
+    "navLabel": "FIRE",
+    "backToOverview": "Terug naar overzicht",
+    "title": "FIRE Calculator",
+    "subtitle": "Wanneer kun jij stoppen met werken?",
+    "description": "Ontdek hoeveel je moet sparen om eerder met pensioen te gaan. Vergelijk verschillende pensioenleeftijden naast elkaar.",
+    "meta": {
+      "title": "FIRE Calculator - Wanneer kun je met vroegpensioen?",
+      "description": "Ontdek hoeveel je nodig hebt om te stoppen met werken op je 40e, 50e of 60e. Vergelijk pensioenleeftijden met de FIRE calculator."
+    },
+    "form": {
+      "currentAge": "Huidige leeftijd",
+      "currentSavings": "Huidig vermogen",
+      "monthlyIncome": "Maandelijks netto inkomen",
+      "monthlyExpenses": "Maandelijkse uitgaven",
+      "expectedReturn": "Verwacht jaarlijks rendement",
+      "expectedReturnHint": "Historisch gemiddelde voor een wereldwijd gespreid indexfonds is ~7% voor inflatie.",
+      "inflation": "Verwachte inflatie",
+      "inflationHint": "Langetermijndoel van de ECB is 2%. Wordt gebruikt om je toekomstige kosten van levensonderhoud aan te passen.",
+      "safeWithdrawalRate": "Veilige onttrekkingspercentage",
+      "safeWithdrawalRateHint": "De 4%-regel: onttrek jaarlijks 4% van je vermogen. Je spaargeld gaat dan 30+ jaar mee.",
+      "advanced": "Geavanceerd",
+      "calculate": "Bereken",
+      "errorAgeRequired": "Vul je leeftijd in",
+      "errorAgeRange": "Leeftijd moet tussen 18 en 80 zijn",
+      "errorSavingsRequired": "Vul je huidig vermogen in",
+      "errorSavingsNegative": "Vermogen kan niet negatief zijn",
+      "errorIncomeRequired": "Vul je maandelijks inkomen in",
+      "errorIncomePositive": "Inkomen moet hoger zijn dan 0",
+      "errorExpensesRequired": "Vul je maandelijkse uitgaven in",
+      "errorExpensesPositive": "Uitgaven moeten hoger zijn dan 0",
+      "errorExpensesExceedIncome": "Uitgaven mogen niet hoger zijn dan je inkomen"
+    },
+    "results": {
+      "title": "Vergelijking pensioenleeftijden",
+      "retireAt": "Pensioen op {{age}}",
+      "yearsToGo": "Nog {{years}} jaar",
+      "requiredNestEgg": "Benodigde pot",
+      "monthlySavingsNeeded": "Maandelijks sparen",
+      "yourContributions": "Jouw inleg",
+      "investmentReturns": "Rendement",
+      "feasible": "Haalbaar",
+      "infeasible": "Niet haalbaar met huidig inkomen",
+      "alreadyFire": "Je bent al FIRE!",
+      "shortfall": "Tekort",
+      "projected": "Geprojecteerd vermogen"
+    }
   }
 }

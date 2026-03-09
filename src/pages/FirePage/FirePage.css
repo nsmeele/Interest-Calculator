@@ -1,0 +1,151 @@
+@reference "../../style.css";
+
+/* ─── FIRE Page ─── */
+.fire-page {
+  @apply pb-16;
+}
+
+.fire-page__hero {
+  @apply mb-8;
+}
+
+.fire-page__hero h1 {
+  @apply font-display text-2xl font-semibold text-navy-900 leading-tight tracking-[-0.03em] dark:text-navy-50 sm:text-3xl;
+}
+
+.fire-page__hero p {
+  @apply text-sm text-navy-600 mt-1 dark:text-navy-300;
+}
+
+.fire-page__layout {
+  @apply flex flex-col gap-8 lg:flex-row lg:items-start;
+}
+
+.fire-page__form-panel {
+  @apply w-full lg:w-sidebar lg:shrink-0 lg:sticky lg:top-6;
+}
+
+.fire-page__results-panel {
+  @apply w-full min-w-0 animate-[fadeInUp_0.3s_ease_both];
+}
+
+/* ─── Fire Form ─── */
+.fire-form {
+  @apply p-4 rounded-2xl bg-white border border-navy-100 shadow-sm dark:bg-navy-900 dark:border-navy-800;
+}
+
+.fire-form__title {
+  @apply font-display text-lg font-semibold text-navy-900 mb-4 dark:text-navy-50;
+}
+
+/* ─── Results Grid ─── */
+.fire-results-grid {
+  @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-3;
+}
+
+/* ─── Age Card ─── */
+.fire-card {
+  @apply p-4 rounded-2xl bg-white border border-navy-100 shadow-sm transition-shadow hover:shadow-md dark:bg-navy-900 dark:border-navy-800;
+}
+
+.fire-card--feasible {
+  @apply border-l-4 border-l-success;
+}
+
+.fire-card--infeasible {
+  @apply border-l-4 border-l-danger opacity-75;
+}
+
+.fire-card--already-fire {
+  @apply border-l-4 border-l-copper-500 ring-1 ring-copper-300/30 dark:ring-copper-500/20;
+}
+
+.fire-card__header {
+  @apply flex items-baseline justify-between mb-3;
+}
+
+.fire-card__age {
+  @apply font-display text-xl font-semibold text-navy-900 dark:text-navy-50;
+}
+
+.fire-card__years-badge {
+  @apply text-xs font-medium text-navy-500 bg-navy-50 px-2 py-0.5 rounded-full dark:bg-navy-800 dark:text-navy-400;
+}
+
+.fire-card__nest-egg {
+  @apply text-2xl font-bold text-navy-900 mb-1 tracking-tight dark:text-navy-50;
+}
+
+.fire-card__nest-egg-label {
+  @apply text-2xs uppercase tracking-wide text-navy-500 mb-3 dark:text-navy-400;
+}
+
+.fire-card__stat {
+  @apply flex justify-between items-center py-1.5 text-sm;
+}
+
+.fire-card__stat-label {
+  @apply text-navy-500 dark:text-navy-400;
+}
+
+.fire-card__stat-value {
+  @apply font-semibold text-navy-800 dark:text-navy-200;
+}
+
+.fire-card__stat-value--danger {
+  @apply text-danger;
+}
+
+.fire-card__divider {
+  @apply border-t border-navy-100 my-2 dark:border-navy-800;
+}
+
+/* ─── Breakdown Bar ─── */
+.fire-card__breakdown {
+  @apply mt-3;
+}
+
+.fire-card__breakdown-bar {
+  @apply flex h-2.5 rounded-full overflow-hidden bg-navy-100 dark:bg-navy-800;
+}
+
+.fire-card__breakdown-savings {
+  @apply bg-navy-400 dark:bg-navy-500 transition-all;
+}
+
+.fire-card__breakdown-returns {
+  @apply bg-copper-500 dark:bg-copper-400 transition-all;
+}
+
+.fire-card__breakdown-legend {
+  @apply flex justify-between mt-1.5 text-2xs text-navy-500 dark:text-navy-400;
+}
+
+.fire-card__breakdown-dot {
+  @apply inline-block w-2 h-2 rounded-full mr-1 align-middle;
+}
+
+.fire-card__breakdown-dot--savings {
+  @apply bg-navy-400 dark:bg-navy-500;
+}
+
+.fire-card__breakdown-dot--returns {
+  @apply bg-copper-500 dark:bg-copper-400;
+}
+
+/* ─── Status Badge ─── */
+.fire-badge {
+  @apply inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full;
+}
+
+.fire-badge--feasible {
+  @apply bg-success-light text-success dark:bg-success/15;
+}
+
+.fire-badge--infeasible {
+  @apply bg-danger-light text-danger dark:bg-danger/15;
+}
+
+.fire-badge--already-fire {
+  @apply bg-copper-100 text-copper-600 dark:bg-copper-500/15 dark:text-copper-400;
+}

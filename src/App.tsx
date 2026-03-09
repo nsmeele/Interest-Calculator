@@ -5,6 +5,7 @@ import BankAccountsOverview from './components/BankAccountsOverview';
 import PortfolioSummary from './components/PortfolioSummary';
 import AccountDetailPage from './pages/AccountDetailPage';
 import ReinvestmentPage from './pages/ReinvestmentPage';
+import FirePage from './pages/FirePage';
 import ThemeToggle from './components/ThemeToggle/ThemeToggle';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import {useDataTransfer} from './hooks/useDataTransfer';
@@ -22,7 +23,8 @@ import {
     ArrowUpTrayIcon,
     ArrowDownTrayIcon,
     ChevronDownIcon,
-    ArrowPathIcon
+    ArrowPathIcon,
+    FireIcon
 } from '@heroicons/react/24/outline';
 import type {BankAccount} from './models/BankAccount';
 import {demoData, demoTransfers} from './transfer/demoData';
@@ -47,6 +49,7 @@ export default function App() {
                                 <Routes>
                                     <Route path="account/:id" element={<AccountDetailPage/>}/>
                                     <Route path="reinvest" element={<ReinvestmentPage/>}/>
+                                    <Route path="fire" element={<FirePage/>}/>
                                     <Route path="*" element={<AppContent/>}/>
                                 </Routes>
                             </TransferProvider>
@@ -248,6 +251,10 @@ function AppContent() {
                                     {t('reinvest.navLabel')}
                                 </Link>
                             )}
+                            <Link to={`/${lang}/fire`} className="btn-action btn-action--muted">
+                                <FireIcon aria-hidden="true"/>
+                                {t('fire.navLabel')}
+                            </Link>
                             <button
                                 className="btn-guide-link"
                                 onClick={() => setShowGuide((v) => !v)}
