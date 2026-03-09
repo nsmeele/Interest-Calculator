@@ -1,3 +1,5 @@
+import type { ScenarioType } from './ScenarioType';
+
 export interface FireScenario {
   retirementAge: number;
   yearsToSave: number;
@@ -9,4 +11,5 @@ export interface FireScenario {
   isFeasible: boolean;
   isAlreadyFire: boolean;
   shortfall: number;
+  scenarioType: ScenarioType;
 }

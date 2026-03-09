@@ -4,16 +4,18 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useLocale } from '../../../context/useLocale';
 import { CURRENCY_SYMBOLS, type Currency } from '../../../enums/Currency';
 import { formatAmountInput, parseAmountInput } from '../../../utils/format';
-import { FireInput } from '../../../models/FireInput';
+import { FireInput, FIRE_DEFAULT_LIFE_EXPECTANCY, FIRE_DEFAULT_AOW_MONTHLY } from '../../../models/FireInput';
 import {
   FIRE_DEFAULT_RETURN_RATE,
   FIRE_DEFAULT_INFLATION_RATE,
   FIRE_DEFAULT_SWR,
 } from '../../../calculator/FireCalculator';
+import { estimateAowAge, formatAowAge, birthYearFromAge } from '../../../utils/aowAge';
 
 interface FireInputFormProps {
   onSubmit: (input: FireInput) => void;
   initialSavings?: number;
+  initialReturn?: number;
 }
 
 interface FormState {
@@ -23,30 +25,41 @@ interface FormState {
   monthlyExpenses: string;
   expectedReturn: string;
   inflation: string;
-  safeWithdrawalRate: string;
+  lifeExpectancy: string;
   errors: Record<string, string>;
 }
 
-function createInitialForm(currency: Currency, initialSavings?: number): FormState {
+const DEFAULT_AGE = 30;
+
+function createInitialForm(currency: Currency, initialSavings?: number, initialReturn?: number): FormState {
+  const returnRate = initialReturn !== undefined && initialReturn > 0
+    ? parseFloat(initialReturn.toFixed(2))
+    : FIRE_DEFAULT_RETURN_RATE;
+
   return {
-    currentAge: '30',
+    currentAge: DEFAULT_AGE.toString(),
     currentSavings: formatAmountInput(initialSavings && initialSavings > 0 ? initialSavings : 50000, currency),
     monthlyIncome: formatAmountInput(4000, currency),
     monthlyExpenses: formatAmountInput(2000, currency),
-    expectedReturn: FIRE_DEFAULT_RETURN_RATE.toString(),
+    expectedReturn: returnRate.toString(),
     inflation: FIRE_DEFAULT_INFLATION_RATE.toString(),
-    safeWithdrawalRate: FIRE_DEFAULT_SWR.toString(),
+    lifeExpectancy: FIRE_DEFAULT_LIFE_EXPECTANCY.toString(),
     errors: {},
   };
 }
 
-export default function FireInputForm({ onSubmit, initialSavings }: FireInputFormProps) {
+export default function FireInputForm({ onSubmit, initialSavings, initialReturn }: FireInputFormProps) {
   const { t } = useTranslation();
   const { currency } = useLocale();
-  const [form, setForm] = useState(() => createInitialForm(currency, initialSavings));
+  const [form, setForm] = useState(() => createInitialForm(currency, initialSavings, initialReturn));
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const currencySymbol = CURRENCY_SYMBOLS[currency];
+  const currentAge = parseInt(form.currentAge);
+  const birthYear = !isNaN(currentAge) ? birthYearFromAge(currentAge) : null;
+  const aowAgeLabel = birthYear
+    ? formatAowAge(birthYear, t('fire.aow.yearLabel'), t('fire.aow.monthLabel'), t('fire.aow.andLabel'))
+    : null;
 
   function updateForm(patch: Partial<FormState>) {
     setForm((prev) => ({ ...prev, ...patch }));
@@ -108,14 +121,20 @@ export default function FireInputForm({ onSubmit, initialSavings }: FireInputFor
     updateForm({ errors: validationErrors });
     if (Object.keys(validationErrors).length > 0) return;
 
+    const age = parseInt(form.currentAge);
+    const aowAge = estimateAowAge(birthYearFromAge(age));
+
     const input = new FireInput(
-      parseInt(form.currentAge),
+      age,
       parseAmountInput(form.currentSavings, currency),
       parseAmountInput(form.monthlyIncome, currency),
       parseAmountInput(form.monthlyExpenses, currency),
       parseFloat(form.expectedReturn.replace(',', '.')) || FIRE_DEFAULT_RETURN_RATE,
       parseFloat(form.inflation.replace(',', '.')) || FIRE_DEFAULT_INFLATION_RATE,
-      parseFloat(form.safeWithdrawalRate.replace(',', '.')) || FIRE_DEFAULT_SWR,
+      FIRE_DEFAULT_SWR,
+      parseInt(form.lifeExpectancy) || FIRE_DEFAULT_LIFE_EXPECTANCY,
+      aowAge,
+      FIRE_DEFAULT_AOW_MONTHLY,
     );
     onSubmit(input);
   }
@@ -123,6 +142,16 @@ export default function FireInputForm({ onSubmit, initialSavings }: FireInputFor
   return (
     <div className="fire-form">
       <h2 className="fire-form__title">{t('fire.subtitle')}</h2>
+
+      <div className="fire-form__banner">
+        {t('fire.aow.banner')}
+        {aowAgeLabel && (
+          <span className="fire-form__aow-age">
+            {t('fire.aow.yourAowAge', { age: aowAgeLabel })}
+          </span>
+        )}
+      </div>
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label" htmlFor="fire-age">{t('fire.form.currentAge')}</label>
@@ -234,28 +263,28 @@ export default function FireInputForm({ onSubmit, initialSavings }: FireInputFor
                   className="form-input"
                   value={form.inflation}
                   onChange={(e) => updateForm({ inflation: e.target.value })}
-                  placeholder="2"
+                  placeholder="3"
                 />
                 <span className="affix">%</span>
               </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="fire-swr">
-                {t('fire.form.safeWithdrawalRate')}
-                <span className="form-hint">{t('fire.form.safeWithdrawalRateHint')}</span>
+              <label className="form-label" htmlFor="fire-life-expectancy">
+                {t('fire.form.lifeExpectancy')}
+                <span className="form-hint">{t('fire.form.lifeExpectancyHint')}</span>
               </label>
               <div className="form-input-affix form-input-affix--suffix">
                 <input
-                  id="fire-swr"
-                  type="text"
-                  inputMode="decimal"
+                  id="fire-life-expectancy"
+                  type="number"
+                  min="60"
+                  max="120"
                   className="form-input"
-                  value={form.safeWithdrawalRate}
-                  onChange={(e) => updateForm({ safeWithdrawalRate: e.target.value })}
-                  placeholder="4"
+                  value={form.lifeExpectancy}
+                  onChange={(e) => updateForm({ lifeExpectancy: e.target.value })}
                 />
-                <span className="affix">%</span>
+                <span className="affix">{t('fire.form.lifeExpectancySuffix')}</span>
               </div>
             </div>
           </div>

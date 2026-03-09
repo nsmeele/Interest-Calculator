@@ -380,6 +380,13 @@
     "title": "FIRE Calculator",
     "subtitle": "When can you stop working?",
     "description": "Discover how much you need to save to retire early. Compare different retirement ages side by side.",
+    "aow": {
+      "banner": "Calculation based on the Dutch pension system (AOW). AOW amount: €1,370/mo net (single).",
+      "yourAowAge": "Your estimated AOW age: {{age}}",
+      "yearLabel": "years",
+      "monthLabel": "months",
+      "andLabel": "and"
+    },
     "meta": {
       "title": "FIRE Calculator - When Can You Retire Early?",
       "description": "Find out how much you need to retire at 40, 50, or 60. Compare required savings across multiple retirement ages with the FIRE calculator."
@@ -390,11 +397,12 @@
       "monthlyIncome": "Monthly income (net)",
       "monthlyExpenses": "Monthly expenses",
       "expectedReturn": "Expected annual return",
-      "expectedReturnHint": "Historical average for a globally diversified index fund is ~7% before inflation.",
+      "expectedReturnHint": "Derived from your portfolio. Historical average for a globally diversified index fund is ~7% before inflation.",
       "inflation": "Expected inflation",
-      "inflationHint": "Long-term ECB target is 2%. Used to adjust your future cost of living.",
-      "safeWithdrawalRate": "Safe withdrawal rate",
-      "safeWithdrawalRateHint": "The 4% rule: withdraw 4% of your nest egg per year. Your savings should last 30+ years.",
+      "inflationHint": "Average Dutch inflation over recent years is ~3%. Used to adjust your future cost of living.",
+      "lifeExpectancy": "Life expectancy",
+      "lifeExpectancyHint": "Determines your safe withdrawal rate: 1 ÷ (life expectancy − retirement age).",
+      "lifeExpectancySuffix": "yrs",
       "advanced": "Advanced settings",
       "calculate": "Calculate",
       "errorAgeRequired": "Enter your age",
@@ -419,7 +427,12 @@
       "infeasible": "Not feasible with current income",
       "alreadyFire": "You're already FIRE!",
       "shortfall": "Shortfall",
-      "projected": "Projected savings"
+      "projected": "Projected savings",
+      "scenarioTabs": "Scenarios",
+      "scenarioBase": "Base",
+      "scenarioPessimistic": "Pessimistic",
+      "scenarioOptimistic": "Optimistic",
+      "swrHint": "Withdrawal: {{swr}}% ({{years}} yrs)"
     }
   }
 }

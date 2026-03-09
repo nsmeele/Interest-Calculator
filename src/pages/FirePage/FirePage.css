@@ -38,6 +38,14 @@
   @apply font-display text-lg font-semibold text-navy-900 mb-4 dark:text-navy-50;
 }
 
+.fire-form__banner {
+  @apply text-2xs text-navy-600 bg-navy-50 border border-navy-100 rounded-lg px-3 py-2 mb-4 dark:bg-navy-800 dark:border-navy-700 dark:text-navy-300;
+}
+
+.fire-form__aow-age {
+  @apply block mt-1 font-medium text-navy-800 dark:text-navy-200;
+}
+
 /* ─── Results Grid ─── */
 .fire-results-grid {
   @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-3;
@@ -148,4 +156,35 @@
 
 .fire-badge--already-fire {
   @apply bg-copper-100 text-copper-600 dark:bg-copper-500/15 dark:text-copper-400;
+}
+
+/* ─── Scenario Group Card ─── */
+.fire-group-card {
+  @apply flex flex-col;
+}
+
+/* ─── Scenario Tabs ─── */
+.fire-scenario-tabs {
+  @apply flex mb-3 rounded-lg bg-navy-50 p-0.5 dark:bg-navy-800;
+}
+
+.fire-scenario-tab {
+  @apply flex-1 text-xs font-medium py-1.5 rounded-md text-navy-500 transition-colors cursor-pointer dark:text-navy-400;
+}
+
+.fire-scenario-tab--active {
+  @apply bg-white text-navy-900 shadow-sm dark:bg-navy-700 dark:text-navy-50;
+}
+
+.fire-scenario-tab--pessimistic.fire-scenario-tab--active {
+  @apply text-danger;
+}
+
+.fire-scenario-tab--optimistic.fire-scenario-tab--active {
+  @apply text-success;
+}
+
+/* ─── SWR Hint ─── */
+.fire-card__swr-hint {
+  @apply text-2xs text-navy-400 mb-2 dark:text-navy-500;
 }

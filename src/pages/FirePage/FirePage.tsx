@@ -14,8 +14,8 @@ import { currentYear } from '../../utils/chartRange';
 import { APP_NAME } from '../../constants/app';
 import FireInputForm from './components/FireInputForm';
 import FireResultsGrid from './components/FireResultsGrid';
-import type { FireInput } from '../../models/FireInput';
-import type { FireScenario } from '../../models/FireScenario';
+import { FIRE_DEFAULT_LIFE_EXPECTANCY, type FireInput } from '../../models/FireInput';
+import type { FireAgeGroup } from '../../models/FireAgeGroup';
 import './FirePage.css';
 
 const calculator = new FireCalculator();
@@ -27,10 +27,15 @@ export default function FirePage() {
   const { currency } = useLocale();
   const { results, portfolioIds } = useAccountStore();
   const { allocations } = useReinvestment();
-  const [scenarios, setScenarios] = useState<FireScenario[]>([]);
+  const [groups, setGroups] = useState<FireAgeGroup[]>([]);
+  const [lifeExpectancy, setLifeExpectancy] = useState(FIRE_DEFAULT_LIFE_EXPECTANCY);
+
+  const portfolioItems = useMemo(
+    () => results.filter((r) => portfolioIds.has(r.id)),
+    [results, portfolioIds],
+  );
 
   const totalBalance = useMemo(() => {
-    const portfolioItems = results.filter((r) => portfolioIds.has(r.id));
     if (portfolioItems.length === 0) return 0;
     const year = currentYear();
     const events = collectMaturities(results, portfolioIds);
@@ -38,10 +43,24 @@ export default function FirePage() {
     const monthKey = toMonthKey(todayISO());
     const point = data.find((p) => p.monthKey === monthKey);
     return point ? point.variable + point.fixed : 0;
-  }, [results, portfolioIds, allocations]);
+  }, [portfolioItems, results, portfolioIds, allocations]);
+
+  const weightedReturn = useMemo(() => {
+    if (portfolioItems.length === 0) return undefined;
+    let totalWeight = 0;
+    let weightedSum = 0;
+    for (const account of portfolioItems) {
+      const balance = account.currentBalance;
+      if (balance <= 0) continue;
+      weightedSum += account.currentRate * balance;
+      totalWeight += balance;
+    }
+    return totalWeight > 0 ? weightedSum / totalWeight : undefined;
+  }, [portfolioItems]);
 
   const handleSubmit = useCallback((input: FireInput) => {
-    setScenarios(calculator.calculateAll(input));
+    setGroups(calculator.calculateAll(input));
+    setLifeExpectancy(input.lifeExpectancy);
   }, []);
 
   return (
@@ -66,12 +85,12 @@ export default function FirePage() {
 
           <div className="fire-page__layout">
             <div className="fire-page__form-panel">
-              <FireInputForm onSubmit={handleSubmit} initialSavings={totalBalance} />
+              <FireInputForm onSubmit={handleSubmit} initialSavings={totalBalance} initialReturn={weightedReturn} />
             </div>
 
-            {scenarios.length > 0 && (
+            {groups.length > 0 && (
               <div className="fire-page__results-panel">
-                <FireResultsGrid scenarios={scenarios} currency={currency} />
+                <FireResultsGrid groups={groups} currency={currency} lifeExpectancy={lifeExpectancy} />
               </div>
             )}
           </div>
