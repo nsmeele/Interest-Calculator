@@ -22,10 +22,11 @@ export class SavingsVsInvestmentInput {
     /** Of er een fiscaal partner is (verdubbelt de vrijstelling). */
     public readonly hasFiscalPartner: boolean = false,
     /**
-     * Reeds elders benut deel van de vrijstelling, in de eenheid van het stelsel
-     * (heffingvrij vermogen bij forfaitair, heffingvrij rendement vanaf 2028).
+     * Of de vrijstelling wordt toegepast. Zo ja, dan geldt per stelsel de eigen
+     * vrijstelling (heffingvrij vermogen forfaitair, heffingvrij rendement vanaf
+     * 2028), eventueel verdubbeld met een fiscaal partner.
      */
-    public readonly usedExemption: number = 0,
+    public readonly applyExemption: boolean = false,
     public readonly currency: string = DEFAULT_CURRENCY,
   ) {}
 }

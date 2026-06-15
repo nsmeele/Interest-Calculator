@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { CURRENCY_SYMBOLS, type Currency } from '../../enums/Currency';
+import { CURRENCY_SYMBOLS, Currency } from '../../enums/Currency';
 import { useLocale } from '../../context/useLocale';
-import { formatAmountInput, parseAmountInput } from '../../utils/format';
+import { formatAmountInput, parseAmountInput, formatCurrency } from '../../utils/format';
+import { BOX3_TAX_FREE_CAPITAL_2026, BOX3_TAX_FREE_RETURN_2028 } from '../../constants/box3';
 import type { SavingsVsInvestmentFormValues } from './formValues';
 import './SavingsVsInvestmentForm.css';
 
@@ -16,12 +17,18 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
   const activeCurrency = globalCurrency as Currency;
   const symbol = CURRENCY_SYMBOLS[activeCurrency];
 
-  const reformatAmount = (field: 'initialAmount' | 'usedExemption') => {
-    const raw = values[field];
+  const reformatInitialAmount = () => {
+    const raw = values.initialAmount;
     if (raw.trim() === '') return;
     const parsed = parseAmountInput(raw, activeCurrency);
-    onChange({ [field]: isNaN(parsed) ? '' : formatAmountInput(parsed, activeCurrency) });
+    onChange({ initialAmount: isNaN(parsed) ? '' : formatAmountInput(parsed, activeCurrency) });
   };
+
+  // The box 3 exemptions are statutory euro figures, so format them in EUR regardless of display currency.
+  const exemptionHint = t('savingsVsInvesting.form.applyExemptionHint', {
+    capital: formatCurrency(BOX3_TAX_FREE_CAPITAL_2026, Currency.EUR),
+    returns: formatCurrency(BOX3_TAX_FREE_RETURN_2028, Currency.EUR),
+  });
 
   return (
     <form className="comparison-form" onSubmit={(e) => e.preventDefault()}>
@@ -38,7 +45,7 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
             className="form-input"
             value={values.initialAmount}
             onChange={(e) => onChange({ initialAmount: e.target.value })}
-            onBlur={() => reformatAmount('initialAmount')}
+            onBlur={reformatInitialAmount}
             placeholder="100.000"
           />
         </div>
@@ -110,33 +117,32 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
         <div className="form-checkbox">
           <input
             type="checkbox"
+            id="svi-applyExemption"
+            checked={values.applyExemption}
+            onChange={(e) => onChange({
+              applyExemption: e.target.checked,
+              ...(e.target.checked ? {} : { hasFiscalPartner: false }),
+            })}
+            aria-describedby="svi-applyExemption-hint"
+          />
+          <label htmlFor="svi-applyExemption">{t('savingsVsInvesting.form.applyExemption')}</label>
+        </div>
+        <span id="svi-applyExemption-hint" className="form-hint">{exemptionHint}</span>
+      </div>
+
+      <div className="form-group">
+        <div className="form-checkbox">
+          <input
+            type="checkbox"
             id="svi-fiscalPartner"
             checked={values.hasFiscalPartner}
+            disabled={!values.applyExemption}
             onChange={(e) => onChange({ hasFiscalPartner: e.target.checked })}
             aria-describedby="svi-fiscalPartner-hint"
           />
           <label htmlFor="svi-fiscalPartner">{t('savingsVsInvesting.form.fiscalPartner')}</label>
         </div>
         <span id="svi-fiscalPartner-hint" className="form-hint">{t('savingsVsInvesting.form.fiscalPartnerHint')}</span>
-      </div>
-
-      <div className="form-group">
-        <label className="form-label" htmlFor="svi-usedExemption">{t('savingsVsInvesting.form.usedExemption')}</label>
-        <div className="form-input-affix form-input-affix--prefix">
-          <span className="affix">{symbol}</span>
-          <input
-            id="svi-usedExemption"
-            type="text"
-            inputMode="decimal"
-            className="form-input"
-            value={values.usedExemption}
-            onChange={(e) => onChange({ usedExemption: e.target.value })}
-            onBlur={() => reformatAmount('usedExemption')}
-            placeholder="0"
-            aria-describedby="svi-usedExemption-hint"
-          />
-        </div>
-        <span id="svi-usedExemption-hint" className="form-hint">{t('savingsVsInvesting.form.usedExemptionHint')}</span>
       </div>
     </form>
   );

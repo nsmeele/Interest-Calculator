@@ -9,7 +9,7 @@ export interface SavingsVsInvestmentFormValues {
   investmentReturn: string;
   useActualReturnFrom2028: boolean;
   hasFiscalPartner: boolean;
-  usedExemption: string;
+  applyExemption: boolean;
 }
 
 const DEFAULT_INITIAL_AMOUNT = 100000;
@@ -29,6 +29,6 @@ export function createDefaultFormValues(currency: Currency): SavingsVsInvestment
     investmentReturn: DEFAULT_INVESTMENT_RETURN,
     useActualReturnFrom2028: false,
     hasFiscalPartner: false,
-    usedExemption: '',
+    applyExemption: false,
   };
 }

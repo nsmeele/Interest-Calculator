@@ -20,7 +20,7 @@ function makeInput(overrides: Partial<{
   startYear: number;
   useActualReturnFrom2028: boolean;
   hasFiscalPartner: boolean;
-  usedExemption: number;
+  applyExemption: boolean;
 }> = {}) {
   return new SavingsVsInvestmentInput(
     overrides.initialAmount ?? 100000,
@@ -30,7 +30,7 @@ function makeInput(overrides: Partial<{
     overrides.startYear ?? 2026,
     overrides.useActualReturnFrom2028 ?? false,
     overrides.hasFiscalPartner ?? false,
-    overrides.usedExemption ?? 0,
+    overrides.applyExemption ?? true,
   );
 }
 
@@ -117,17 +117,27 @@ describe('SavingsVsInvestmentCalculator', () => {
   describe('exemptions', () => {
     it('doubles the exemption for a fiscal partner', () => {
       // With a partner the doubled exemption (€118.714) exceeds €100.000, so no tax is due.
-      const result = calculator.calculate(makeInput({ years: 1, hasFiscalPartner: true }));
+      const result = calculator.calculate(makeInput({ years: 1, applyExemption: true, hasFiscalPartner: true }));
       expect(result.savings[0].tax).toBe(0);
       expect(result.investments[0].tax).toBe(0);
       expect(result.savings[0].endBalance).toBeCloseTo(102000, 6);
     });
 
-    it('reduces the exemption by the already-used portion', () => {
-      const full = calculator.calculate(makeInput({ years: 1 }));
-      const reduced = calculator.calculate(makeInput({ years: 1, usedExemption: BOX3_TAX_FREE_CAPITAL_2026 }));
-      // With the whole exemption used up, the full capital is taxed, so tax is higher.
-      expect(reduced.investments[0].tax).toBeGreaterThan(full.investments[0].tax);
+    it('taxes the full base when the exemption is not applied', () => {
+      const withExemption = calculator.calculate(makeInput({ years: 1, applyExemption: true }));
+      const withoutExemption = calculator.calculate(makeInput({ years: 1, applyExemption: false }));
+
+      // No exemption → the whole capital is the taxable base.
+      expect(withoutExemption.investments[0].tax).toBeCloseTo(forfaitairTax(100000, BOX3_FORFAIT_INVESTMENTS_2026, 0), 6);
+      expect(withoutExemption.investments[0].tax).toBeGreaterThan(withExemption.investments[0].tax);
+    });
+
+    it('applies the regime-specific exemption: capital for forfaitair, return for actual', () => {
+      const forfaitair = calculator.calculate(makeInput({ years: 1, startYear: 2026, applyExemption: true }));
+      expect(forfaitair.savings[0].tax).toBeCloseTo(forfaitairTax(100000, BOX3_FORFAIT_SAVINGS_2026, BOX3_TAX_FREE_CAPITAL_2026), 6);
+
+      const actual = calculator.calculate(makeInput({ years: 1, startYear: 2028, useActualReturnFrom2028: true, applyExemption: true }));
+      expect(actual.savings[0].tax).toBeCloseTo(actualTax(2000, BOX3_TAX_FREE_RETURN_2028), 6);
     });
   });
 

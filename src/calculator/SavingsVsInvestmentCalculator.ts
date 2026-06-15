@@ -34,12 +34,13 @@ export class SavingsVsInvestmentCalculator {
     return useActual ? Box3Regime.Actual2028 : Box3Regime.Forfaitair2026;
   }
 
-  /** De toepasselijke vrijstelling voor een stelsel, gecorrigeerd voor partnerschap en reeds benut deel. */
+  /** De toepasselijke vrijstelling voor een stelsel; nul als de vrijstelling niet wordt toegepast. */
   private exemptionForRegime(input: SavingsVsInvestmentInput, regime: Box3Regime): number {
+    if (!input.applyExemption) return 0;
     const base =
       regime === Box3Regime.Forfaitair2026 ? BOX3_TAX_FREE_CAPITAL_2026 : BOX3_TAX_FREE_RETURN_2028;
     const multiplier = input.hasFiscalPartner ? FISCAL_PARTNER_MULTIPLIER : 1;
-    return Math.max(0, base * multiplier - input.usedExemption);
+    return base * multiplier;
   }
 
   private project(

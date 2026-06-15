@@ -59,7 +59,7 @@ export default function SavingsVsInvestmentPage() {
       currentYear(),
       values.useActualReturnFrom2028,
       values.hasFiscalPartner,
-      parseAmountInput(values.usedExemption, activeCurrency),
+      values.applyExemption,
       currency,
     );
     return calculator.calculate(input);

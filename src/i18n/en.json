@@ -388,10 +388,10 @@
       "investmentReturn": "Expected investment return",
       "useActualReturnFrom2028": "Use actual return from 2028",
       "useActualReturnFrom2028Hint": "Up to 2027 a notional return is always used; from 2028 the actual return applies.",
+      "applyExemption": "Apply the exemption",
+      "applyExemptionHint": "Tax-free capital {{capital}} (up to 2027) and tax-free return {{returns}} (from 2028), per person.",
       "fiscalPartner": "I have a fiscal partner",
-      "fiscalPartnerHint": "Doubles the exemption.",
-      "usedExemption": "Exemption already used",
-      "usedExemptionHint": "Portion of the exemption already used by other box 3 assets (tax-free capital before 2028, tax-free return from 2028)."
+      "fiscalPartnerHint": "Doubles the exemption (only when it is applied)."
     },
     "assetClass": {
       "savings": "Saving",
