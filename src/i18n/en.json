@@ -383,6 +383,7 @@
     "form": {
       "title": "Your details",
       "initialAmount": "Initial amount",
+      "startYear": "Start year",
       "years": "Term (years)",
       "savingsRate": "Expected savings rate",
       "investmentReturn": "Expected investment return",

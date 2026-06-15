@@ -51,18 +51,35 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
         </div>
       </div>
 
-      <div className="form-group">
-        <label className="form-label" htmlFor="svi-years">{t('savingsVsInvesting.form.years')}</label>
-        <input
-          id="svi-years"
-          type="number"
-          min="0"
-          max="50"
-          className="form-input"
-          value={values.years}
-          onChange={(e) => onChange({ years: e.target.value })}
-          placeholder="10"
-        />
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label" htmlFor="svi-startYear">{t('savingsVsInvesting.form.startYear')}</label>
+          <input
+            id="svi-startYear"
+            type="number"
+            min="2001"
+            max="2100"
+            step="1"
+            className="form-input"
+            value={values.startYear}
+            onChange={(e) => onChange({ startYear: e.target.value })}
+            placeholder="2026"
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label" htmlFor="svi-years">{t('savingsVsInvesting.form.years')}</label>
+          <input
+            id="svi-years"
+            type="number"
+            min="0"
+            max="50"
+            className="form-input"
+            value={values.years}
+            onChange={(e) => onChange({ years: e.target.value })}
+            placeholder="10"
+          />
+        </div>
       </div>
 
       <div className="form-row">

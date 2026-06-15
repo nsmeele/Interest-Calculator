@@ -383,6 +383,7 @@
     "form": {
       "title": "Jouw gegevens",
       "initialAmount": "Startbedrag",
+      "startYear": "Startjaar",
       "years": "Looptijd (jaren)",
       "savingsRate": "Verwachte spaarrente",
       "investmentReturn": "Verwacht beleggingsrendement",

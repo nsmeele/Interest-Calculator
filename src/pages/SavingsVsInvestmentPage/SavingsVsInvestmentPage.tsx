@@ -24,12 +24,21 @@ const calculator = new SavingsVsInvestmentCalculator();
 
 const MIN_YEARS = 0;
 const MAX_YEARS = 50;
+const MIN_START_YEAR = 2001;
+const MAX_START_YEAR = 2100;
 
 /** Parseert het looptijdveld naar een geheel aantal jaren binnen [MIN_YEARS, MAX_YEARS]. */
 function parseYears(value: string): number {
   const parsed = parseInt(value, 10);
   if (isNaN(parsed)) return MIN_YEARS;
   return Math.min(MAX_YEARS, Math.max(MIN_YEARS, parsed));
+}
+
+/** Parseert het startjaarveld; valt terug op het huidige jaar en klemt op [MIN_START_YEAR, MAX_START_YEAR]. */
+function parseStartYear(value: string): number {
+  const parsed = parseInt(value, 10);
+  if (isNaN(parsed)) return currentYear();
+  return Math.min(MAX_START_YEAR, Math.max(MIN_START_YEAR, parsed));
 }
 
 export default function SavingsVsInvestmentPage() {
@@ -56,7 +65,7 @@ export default function SavingsVsInvestmentPage() {
       parseYears(values.years),
       parseDecimalInput(values.savingsRate),
       parseDecimalInput(values.investmentReturn),
-      currentYear(),
+      parseStartYear(values.startYear),
       values.useActualReturnFrom2028,
       values.hasFiscalPartner,
       values.applyExemption,
