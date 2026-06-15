@@ -380,6 +380,7 @@
     "title": "Saving or investing?",
     "intro": "Calculate which leaves you with more net: saving or investing your money. The tool accounts for the box 3 tax on both your savings and your investments.",
     "netherlandsOnly": "Note: this calculation applies only to the Dutch tax system (box 3).",
+    "investmentRisk": "Note: investing carries risk. The investment return is an assumption; the actual amount may turn out higher, but also lower than calculated here.",
     "form": {
       "title": "Your details",
       "initialAmount": "Initial amount",

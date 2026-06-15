@@ -380,6 +380,7 @@
     "title": "Sparen of beleggen?",
     "intro": "Bereken wat netto het meeste oplevert: je geld sparen of beleggen. De rekentool houdt rekening met de belasting in box 3 over zowel je spaargeld als je beleggingen.",
     "netherlandsOnly": "Let op: deze berekening geldt uitsluitend voor het Nederlandse belastingstelsel (box 3).",
+    "investmentRisk": "Let op: beleggen brengt risico met zich mee. Het beleggingsrendement is een aanname; het werkelijke bedrag kan hoger maar ook lager uitvallen dan hier berekend.",
     "form": {
       "title": "Jouw gegevens",
       "initialAmount": "Startbedrag",

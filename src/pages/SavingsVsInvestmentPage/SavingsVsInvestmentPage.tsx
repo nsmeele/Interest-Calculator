@@ -103,6 +103,9 @@ export default function SavingsVsInvestmentPage() {
             <p className="info-box info-box--copper svi-page__notice">
               {t('savingsVsInvesting.netherlandsOnly')}
             </p>
+            <p className="info-box info-box--copper svi-page__notice">
+              {t('savingsVsInvesting.investmentRisk')}
+            </p>
           </div>
 
           <div className="svi-page__layout">
