@@ -373,5 +373,66 @@
     "yearsShort": "{{count}} jr",
     "monthsShort": "{{count}} mnd",
     "yearsMonthsShort": "{{years}} jr {{months}} mnd"
+  },
+  "savingsVsInvesting": {
+    "navLabel": "Sparen of beleggen",
+    "backToOverview": "Terug naar overzicht",
+    "title": "Sparen of beleggen?",
+    "intro": "Bereken wat netto het meeste oplevert: je geld sparen of beleggen. De rekentool houdt rekening met de belasting in box 3 over zowel je spaargeld als je beleggingen.",
+    "netherlandsOnly": "Let op: deze berekening geldt uitsluitend voor het Nederlandse belastingstelsel (box 3).",
+    "form": {
+      "title": "Jouw gegevens",
+      "initialAmount": "Startbedrag",
+      "years": "Looptijd (jaren)",
+      "savingsRate": "Verwachte spaarrente",
+      "investmentReturn": "Verwacht beleggingsrendement",
+      "regime": "Belastingstelsel",
+      "fiscalPartner": "Ik heb een fiscaal partner",
+      "fiscalPartnerHint": "Verdubbelt de vrijstelling.",
+      "usedExemption": "Reeds benutte vrijstelling",
+      "usedExemptionCapitalHint": "Heffingvrij vermogen dat al door ander box 3-vermogen wordt gebruikt.",
+      "usedExemptionReturnHint": "Heffingvrij rendement dat al door ander box 3-vermogen wordt gebruikt."
+    },
+    "regime": {
+      "forfaitair2026": "Forfaitair (huidig, 2026)",
+      "actual2028": "Werkelijk rendement (vanaf 2028)",
+      "forfaitair2026Description": "Belasting over een fictief rendement: spaargeld 1,44%, beleggingen 6%, tarief 36%.",
+      "actual2028Description": "Belasting over je werkelijke rente en koerswinst, tarief 36%."
+    },
+    "assetClass": {
+      "savings": "Sparen",
+      "investments": "Beleggen"
+    },
+    "result": {
+      "title": "Resultaat na {{count}} jaar",
+      "winnerInvestments": "Beleggen levert netto het meeste op",
+      "winnerSavings": "Sparen levert netto het meeste op",
+      "tie": "Sparen en beleggen leveren netto evenveel op",
+      "differenceLabel": "Verschil",
+      "netSavings": "Netto bij sparen",
+      "netInvestments": "Netto bij beleggen",
+      "totalTaxSavings": "Totale heffing bij sparen",
+      "totalTaxInvestments": "Totale heffing bij beleggen"
+    },
+    "chart": {
+      "title": "Netto vermogen over de tijd",
+      "ariaLabel": "Lijngrafiek die het netto vermogen van sparen en beleggen over de jaren vergelijkt",
+      "now": "Nu"
+    },
+    "table": {
+      "title": "Jaaroverzicht",
+      "ariaLabel": "Tabel met per jaar het brutorendement, de heffing en het netto saldo",
+      "year": "Jaar",
+      "startBalance": "Beginsaldo",
+      "grossReturn": "Brutorendement",
+      "tax": "Box 3-heffing",
+      "endBalance": "Eindsaldo"
+    },
+    "disclaimer": "Deze rekentool geeft een indicatie op basis van het Nederlandse box 3-stelsel en je eigen aannames over rendement. Het is geen fiscaal of financieel advies. Werkelijke percentages, vrijstellingen en wetgeving kunnen wijzigen.",
+    "meta": {
+      "title": "Sparen of beleggen? — Netto vergelijking met box 3-belasting",
+      "description": "Bereken wat netto het meeste oplevert: sparen of beleggen. Inclusief box 3-belasting over spaargeld en beleggingen, voor het huidige en het nieuwe stelsel.",
+      "keywords": "sparen of beleggen, box 3, vermogensbelasting, fictief rendement, werkelijk rendement, netto rendement, belasting spaargeld, belasting beleggingen"
+    }
   }
 }

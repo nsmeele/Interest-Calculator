@@ -1,0 +1,35 @@
+@reference "../../style.css";
+
+/* ─── Projection Table ─── */
+.projection-table__title {
+  @apply mb-2 font-display text-base font-semibold text-navy-800 dark:text-navy-100;
+}
+
+.projection-table__scroll {
+  @apply overflow-x-auto min-w-0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.projection-table table {
+  @apply w-full text-xs border-collapse sm:text-sm;
+}
+
+.projection-table thead {
+  @apply bg-navy-50 dark:bg-navy-800;
+}
+
+.projection-table th {
+  @apply px-3 py-2 text-right font-semibold text-navy-600 uppercase text-2xs tracking-[0.06em] first:text-left dark:text-navy-300 sm:px-4 sm:py-2.5 sm:text-xs;
+}
+
+.projection-table td {
+  @apply px-3 py-2 text-right text-navy-700 border-b border-navy-100 tabular-nums first:text-left first:text-navy-500 first:font-medium dark:text-navy-200 dark:border-navy-700 dark:first:text-navy-400 sm:px-4 sm:py-[9px];
+}
+
+.projection-table tbody tr {
+  @apply transition-colors duration-150 hover:bg-copper-500/4 dark:hover:bg-copper-500/6;
+}
+
+.projection-table tbody tr:last-child td {
+  @apply border-b-0;
+}

@@ -1,0 +1,6 @@
+@reference "../../style.css";
+
+/* ─── Saving vs Investing Form ─── */
+.comparison-form {
+  @apply flex flex-col gap-4;
+}
