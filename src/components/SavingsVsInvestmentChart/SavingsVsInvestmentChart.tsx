@@ -61,7 +61,11 @@ export default function SavingsVsInvestmentChart({ result }: SavingsVsInvestment
 
   const data = useMemo(() => buildComparisonChartData(result), [result]);
 
-  const yearLabel = (year: number) => (year === 0 ? t('savingsVsInvesting.chart.now') : String(year));
+  // X-axis ticks are calendar years (peildatum 1 januari). Index 0 = startYear (het huidige jaar),
+  // elk volgend punt is het saldo per 1 januari van het jaar daarna.
+  const startYear = result.savings[0]?.calendarYear;
+  const yearLabel = (index: number) =>
+    startYear != null ? String(startYear + index) : String(index);
 
   if (data.length <= 1) return null;
 

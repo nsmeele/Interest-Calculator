@@ -30,5 +30,8 @@ export const BOX3_TAX_FREE_CAPITAL_2026 = 59357;
 /** Heffingvrij rendement per persoon (vanaf 2028). */
 export const BOX3_TAX_FREE_RETURN_2028 = 1800;
 
+/** Eerste kalenderjaar waarin met werkelijk rendement gerekend kan worden. */
+export const BOX3_ACTUAL_RETURN_START_YEAR = 2028;
+
 /** Vermenigvuldigingsfactor van de vrijstelling bij fiscaal partnerschap. */
 export const FISCAL_PARTNER_MULTIPLIER = 2;

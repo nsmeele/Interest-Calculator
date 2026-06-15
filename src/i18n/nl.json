@@ -386,18 +386,12 @@
       "years": "Looptijd (jaren)",
       "savingsRate": "Verwachte spaarrente",
       "investmentReturn": "Verwacht beleggingsrendement",
-      "regime": "Belastingstelsel",
+      "useActualReturnFrom2028": "Vanaf 2028 met werkelijk rendement rekenen",
+      "useActualReturnFrom2028Hint": "T/m 2027 wordt altijd met fictief rendement gerekend; vanaf 2028 met werkelijk rendement.",
       "fiscalPartner": "Ik heb een fiscaal partner",
       "fiscalPartnerHint": "Verdubbelt de vrijstelling.",
       "usedExemption": "Reeds benutte vrijstelling",
-      "usedExemptionCapitalHint": "Heffingvrij vermogen dat al door ander box 3-vermogen wordt gebruikt.",
-      "usedExemptionReturnHint": "Heffingvrij rendement dat al door ander box 3-vermogen wordt gebruikt."
-    },
-    "regime": {
-      "forfaitair2026": "Forfaitair (huidig, 2026)",
-      "actual2028": "Werkelijk rendement (vanaf 2028)",
-      "forfaitair2026Description": "Belasting over een fictief rendement: spaargeld 1,44%, beleggingen 6%, tarief 36%.",
-      "actual2028Description": "Belasting over je werkelijke rente en koerswinst, tarief 36%."
+      "usedExemptionHint": "Reeds door ander box 3-vermogen benut deel van de vrijstelling (heffingvrij vermogen vóór 2028, heffingvrij rendement vanaf 2028)."
     },
     "assetClass": {
       "savings": "Sparen",
@@ -416,8 +410,7 @@
     },
     "chart": {
       "title": "Netto vermogen over de tijd",
-      "ariaLabel": "Lijngrafiek die het netto vermogen van sparen en beleggen over de jaren vergelijkt",
-      "now": "Nu"
+      "ariaLabel": "Lijngrafiek die het netto vermogen van sparen en beleggen over de jaren vergelijkt"
     },
     "table": {
       "title": "Jaaroverzicht",

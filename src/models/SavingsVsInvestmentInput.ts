@@ -1,4 +1,3 @@
-import { Box3Regime } from '../enums/Box3Regime';
 import { DEFAULT_CURRENCY } from '../enums/Currency';
 
 /** Invoer voor de "sparen vs beleggen"-vergelijking onder box 3. */
@@ -12,8 +11,14 @@ export class SavingsVsInvestmentInput {
     public readonly savingsRate: number,
     /** Verwacht beleggingsrendement in procenten per jaar. */
     public readonly investmentReturn: number,
-    /** Het box 3-stelsel waarmee gerekend wordt. */
-    public readonly regime: Box3Regime,
+    /** Kalenderjaar waarin de projectie begint (jaar 1). */
+    public readonly startYear: number,
+    /**
+     * Of vanaf 2028 met werkelijk rendement gerekend wordt. Staat dit uit, dan
+     * wordt elk jaar forfaitair belast; staat het aan, dan geldt forfaitair t/m
+     * 2027 en werkelijk rendement vanaf 2028.
+     */
+    public readonly useActualReturnFrom2028: boolean = false,
     /** Of er een fiscaal partner is (verdubbelt de vrijstelling). */
     public readonly hasFiscalPartner: boolean = false,
     /**

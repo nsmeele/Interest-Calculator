@@ -386,18 +386,12 @@
       "years": "Term (years)",
       "savingsRate": "Expected savings rate",
       "investmentReturn": "Expected investment return",
-      "regime": "Tax system",
+      "useActualReturnFrom2028": "Use actual return from 2028",
+      "useActualReturnFrom2028Hint": "Up to 2027 a notional return is always used; from 2028 the actual return applies.",
       "fiscalPartner": "I have a fiscal partner",
       "fiscalPartnerHint": "Doubles the exemption.",
       "usedExemption": "Exemption already used",
-      "usedExemptionCapitalHint": "Tax-free capital already used by other box 3 assets.",
-      "usedExemptionReturnHint": "Tax-free return already used by other box 3 assets."
-    },
-    "regime": {
-      "forfaitair2026": "Notional (current, 2026)",
-      "actual2028": "Actual return (from 2028)",
-      "forfaitair2026Description": "Tax on a notional return: savings 1.44%, investments 6%, rate 36%.",
-      "actual2028Description": "Tax on your actual interest and capital gains, rate 36%."
+      "usedExemptionHint": "Portion of the exemption already used by other box 3 assets (tax-free capital before 2028, tax-free return from 2028)."
     },
     "assetClass": {
       "savings": "Saving",
@@ -416,8 +410,7 @@
     },
     "chart": {
       "title": "Net wealth over time",
-      "ariaLabel": "Line chart comparing the net wealth of saving and investing over the years",
-      "now": "Now"
+      "ariaLabel": "Line chart comparing the net wealth of saving and investing over the years"
     },
     "table": {
       "title": "Yearly breakdown",

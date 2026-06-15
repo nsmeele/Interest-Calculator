@@ -1,10 +1,11 @@
-import { Box3Regime } from '../enums/Box3Regime';
 import { AssetClass } from '../enums/AssetClass';
 
 /** Eén jaar uit een meerjarige projectie. */
 export interface YearProjection {
   /** 1-based jaarnummer. */
   year: number;
+  /** Het kalenderjaar dat dit projectiejaar vertegenwoordigt. */
+  calendarYear: number;
   /** Saldo aan het begin van het jaar (peildatum 1 januari). */
   startBalance: number;
   /** Brutorendement over het jaar (vóór belasting). */
@@ -29,7 +30,6 @@ export class SavingsVsInvestmentResult {
     public readonly initialAmount: number,
     public readonly savings: YearProjection[],
     public readonly investments: YearProjection[],
-    public readonly regime: Box3Regime,
     public readonly currency: string,
   ) {}
 

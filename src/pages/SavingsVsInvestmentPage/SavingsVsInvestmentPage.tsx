@@ -10,6 +10,7 @@ import { SavingsVsInvestmentInput } from '../../models/SavingsVsInvestmentInput'
 import { WINNER_TIE } from '../../models/SavingsVsInvestmentResult';
 import { AssetClass } from '../../enums/AssetClass';
 import { parseAmountInput, parseDecimalInput, formatCurrency } from '../../utils/format';
+import { currentYear } from '../../utils/chartRange';
 import type { Currency } from '../../enums/Currency';
 import SavingsVsInvestmentForm, {
   createDefaultFormValues,
@@ -55,7 +56,8 @@ export default function SavingsVsInvestmentPage() {
       parseYears(values.years),
       parseDecimalInput(values.savingsRate),
       parseDecimalInput(values.investmentReturn),
-      values.regime,
+      currentYear(),
+      values.useActualReturnFrom2028,
       values.hasFiscalPartner,
       parseAmountInput(values.usedExemption, activeCurrency),
       currency,

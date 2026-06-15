@@ -1,12 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import { Box3Regime, getBox3RegimeLabel } from '../../enums/Box3Regime';
 import { CURRENCY_SYMBOLS, type Currency } from '../../enums/Currency';
 import { useLocale } from '../../context/useLocale';
 import { formatAmountInput, parseAmountInput } from '../../utils/format';
 import type { SavingsVsInvestmentFormValues } from './formValues';
 import './SavingsVsInvestmentForm.css';
-
-const REGIMES = Object.values(Box3Regime);
 
 interface SavingsVsInvestmentFormProps {
   values: SavingsVsInvestmentFormValues;
@@ -25,11 +22,6 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
     const parsed = parseAmountInput(raw, activeCurrency);
     onChange({ [field]: isNaN(parsed) ? '' : formatAmountInput(parsed, activeCurrency) });
   };
-
-  const usedExemptionHint =
-    values.regime === Box3Regime.Forfaitair2026
-      ? t('savingsVsInvesting.form.usedExemptionCapitalHint')
-      : t('savingsVsInvesting.form.usedExemptionReturnHint');
 
   return (
     <form className="comparison-form" onSubmit={(e) => e.preventDefault()}>
@@ -101,23 +93,17 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
       </div>
 
       <div className="form-group">
-        <label className="form-label">{t('savingsVsInvesting.form.regime')}</label>
-        <div className="interval-grid">
-          {REGIMES.map((regime) => (
-            <div key={regime} className="interval-option">
-              <input
-                type="radio"
-                name="svi-regime"
-                id={`svi-regime-${regime}`}
-                value={regime}
-                checked={values.regime === regime}
-                onChange={() => onChange({ regime })}
-              />
-              <label htmlFor={`svi-regime-${regime}`}>{getBox3RegimeLabel(regime)}</label>
-            </div>
-          ))}
+        <div className="form-checkbox">
+          <input
+            type="checkbox"
+            id="svi-useActualReturn"
+            checked={values.useActualReturnFrom2028}
+            onChange={(e) => onChange({ useActualReturnFrom2028: e.target.checked })}
+            aria-describedby="svi-useActualReturn-hint"
+          />
+          <label htmlFor="svi-useActualReturn">{t('savingsVsInvesting.form.useActualReturnFrom2028')}</label>
         </div>
-        <span className="form-hint">{t(`savingsVsInvesting.regime.${values.regime}Description`)}</span>
+        <span id="svi-useActualReturn-hint" className="form-hint">{t('savingsVsInvesting.form.useActualReturnFrom2028Hint')}</span>
       </div>
 
       <div className="form-group">
@@ -127,10 +113,11 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
             id="svi-fiscalPartner"
             checked={values.hasFiscalPartner}
             onChange={(e) => onChange({ hasFiscalPartner: e.target.checked })}
+            aria-describedby="svi-fiscalPartner-hint"
           />
           <label htmlFor="svi-fiscalPartner">{t('savingsVsInvesting.form.fiscalPartner')}</label>
         </div>
-        <span className="form-hint">{t('savingsVsInvesting.form.fiscalPartnerHint')}</span>
+        <span id="svi-fiscalPartner-hint" className="form-hint">{t('savingsVsInvesting.form.fiscalPartnerHint')}</span>
       </div>
 
       <div className="form-group">
@@ -146,9 +133,10 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
             onChange={(e) => onChange({ usedExemption: e.target.value })}
             onBlur={() => reformatAmount('usedExemption')}
             placeholder="0"
+            aria-describedby="svi-usedExemption-hint"
           />
         </div>
-        <span className="form-hint">{usedExemptionHint}</span>
+        <span id="svi-usedExemption-hint" className="form-hint">{t('savingsVsInvesting.form.usedExemptionHint')}</span>
       </div>
     </form>
   );

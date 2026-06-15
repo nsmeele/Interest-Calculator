@@ -1,4 +1,3 @@
-import { Box3Regime } from '../../enums/Box3Regime';
 import type { Currency } from '../../enums/Currency';
 import { formatAmountInput } from '../../utils/format';
 
@@ -8,7 +7,7 @@ export interface SavingsVsInvestmentFormValues {
   years: string;
   savingsRate: string;
   investmentReturn: string;
-  regime: Box3Regime;
+  useActualReturnFrom2028: boolean;
   hasFiscalPartner: boolean;
   usedExemption: string;
 }
@@ -28,7 +27,7 @@ export function createDefaultFormValues(currency: Currency): SavingsVsInvestment
     years: DEFAULT_YEARS,
     savingsRate: DEFAULT_SAVINGS_RATE,
     investmentReturn: DEFAULT_INVESTMENT_RETURN,
-    regime: Box3Regime.Forfaitair2026,
+    useActualReturnFrom2028: false,
     hasFiscalPartner: false,
     usedExemption: '',
   };

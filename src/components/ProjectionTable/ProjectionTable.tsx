@@ -33,7 +33,7 @@ export default function ProjectionTable({ projections, assetClass, currency }: P
           <tbody>
             {projections.map((p) => (
               <tr key={p.year}>
-                <td>{p.year}</td>
+                <td>{p.calendarYear}</td>
                 <td>{formatCurrency(p.grossReturn, currency)}</td>
                 <td>{formatCurrency(p.tax, currency)}</td>
                 <td>{formatCurrency(p.endBalance, currency)}</td>
