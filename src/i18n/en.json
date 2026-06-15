@@ -373,5 +373,61 @@
     "yearsShort": "{{count}} yr",
     "monthsShort": "{{count}} mo",
     "yearsMonthsShort": "{{years}} yr {{months}} mo"
+  },
+  "savingsVsInvesting": {
+    "navLabel": "Saving or investing",
+    "backToOverview": "Back to overview",
+    "title": "Saving or investing?",
+    "intro": "Calculate which leaves you with more net: saving or investing your money. The tool accounts for the box 3 tax on both your savings and your investments.",
+    "netherlandsOnly": "Note: this calculation applies only to the Dutch tax system (box 3).",
+    "investmentRisk": "Note: investing carries risk. The investment return is an assumption; the actual amount may turn out higher, but also lower than calculated here.",
+    "form": {
+      "title": "Your details",
+      "initialAmount": "Initial amount",
+      "startYear": "Start year",
+      "years": "Term (years)",
+      "savingsRate": "Expected savings rate",
+      "investmentReturn": "Expected investment return",
+      "useActualReturnFrom2028": "Use actual return from 2028",
+      "useActualReturnFrom2028Hint": "Up to 2027 a notional return is always used; from 2028 the actual return applies.",
+      "applyExemption": "Apply the exemption",
+      "applyExemptionHint": "Tax-free capital {{capital}} (up to 2027) and tax-free return {{returns}} (from 2028), per person.",
+      "fiscalPartner": "I have a fiscal partner",
+      "fiscalPartnerHint": "Doubles the exemption (only when it is applied)."
+    },
+    "assetClass": {
+      "savings": "Saving",
+      "investments": "Investing"
+    },
+    "result": {
+      "title": "Result after {{count}} years",
+      "winnerInvestments": "Investing yields the most net",
+      "winnerSavings": "Saving yields the most net",
+      "tie": "Saving and investing yield the same net amount",
+      "differenceLabel": "Difference",
+      "netSavings": "Net when saving",
+      "netInvestments": "Net when investing",
+      "totalTaxSavings": "Total tax when saving",
+      "totalTaxInvestments": "Total tax when investing"
+    },
+    "chart": {
+      "title": "Net wealth over time",
+      "ariaLabel": "Line chart comparing the net wealth of saving and investing over the years"
+    },
+    "table": {
+      "title": "Yearly breakdown",
+      "ariaLabel": "Table showing gross return, tax and net balance per year",
+      "year": "Year",
+      "startBalance": "Start balance",
+      "grossReturn": "Gross return",
+      "tax": "Box 3 tax",
+      "endBalance": "End balance"
+    },
+    "disclaimer": "This tool gives an indication based on the Dutch box 3 system and your own return assumptions. It is not tax or financial advice. Actual rates, exemptions and legislation may change.",
+    "meta": {
+      "title": "Saving or investing? — Net comparison with box 3 tax",
+      "description": "Calculate which leaves you with more net: saving or investing. Includes box 3 tax on savings and investments, for the current and the new system.",
+      "keywords": "saving or investing, box 3, wealth tax, notional return, actual return, net return, tax on savings, tax on investments"
+    }
   }
 }

@@ -51,20 +51,28 @@ function upsertJsonLd(data: Record<string, unknown>) {
   script.textContent = JSON.stringify(data);
 }
 
-export function useDocumentMeta() {
+/** Optionele per-pagina overrides voor de documentmetadata (i18n-sleutels). */
+interface DocumentMetaOverrides {
+  titleKey?: string;
+  descriptionKey?: string;
+  keywordsKey?: string;
+}
+
+export function useDocumentMeta(overrides: DocumentMetaOverrides = {}) {
   const { t, i18n } = useTranslation();
+  const { titleKey = 'meta.title', descriptionKey = 'meta.description', keywordsKey = 'meta.keywords' } = overrides;
 
   useEffect(() => {
     const lang = i18n.language as SupportedLanguage;
     const langUrl = (l: string) => `${CANONICAL_ORIGIN}${BASE_PATH}/${l}`;
     const currentUrl = langUrl(lang);
-    const title = t('meta.title');
-    const description = t('meta.description');
+    const title = t(titleKey);
+    const description = t(descriptionKey);
 
     document.title = title;
     document.documentElement.lang = lang;
     upsertMeta('description', description);
-    upsertMeta('keywords', t('meta.keywords'));
+    upsertMeta('keywords', t(keywordsKey));
     upsertLink('canonical', currentUrl);
 
     for (const { code } of SUPPORTED_LANGUAGES) {
@@ -112,5 +120,5 @@ export function useDocumentMeta() {
         url: 'https://github.com/nsmeele',
       },
     });
-  }, [t, i18n.language]);
+  }, [t, i18n.language, titleKey, descriptionKey, keywordsKey]);
 }

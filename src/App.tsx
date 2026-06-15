@@ -5,6 +5,7 @@ import BankAccountsOverview from './components/BankAccountsOverview';
 import PortfolioSummary from './components/PortfolioSummary';
 import AccountDetailPage from './pages/AccountDetailPage';
 import ReinvestmentPage from './pages/ReinvestmentPage';
+import SavingsVsInvestmentPage from './pages/SavingsVsInvestmentPage';
 import ThemeToggle from './components/ThemeToggle/ThemeToggle';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import {useDataTransfer} from './hooks/useDataTransfer';
@@ -22,7 +23,8 @@ import {
     ArrowUpTrayIcon,
     ArrowDownTrayIcon,
     ChevronDownIcon,
-    ArrowPathIcon
+    ArrowPathIcon,
+    ScaleIcon
 } from '@heroicons/react/24/outline';
 import type {BankAccount} from './models/BankAccount';
 import {demoData, demoTransfers} from './transfer/demoData';
@@ -47,6 +49,7 @@ export default function App() {
                                 <Routes>
                                     <Route path="account/:id" element={<AccountDetailPage/>}/>
                                     <Route path="reinvest" element={<ReinvestmentPage/>}/>
+                                    <Route path="sparen-vs-beleggen" element={<SavingsVsInvestmentPage/>}/>
                                     <Route path="*" element={<AppContent/>}/>
                                 </Routes>
                             </TransferProvider>
@@ -242,6 +245,10 @@ function AppContent() {
                             </p>
                         </div>
                         <div className="hero-top__actions">
+                            <Link to={`/${lang}/sparen-vs-beleggen`} className="btn-action btn-action--muted">
+                                <ScaleIcon aria-hidden="true"/>
+                                {t('savingsVsInvesting.navLabel')}
+                            </Link>
                             {hasResults && (
                                 <Link to={`/${lang}/reinvest`} className="btn-action btn-action--muted">
                                     <ArrowPathIcon aria-hidden="true"/>

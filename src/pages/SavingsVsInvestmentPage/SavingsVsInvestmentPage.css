@@ -1,0 +1,78 @@
+@reference "../../style.css";
+
+/* ─── Saving vs Investing Page ─── */
+.svi-page {
+  @apply pb-16;
+}
+
+.svi-page__hero {
+  @apply mb-6;
+}
+
+.svi-page__hero h1 {
+  @apply font-display text-2xl font-semibold text-navy-900 leading-tight tracking-[-0.03em] dark:text-navy-50 sm:text-3xl;
+}
+
+.svi-page__intro {
+  @apply mt-2 max-w-2xl text-sm text-navy-600 dark:text-navy-300 sm:text-base;
+}
+
+.svi-page__notice {
+  @apply mt-3 max-w-2xl text-sm text-navy-700 dark:text-navy-200;
+}
+
+/* Layout: form beside results on larger screens, stacked on mobile */
+.svi-page__layout {
+  @apply grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start;
+}
+
+.svi-page__form {
+  @apply lg:sticky lg:top-4;
+}
+
+.svi-page__results {
+  @apply flex flex-col gap-6 min-w-0;
+}
+
+/* ─── Result hero ─── */
+.svi-result-hero {
+  @apply flex flex-col gap-1 rounded-xl border-l-4 border-copper-400 bg-copper-100/40 p-4 dark:bg-copper-500/10 sm:p-5;
+}
+
+.svi-result-hero__verdict {
+  @apply font-display text-lg font-semibold text-navy-900 dark:text-navy-50 sm:text-xl;
+}
+
+.svi-result-hero__difference {
+  @apply font-body text-base font-semibold tabular-nums text-copper-600 dark:text-copper-300;
+}
+
+.svi-result-hero__subtitle {
+  @apply text-2xs uppercase tracking-[0.08em] text-navy-500 dark:text-navy-400;
+}
+
+/* ─── Summary stats ─── */
+.svi-stats {
+  @apply grid grid-cols-2 gap-3 sm:grid-cols-4;
+}
+
+.svi-stats__item {
+  @apply flex flex-col gap-1 rounded-lg bg-navy-100/40 p-3 dark:bg-navy-800/40;
+}
+
+.svi-stats__item dt {
+  @apply text-2xs uppercase tracking-[0.06em] text-navy-500 dark:text-navy-400;
+}
+
+.svi-stats__item dd {
+  @apply font-body text-base font-semibold tabular-nums text-navy-900 dark:text-navy-50;
+}
+
+/* ─── Yearly tables ─── */
+.svi-tables__grid {
+  @apply grid grid-cols-1 gap-4 lg:grid-cols-2;
+}
+
+.svi-page__disclaimer {
+  @apply mt-8;
+}

@@ -55,3 +55,9 @@ export function formatAmountInput(value: string | number, currencyCode: Currency
 export function parseAmountInput(value: string, currencyCode: Currency): number {
   return createCurrency(value, currencyCode).value;
 }
+
+/** Parseert een decimaal invoerveld dat zowel komma als punt accepteert; geeft 0 bij ongeldige invoer. */
+export function parseDecimalInput(value: string): number {
+  const parsed = parseFloat(value.replace(/,/g, '.'));
+  return isNaN(parsed) ? 0 : parsed;
+}
