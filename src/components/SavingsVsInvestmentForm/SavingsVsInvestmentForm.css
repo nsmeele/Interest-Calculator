@@ -4,3 +4,20 @@
 .comparison-form {
   @apply flex flex-col gap-4;
 }
+
+/* ─── Spaarforfait slider ─── */
+.form-slider__header {
+  @apply flex items-baseline justify-between gap-2 mb-1.5;
+}
+
+.form-slider__value {
+  @apply text-sm font-semibold text-copper-600 tabular-nums dark:text-copper-400;
+}
+
+.form-slider {
+  @apply w-full h-1.5 rounded-full cursor-pointer appearance-none bg-navy-200 outline-none accent-copper-500 dark:bg-navy-600 dark:accent-copper-400;
+}
+
+.form-slider:focus-visible {
+  @apply ring-2 ring-copper-400/40 ring-offset-2 ring-offset-transparent;
+}

@@ -9,6 +9,11 @@ export interface Box3TaxContext {
   /** De vermogenscategorie waarop de heffing van toepassing is. */
   assetClass: AssetClass;
   /**
+   * Het forfaitaire rendement op spaargeld (fractie) voor dit belastingjaar.
+   * Wordt alleen gebruikt door het forfaitaire stelsel voor de categorie sparen.
+   */
+  savingsForfait: number;
+  /**
    * De toepasselijke vrijstelling in de eenheid van het stelsel:
    * heffingvrij vermogen (forfaitair) of heffingvrij rendement (werkelijk rendement).
    */

@@ -388,6 +388,8 @@
       "years": "Looptijd (jaren)",
       "savingsRate": "Verwachte spaarrente",
       "investmentReturn": "Verwacht beleggingsrendement",
+      "savingsForfait": "Box 3-spaarforfait",
+      "savingsForfaitHint": "Fictief rendement op spaargeld waarover box 3-belasting wordt geheven. Standaard 1,28% (voorlopig cijfer 2026); pas aan naar je eigen aanname.",
       "useActualReturnFrom2028": "Vanaf 2028 met werkelijk rendement rekenen",
       "useActualReturnFrom2028Hint": "T/m 2027 wordt altijd met fictief rendement gerekend; vanaf 2028 met werkelijk rendement.",
       "applyExemption": "Vrijstelling toepassen",

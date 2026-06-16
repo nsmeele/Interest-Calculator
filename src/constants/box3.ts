@@ -16,10 +16,24 @@ export const BOX3_TAX_RATE = 0.36;
 
 /* ─── Forfaitair stelsel (peiljaar 2026) ─── */
 
-/** Forfaitair rendement op spaargeld (2026, voorlopig). */
-export const BOX3_FORFAIT_SAVINGS_2026 = 0.0144;
+/**
+ * Standaard box 3-spaarforfait, in procenten. Voorlopig cijfer voor peiljaar
+ * 2026; het definitieve percentage wordt pas na afloop van het jaar
+ * vastgesteld. Daarom is deze waarde in de UI instelbaar via een slider — de
+ * gebruiker kiest zelf zijn aanname. Ter referentie de definitieve cijfers:
+ * 2024 = 1,44%, 2025 = 1,37%.
+ */
+export const BOX3_FORFAIT_SAVINGS_DEFAULT_PERCENT = 1.28;
 
-/** Forfaitair rendement op beleggingen / overige bezittingen (2026). */
+/** Standaard box 3-spaarforfait als fractie (afgeleid van het percentage). */
+export const BOX3_FORFAIT_SAVINGS_DEFAULT = BOX3_FORFAIT_SAVINGS_DEFAULT_PERCENT / 100;
+
+/** Grenzen en stapgrootte voor de instelbare spaarforfait-slider (in procenten). */
+export const BOX3_FORFAIT_SAVINGS_MIN_PERCENT = 0;
+export const BOX3_FORFAIT_SAVINGS_MAX_PERCENT = 3;
+export const BOX3_FORFAIT_SAVINGS_STEP_PERCENT = 0.01;
+
+/** Forfaitair rendement op beleggingen / overige bezittingen (2026, definitief). */
 export const BOX3_FORFAIT_INVESTMENTS_2026 = 0.06;
 
 /** Heffingvrij vermogen per persoon (2026). */
