@@ -388,6 +388,8 @@
       "years": "Term (years)",
       "savingsRate": "Expected savings rate",
       "investmentReturn": "Expected investment return",
+      "savingsForfait": "Box 3 savings forfait",
+      "savingsForfaitHint": "Notional return on savings that box 3 tax is levied on. Default 1.28% (2026 preliminary); adjust to your own assumption.",
       "useActualReturnFrom2028": "Use actual return from 2028",
       "useActualReturnFrom2028Hint": "Up to 2027 a notional return is always used; from 2028 the actual return applies.",
       "applyExemption": "Apply the exemption",

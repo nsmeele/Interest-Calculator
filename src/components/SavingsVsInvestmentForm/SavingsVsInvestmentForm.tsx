@@ -2,7 +2,13 @@ import { useTranslation } from 'react-i18next';
 import { CURRENCY_SYMBOLS, Currency } from '../../enums/Currency';
 import { useLocale } from '../../context/useLocale';
 import { formatAmountInput, parseAmountInput, formatCurrency } from '../../utils/format';
-import { BOX3_TAX_FREE_CAPITAL_2026, BOX3_TAX_FREE_RETURN_2028 } from '../../constants/box3';
+import {
+  BOX3_TAX_FREE_CAPITAL_2026,
+  BOX3_TAX_FREE_RETURN_2028,
+  BOX3_FORFAIT_SAVINGS_MIN_PERCENT,
+  BOX3_FORFAIT_SAVINGS_MAX_PERCENT,
+  BOX3_FORFAIT_SAVINGS_STEP_PERCENT,
+} from '../../constants/box3';
 import type { SavingsVsInvestmentFormValues } from './formValues';
 import './SavingsVsInvestmentForm.css';
 
@@ -114,6 +120,25 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
             <span className="affix">%</span>
           </div>
         </div>
+      </div>
+
+      <div className="form-group">
+        <div className="form-slider__header">
+          <label className="form-label" htmlFor="svi-savingsForfait">{t('savingsVsInvesting.form.savingsForfait')}</label>
+          <span className="form-slider__value">{values.savingsForfait.replace('.', ',')}%</span>
+        </div>
+        <input
+          id="svi-savingsForfait"
+          type="range"
+          className="form-slider"
+          min={BOX3_FORFAIT_SAVINGS_MIN_PERCENT}
+          max={BOX3_FORFAIT_SAVINGS_MAX_PERCENT}
+          step={BOX3_FORFAIT_SAVINGS_STEP_PERCENT}
+          value={values.savingsForfait}
+          onChange={(e) => onChange({ savingsForfait: e.target.value })}
+          aria-describedby="svi-savingsForfait-hint"
+        />
+        <span id="svi-savingsForfait-hint" className="form-hint">{t('savingsVsInvesting.form.savingsForfaitHint')}</span>
       </div>
 
       <div className="form-group">

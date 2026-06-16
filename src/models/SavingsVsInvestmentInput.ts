@@ -1,4 +1,5 @@
 import { DEFAULT_CURRENCY } from '../enums/Currency';
+import { BOX3_FORFAIT_SAVINGS_DEFAULT } from '../constants/box3';
 
 /** Invoer voor de "sparen vs beleggen"-vergelijking onder box 3. */
 export class SavingsVsInvestmentInput {
@@ -27,6 +28,12 @@ export class SavingsVsInvestmentInput {
      * 2028), eventueel verdubbeld met een fiscaal partner.
      */
     public readonly applyExemption: boolean = false,
+    /**
+     * Het forfaitaire rendement op spaargeld (fractie) waarmee de box 3-heffing
+     * in het forfaitaire stelsel wordt berekend. Voorlopig en daarom door de
+     * gebruiker instelbaar; standaard het meest actuele cijfer.
+     */
+    public readonly savingsForfait: number = BOX3_FORFAIT_SAVINGS_DEFAULT,
     public readonly currency: string = DEFAULT_CURRENCY,
   ) {}
 }

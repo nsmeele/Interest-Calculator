@@ -2,7 +2,6 @@ import type { IBox3TaxStrategy, Box3TaxContext } from '../interfaces/IBox3TaxStr
 import { AssetClass } from '../enums/AssetClass';
 import {
   BOX3_TAX_RATE,
-  BOX3_FORFAIT_SAVINGS_2026,
   BOX3_FORFAIT_INVESTMENTS_2026,
 } from '../constants/box3';
 
@@ -14,10 +13,10 @@ import {
  * heffing = tarief × forfait[categorie] × max(0, vermogen − heffingvrij vermogen)
  */
 export class ForfaitairTaxStrategy2026 implements IBox3TaxStrategy {
-  annualTax({ capital, assetClass, exemption }: Box3TaxContext): number {
+  annualTax({ capital, assetClass, exemption, savingsForfait }: Box3TaxContext): number {
     const forfait =
       assetClass === AssetClass.Savings
-        ? BOX3_FORFAIT_SAVINGS_2026
+        ? savingsForfait
         : BOX3_FORFAIT_INVESTMENTS_2026;
 
     const taxableBase = Math.max(0, capital - exemption);

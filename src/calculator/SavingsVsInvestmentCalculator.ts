@@ -60,7 +60,13 @@ export class SavingsVsInvestmentCalculator {
 
       const startBalance = balance;
       const grossReturn = startBalance * rate;
-      const tax = strategy.annualTax({ capital: startBalance, actualReturn: grossReturn, assetClass, exemption });
+      const tax = strategy.annualTax({
+        capital: startBalance,
+        actualReturn: grossReturn,
+        assetClass,
+        exemption,
+        savingsForfait: input.savingsForfait,
+      });
       const netReturn = grossReturn - tax;
       const endBalance = startBalance + netReturn;
 

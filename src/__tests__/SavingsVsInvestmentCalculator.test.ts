@@ -4,7 +4,7 @@ import { SavingsVsInvestmentInput } from '../models/SavingsVsInvestmentInput';
 import { AssetClass } from '../enums/AssetClass';
 import {
   BOX3_TAX_RATE,
-  BOX3_FORFAIT_SAVINGS_2026,
+  BOX3_FORFAIT_SAVINGS_DEFAULT,
   BOX3_FORFAIT_INVESTMENTS_2026,
   BOX3_TAX_FREE_CAPITAL_2026,
   BOX3_TAX_FREE_RETURN_2028,
@@ -21,6 +21,7 @@ function makeInput(overrides: Partial<{
   useActualReturnFrom2028: boolean;
   hasFiscalPartner: boolean;
   applyExemption: boolean;
+  savingsForfait: number;
 }> = {}) {
   return new SavingsVsInvestmentInput(
     overrides.initialAmount ?? 100000,
@@ -31,6 +32,7 @@ function makeInput(overrides: Partial<{
     overrides.useActualReturnFrom2028 ?? false,
     overrides.hasFiscalPartner ?? false,
     overrides.applyExemption ?? true,
+    overrides.savingsForfait ?? BOX3_FORFAIT_SAVINGS_DEFAULT,
   );
 }
 
@@ -61,7 +63,7 @@ describe('SavingsVsInvestmentCalculator', () => {
     it('computes the first-year net balance for savings and investments', () => {
       const result = calculator.calculate(makeInput({ years: 1 }));
 
-      const savingsTax = forfaitairTax(100000, BOX3_FORFAIT_SAVINGS_2026);
+      const savingsTax = forfaitairTax(100000, BOX3_FORFAIT_SAVINGS_DEFAULT);
       expect(result.savings[0].grossReturn).toBeCloseTo(2000, 6);
       expect(result.savings[0].tax).toBeCloseTo(savingsTax, 6);
       expect(result.savings[0].endBalance).toBeCloseTo(100000 + 2000 - savingsTax, 6);
@@ -84,10 +86,18 @@ describe('SavingsVsInvestmentCalculator', () => {
       expect(result.totalInvestmentsTax).toBeGreaterThan(result.totalSavingsTax);
     });
 
+    it('applies a custom savings forfait (slider value) to the savings tax', () => {
+      const customForfait = 0.02;
+      const result = calculator.calculate(makeInput({ years: 1, applyExemption: false, savingsForfait: customForfait }));
+      // Savings use the custom forfait; investments keep the fixed investment forfait.
+      expect(result.savings[0].tax).toBeCloseTo(forfaitairTax(100000, customForfait, 0), 6);
+      expect(result.investments[0].tax).toBeCloseTo(forfaitairTax(100000, BOX3_FORFAIT_INVESTMENTS_2026, 0), 6);
+    });
+
     it('keeps using the forfaitair regime in 2028+ when the toggle is off', () => {
       const result = calculator.calculate(makeInput({ years: 1, startYear: 2028, useActualReturnFrom2028: false }));
       // Capital-based forfait, NOT the actual-return formula.
-      expect(result.savings[0].tax).toBeCloseTo(forfaitairTax(100000, BOX3_FORFAIT_SAVINGS_2026), 6);
+      expect(result.savings[0].tax).toBeCloseTo(forfaitairTax(100000, BOX3_FORFAIT_SAVINGS_DEFAULT), 6);
       expect(result.savings[0].tax).not.toBeCloseTo(actualTax(2000), 6);
     });
   });
@@ -104,9 +114,9 @@ describe('SavingsVsInvestmentCalculator', () => {
 
       // 2026 + 2027: forfaitair (capital-based).
       expect(result.savings[0].calendarYear).toBe(2026);
-      expect(result.savings[0].tax).toBeCloseTo(forfaitairTax(result.savings[0].startBalance, BOX3_FORFAIT_SAVINGS_2026), 6);
+      expect(result.savings[0].tax).toBeCloseTo(forfaitairTax(result.savings[0].startBalance, BOX3_FORFAIT_SAVINGS_DEFAULT), 6);
       expect(result.savings[1].calendarYear).toBe(2027);
-      expect(result.savings[1].tax).toBeCloseTo(forfaitairTax(result.savings[1].startBalance, BOX3_FORFAIT_SAVINGS_2026), 6);
+      expect(result.savings[1].tax).toBeCloseTo(forfaitairTax(result.savings[1].startBalance, BOX3_FORFAIT_SAVINGS_DEFAULT), 6);
 
       // 2028: actual return (return-based).
       expect(result.savings[2].calendarYear).toBe(2028);
@@ -134,7 +144,7 @@ describe('SavingsVsInvestmentCalculator', () => {
 
     it('applies the regime-specific exemption: capital for forfaitair, return for actual', () => {
       const forfaitair = calculator.calculate(makeInput({ years: 1, startYear: 2026, applyExemption: true }));
-      expect(forfaitair.savings[0].tax).toBeCloseTo(forfaitairTax(100000, BOX3_FORFAIT_SAVINGS_2026, BOX3_TAX_FREE_CAPITAL_2026), 6);
+      expect(forfaitair.savings[0].tax).toBeCloseTo(forfaitairTax(100000, BOX3_FORFAIT_SAVINGS_DEFAULT, BOX3_TAX_FREE_CAPITAL_2026), 6);
 
       const actual = calculator.calculate(makeInput({ years: 1, startYear: 2028, useActualReturnFrom2028: true, applyExemption: true }));
       expect(actual.savings[0].tax).toBeCloseTo(actualTax(2000, BOX3_TAX_FREE_RETURN_2028), 6);

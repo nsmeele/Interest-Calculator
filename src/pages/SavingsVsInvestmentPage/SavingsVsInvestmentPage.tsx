@@ -11,6 +11,10 @@ import { WINNER_TIE } from '../../models/SavingsVsInvestmentResult';
 import { AssetClass } from '../../enums/AssetClass';
 import { parseAmountInput, parseDecimalInput, formatCurrency } from '../../utils/format';
 import { currentYear } from '../../utils/chartRange';
+import {
+  BOX3_FORFAIT_SAVINGS_MIN_PERCENT,
+  BOX3_FORFAIT_SAVINGS_MAX_PERCENT,
+} from '../../constants/box3';
 import type { Currency } from '../../enums/Currency';
 import SavingsVsInvestmentForm, {
   createDefaultFormValues,
@@ -41,6 +45,13 @@ function parseStartYear(value: string): number {
   return Math.min(MAX_START_YEAR, Math.max(MIN_START_YEAR, parsed));
 }
 
+/** Parseert het spaarforfait-veld (procenten), klemt op het slider-bereik en geeft een fractie terug. */
+function parseSavingsForfait(value: string): number {
+  const percent = parseDecimalInput(value);
+  const clamped = Math.min(BOX3_FORFAIT_SAVINGS_MAX_PERCENT, Math.max(BOX3_FORFAIT_SAVINGS_MIN_PERCENT, percent));
+  return clamped / 100;
+}
+
 export default function SavingsVsInvestmentPage() {
   useDocumentMeta({
     titleKey: 'savingsVsInvesting.meta.title',
@@ -69,6 +80,7 @@ export default function SavingsVsInvestmentPage() {
       values.useActualReturnFrom2028,
       values.hasFiscalPartner,
       values.applyExemption,
+      parseSavingsForfait(values.savingsForfait),
       currency,
     );
     return calculator.calculate(input);
