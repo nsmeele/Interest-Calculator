@@ -1,0 +1,65 @@
+@reference "../../style.css";
+
+.net-income {
+  @apply mb-6 sm:mb-8;
+}
+
+.net-income__header {
+  @apply flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.net-income__title {
+  @apply mb-0 flex items-center;
+}
+
+.net-income__regime {
+  @apply inline-flex p-0.5 rounded-xl bg-navy-100 dark:bg-navy-800;
+}
+
+.net-income__regime-option {
+  @apply px-3 py-1.5 rounded-lg text-xs font-semibold text-navy-500 transition-colors duration-200 dark:text-navy-400;
+}
+
+.net-income__regime-option:hover {
+  @apply text-navy-700 dark:text-navy-200;
+}
+
+.net-income__regime-option--active {
+  @apply bg-white text-copper-600 shadow-sm dark:bg-navy-700 dark:text-copper-400;
+}
+
+.net-income__grid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+}
+
+.net-income__item {
+  @apply p-4 rounded-2xl bg-navy-50/60 border border-navy-100 dark:bg-navy-800/40 dark:border-navy-700/60;
+}
+
+.net-income__item-label {
+  @apply block text-2xs font-semibold text-navy-400 uppercase tracking-[0.08em] mb-2 dark:text-navy-500;
+}
+
+.net-income__values {
+  @apply flex items-end justify-between gap-3;
+}
+
+.net-income__value {
+  @apply flex flex-col gap-0.5;
+}
+
+.net-income__value-tag {
+  @apply text-2xs font-medium text-navy-400 uppercase tracking-[0.06em] dark:text-navy-500;
+}
+
+.net-income__value-amount {
+  @apply text-sm font-medium text-navy-700 tabular-nums dark:text-navy-200 sm:text-base;
+}
+
+.net-income__value--net .net-income__value-amount {
+  @apply text-base font-semibold text-copper-600 dark:text-copper-400 sm:text-lg;
+}
+
+.net-income__note {
+  @apply mt-4 text-xs text-navy-400 dark:text-navy-500;
+}

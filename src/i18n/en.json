@@ -270,6 +270,21 @@
     "chartLabel": "Balance over time",
     "monthBreakdownLabel": "Interest accrual this month"
   },
+  "netIncome": {
+    "label": "Net income",
+    "info": "Net income is your interest or return after box 3 tax. The tax is calculated per calendar year according to the selected tax regime.",
+    "regimeLabel": "Tax regime",
+    "regimeForfaitair": "Deemed return (2026)",
+    "regimeActual": "Actual return (2028)",
+    "gross": "Gross",
+    "net": "Net",
+    "interestThisYear": "Interest this year",
+    "interestThisMonth": "Interest this month",
+    "totalInterest": "Total interest",
+    "endAmount": "End amount",
+    "totalTaxNote": "Total box 3 tax over the term: {{amount}}.",
+    "exemptionNote": "The tax-free allowance is not included here: it applies once across your entire wealth, not per account."
+  },
   "chart": {
     "rangeLabel": "Time period",
     "yearSuffix": "Y",

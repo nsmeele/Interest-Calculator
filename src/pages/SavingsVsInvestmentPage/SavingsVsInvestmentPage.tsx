@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useDocumentMeta } from '../../hooks/useDocumentMeta';
 import { useLocale } from '../../context/useLocale';
+import { useTaxSettings } from '../../context/useTaxSettings';
 import { APP_NAME } from '../../constants/app';
 import { SavingsVsInvestmentCalculator } from '../../calculator/SavingsVsInvestmentCalculator';
 import { SavingsVsInvestmentInput } from '../../models/SavingsVsInvestmentInput';
@@ -50,6 +51,7 @@ export default function SavingsVsInvestmentPage() {
   const { t } = useTranslation();
   const { lang } = useParams();
   const { currency } = useLocale();
+  const { useActualReturnFrom2028, hasFiscalPartner, applyExemption } = useTaxSettings();
   const [values, setValues] = useState<SavingsVsInvestmentFormValues>(() =>
     createDefaultFormValues(currency as Currency),
   );
@@ -66,13 +68,13 @@ export default function SavingsVsInvestmentPage() {
       parseDecimalInput(values.savingsRate),
       parseDecimalInput(values.investmentReturn),
       parseStartYear(values.startYear),
-      values.useActualReturnFrom2028,
-      values.hasFiscalPartner,
-      values.applyExemption,
+      useActualReturnFrom2028,
+      hasFiscalPartner,
+      applyExemption,
       currency,
     );
     return calculator.calculate(input);
-  }, [values, currency]);
+  }, [values, currency, useActualReturnFrom2028, hasFiscalPartner, applyExemption]);
 
   const years = parseYears(values.years);
   const winnerMessageKey =

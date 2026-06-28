@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { CURRENCY_SYMBOLS, Currency } from '../../enums/Currency';
 import { useLocale } from '../../context/useLocale';
+import { useTaxSettings } from '../../context/useTaxSettings';
 import { formatAmountInput, parseAmountInput, formatCurrency } from '../../utils/format';
 import { BOX3_TAX_FREE_CAPITAL_2026, BOX3_TAX_FREE_RETURN_2028 } from '../../constants/box3';
 import type { SavingsVsInvestmentFormValues } from './formValues';
@@ -14,6 +15,11 @@ interface SavingsVsInvestmentFormProps {
 export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsInvestmentFormProps) {
   const { t } = useTranslation();
   const { currency: globalCurrency } = useLocale();
+  const {
+    useActualReturnFrom2028, setUseActualReturnFrom2028,
+    hasFiscalPartner, setHasFiscalPartner,
+    applyExemption, setApplyExemption,
+  } = useTaxSettings();
   const activeCurrency = globalCurrency as Currency;
   const symbol = CURRENCY_SYMBOLS[activeCurrency];
 
@@ -121,8 +127,8 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
           <input
             type="checkbox"
             id="svi-useActualReturn"
-            checked={values.useActualReturnFrom2028}
-            onChange={(e) => onChange({ useActualReturnFrom2028: e.target.checked })}
+            checked={useActualReturnFrom2028}
+            onChange={(e) => setUseActualReturnFrom2028(e.target.checked)}
             aria-describedby="svi-useActualReturn-hint"
           />
           <label htmlFor="svi-useActualReturn">{t('savingsVsInvesting.form.useActualReturnFrom2028')}</label>
@@ -135,11 +141,8 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
           <input
             type="checkbox"
             id="svi-applyExemption"
-            checked={values.applyExemption}
-            onChange={(e) => onChange({
-              applyExemption: e.target.checked,
-              ...(e.target.checked ? {} : { hasFiscalPartner: false }),
-            })}
+            checked={applyExemption}
+            onChange={(e) => setApplyExemption(e.target.checked)}
             aria-describedby="svi-applyExemption-hint"
           />
           <label htmlFor="svi-applyExemption">{t('savingsVsInvesting.form.applyExemption')}</label>
@@ -152,9 +155,9 @@ export default function SavingsVsInvestmentForm({ values, onChange }: SavingsVsI
           <input
             type="checkbox"
             id="svi-fiscalPartner"
-            checked={values.hasFiscalPartner}
-            disabled={!values.applyExemption}
-            onChange={(e) => onChange({ hasFiscalPartner: e.target.checked })}
+            checked={hasFiscalPartner}
+            disabled={!applyExemption}
+            onChange={(e) => setHasFiscalPartner(e.target.checked)}
             aria-describedby="svi-fiscalPartner-hint"
           />
           <label htmlFor="svi-fiscalPartner">{t('savingsVsInvesting.form.fiscalPartner')}</label>

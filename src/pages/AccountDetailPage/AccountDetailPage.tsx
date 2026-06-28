@@ -20,8 +20,9 @@ import { getMonthDays } from '../../utils/monthDays';
 import CashFlowEditor, { type AutoCashFlow } from '../../components/CashFlowEditor';
 import InfoPopover from '../../components/InfoPopover';
 import MonthNav from '../../components/MonthNav';
-import { expandCashFlows, getRecurringAutoEntries } from '../../models/CashFlow';
-import { calculateDailyInterest } from '../../utils/dailyInterest';
+import { getRecurringAutoEntries } from '../../models/CashFlow';
+import { projectedBalanceAt } from '../../utils/projectedBalance';
+import NetIncomeSummary from '../../components/NetIncomeSummary';
 import RateChangeEditor from '../../components/RateChangeEditor';
 import AccountBalanceChart from '../../components/AccountBalanceChart';
 import { getMaxRangeForAccount, getRangeEndYear } from '../../utils/chartRange';
@@ -240,32 +241,7 @@ export default function AccountDetailPage() {
 
   const autoEntries = [...compoundPayouts, ...recurringAutoEntries];
 
-  const getProjectedBalance = (targetDate: string): number => {
-    if (!account.startDate || account.periods.length === 0) return account.startAmount;
-
-    const allCashFlows = expandCashFlows(account.cashFlows, endISO);
-
-    for (let i = 0; i < account.periods.length; i++) {
-      const periodStart = i === 0 ? account.startDate : account.periods[i - 1].endDate!;
-      const periodEnd = account.periods[i].endDate;
-
-      if (!periodEnd) continue;
-      if (targetDate < periodStart) {
-        return i === 0 ? account.startAmount : account.periods[i - 1].endBalance;
-      }
-
-      if (targetDate >= periodStart && targetDate < periodEnd) {
-        const periodCashFlows = allCashFlows.filter((cf) => cf.date >= periodStart && cf.date < targetDate);
-        const { endBalance } = calculateDailyInterest(
-          periodStart, targetDate, account.periods[i].startBalance,
-          periodCashFlows, account.annualInterestRate, account.dayCount, account.rateChanges,
-        );
-        return endBalance;
-      }
-    }
-
-    return account.periods[account.periods.length - 1].endBalance;
-  };
+  const getProjectedBalance = (targetDate: string): number => projectedBalanceAt(account, targetDate);
 
   const entryBalances = new Map<string, number>();
   if (account.startDate) {
@@ -380,6 +356,8 @@ export default function AccountDetailPage() {
               </dl>
             </section>
           )}
+
+          <NetIncomeSummary account={account} currency={cur} />
 
           {(account.hasCashFlows || account.isVariableRate) && (
             <section className="card detail-editors">
