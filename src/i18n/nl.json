@@ -271,19 +271,10 @@
     "monthBreakdownLabel": "Rente-opbouw deze maand"
   },
   "netIncome": {
-    "label": "Netto inkomsten",
-    "info": "Netto inkomsten zijn je rente of rendement na aftrek van de box 3-heffing. De heffing wordt per kalenderjaar berekend volgens het gekozen belastingstelsel.",
     "regimeLabel": "Belastingstelsel",
     "regimeForfaitair": "Forfaitair (2026)",
     "regimeActual": "Werkelijk rendement (2028)",
-    "gross": "Bruto",
-    "net": "Netto",
-    "interestThisYear": "Rente dit jaar",
-    "interestThisMonth": "Rente deze maand",
-    "totalInterest": "Totale rente",
-    "endAmount": "Eindbedrag",
-    "totalTaxNote": "Totale box 3-heffing over de looptijd: {{amount}}.",
-    "exemptionNote": "Het heffingvrij vermogen is hier niet meegerekend: dat geldt fiscaal één keer over je hele vermogen, niet per rekening."
+    "netTooltip": "Netto na box 3-heffing. Bruto: {{gross}}. Het heffingvrij vermogen is niet meegerekend (geldt fiscaal één keer over je hele vermogen)."
   },
   "chart": {
     "rangeLabel": "Tijdsperiode",

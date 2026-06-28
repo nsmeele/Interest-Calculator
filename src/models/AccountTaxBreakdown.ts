@@ -56,6 +56,16 @@ export class AccountTaxBreakdown {
     return this.grossEndAmount - this.totalTax;
   }
 
+  // Share of gross interest left after tax, used to net interest figures that
+  // are not tracked per year (accrued, disbursed).
+  get netRatio(): number {
+    return this.grossTotalInterest > 0 ? this.netTotalInterest / this.grossTotalInterest : 1;
+  }
+
+  netInterest(grossAmount: number): number {
+    return grossAmount * this.netRatio;
+  }
+
   private get currentYearRow(): AccountTaxYear | undefined {
     return this.years.find((y) => y.calendarYear === this.currentYear);
   }

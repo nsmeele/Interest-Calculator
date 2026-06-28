@@ -44,4 +44,20 @@ describe('AccountTaxBreakdown', () => {
     const b = new AccountTaxBreakdown([year(2026, 1000, 360), year(2027, 1200, 400)], 0, 105000, 2026);
     expect(b.netEndAmount).toBe(105000 - 760);
   });
+
+  it('derives the after-tax ratio from the totals', () => {
+    const b = new AccountTaxBreakdown([year(2026, 1000, 360), year(2027, 1200, 400)], 0, 0, 2026);
+    expect(b.netRatio).toBeCloseTo(1440 / 2200, 6);
+  });
+
+  it('applies the after-tax ratio to an arbitrary interest amount', () => {
+    const b = new AccountTaxBreakdown([year(2026, 1000, 360), year(2027, 1200, 400)], 0, 0, 2026);
+    expect(b.netInterest(1100)).toBeCloseTo(1100 * (1440 / 2200), 6);
+  });
+
+  it('leaves amounts untouched when there is no gross interest', () => {
+    const b = new AccountTaxBreakdown([], 0, 0, 2026);
+    expect(b.netRatio).toBe(1);
+    expect(b.netInterest(250)).toBe(250);
+  });
 });

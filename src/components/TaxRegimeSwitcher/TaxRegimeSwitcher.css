@@ -1,0 +1,13 @@
+@reference "../../style.css";
+
+.tax-regime-switcher {
+  @apply flex items-center;
+}
+
+.tax-regime-switcher__select {
+  @apply rounded-lg appearance-none;
+}
+
+.tax-regime-switcher__select:focus-visible {
+  @apply outline-none ring-2 ring-copper-500 ring-offset-1;
+}

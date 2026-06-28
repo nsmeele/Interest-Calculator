@@ -15,6 +15,7 @@ import {LocaleProvider} from './context/LocaleContext';
 import {AccountStoreProvider} from './context/AccountStoreProvider';
 import {useAccountStore} from './context/useAccountStore';
 import CurrencySelector from './components/CurrencySelector';
+import TaxRegimeSwitcher from './components/TaxRegimeSwitcher';
 import {useLastTabClear} from './hooks/useLastTabClear';
 import ClearDataButton from './components/ClearDataButton';
 import {
@@ -213,6 +214,7 @@ function AppContent() {
                         )}
                         <CurrencySelector/>
                         <LanguageSwitcher/>
+                        <TaxRegimeSwitcher/>
                         <ThemeToggle/>
                         <a
                             href={GITHUB_URL}
