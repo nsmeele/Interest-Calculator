@@ -270,6 +270,12 @@
     "chartLabel": "Saldoverloop",
     "monthBreakdownLabel": "Rente-opbouw deze maand"
   },
+  "netIncome": {
+    "regimeLabel": "Belastingstelsel",
+    "regimeForfaitair": "Forfaitair (2026)",
+    "regimeActual": "Werkelijk rendement (2028)",
+    "netTooltip": "Netto na box 3-heffing. Bruto: {{gross}}. Het heffingvrij vermogen is niet meegerekend (geldt fiscaal één keer over je hele vermogen)."
+  },
   "chart": {
     "rangeLabel": "Tijdsperiode",
     "yearSuffix": "J",

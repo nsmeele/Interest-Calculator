@@ -15,6 +15,7 @@ import {LocaleProvider} from './context/LocaleContext';
 import {AccountStoreProvider} from './context/AccountStoreProvider';
 import {useAccountStore} from './context/useAccountStore';
 import CurrencySelector from './components/CurrencySelector';
+import TaxRegimeSwitcher from './components/TaxRegimeSwitcher';
 import {useLastTabClear} from './hooks/useLastTabClear';
 import ClearDataButton from './components/ClearDataButton';
 import {
@@ -29,6 +30,7 @@ import {
 import type {BankAccount} from './models/BankAccount';
 import {demoData, demoTransfers} from './transfer/demoData';
 import {ModalProvider} from './context/ModalContext';
+import {TaxSettingsProvider} from './context/TaxSettingsProvider';
 import {ReinvestmentProvider} from './context/ReinvestmentProvider';
 import {TransferProvider} from './context/TransferProvider';
 import {useTransfer} from './context/useTransfer';
@@ -42,20 +44,22 @@ export default function App() {
     return (
         <LocaleProvider>
             <ThemeContext.Provider value={themeCtx}>
-                <AccountStoreProvider>
-                    <ModalProvider>
-                        <ReinvestmentProvider>
-                            <TransferProvider>
-                                <Routes>
-                                    <Route path="account/:id" element={<AccountDetailPage/>}/>
-                                    <Route path="reinvest" element={<ReinvestmentPage/>}/>
-                                    <Route path="sparen-vs-beleggen" element={<SavingsVsInvestmentPage/>}/>
-                                    <Route path="*" element={<AppContent/>}/>
-                                </Routes>
-                            </TransferProvider>
-                        </ReinvestmentProvider>
-                    </ModalProvider>
-                </AccountStoreProvider>
+                <TaxSettingsProvider>
+                    <AccountStoreProvider>
+                        <ModalProvider>
+                            <ReinvestmentProvider>
+                                <TransferProvider>
+                                    <Routes>
+                                        <Route path="account/:id" element={<AccountDetailPage/>}/>
+                                        <Route path="reinvest" element={<ReinvestmentPage/>}/>
+                                        <Route path="sparen-vs-beleggen" element={<SavingsVsInvestmentPage/>}/>
+                                        <Route path="*" element={<AppContent/>}/>
+                                    </Routes>
+                                </TransferProvider>
+                            </ReinvestmentProvider>
+                        </ModalProvider>
+                    </AccountStoreProvider>
+                </TaxSettingsProvider>
             </ThemeContext.Provider>
         </LocaleProvider>
     );
@@ -210,6 +214,7 @@ function AppContent() {
                         )}
                         <CurrencySelector/>
                         <LanguageSwitcher/>
+                        <TaxRegimeSwitcher/>
                         <ThemeToggle/>
                         <a
                             href={GITHUB_URL}

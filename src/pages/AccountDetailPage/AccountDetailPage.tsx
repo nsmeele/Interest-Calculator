@@ -20,11 +20,13 @@ import { getMonthDays } from '../../utils/monthDays';
 import CashFlowEditor, { type AutoCashFlow } from '../../components/CashFlowEditor';
 import InfoPopover from '../../components/InfoPopover';
 import MonthNav from '../../components/MonthNav';
-import { expandCashFlows, getRecurringAutoEntries } from '../../models/CashFlow';
-import { calculateDailyInterest } from '../../utils/dailyInterest';
+import { getRecurringAutoEntries } from '../../models/CashFlow';
+import { projectedBalanceAt } from '../../utils/projectedBalance';
+import { AccountTaxCalculator } from '../../calculator/AccountTaxCalculator';
+import { useTaxSettings } from '../../context/useTaxSettings';
 import RateChangeEditor from '../../components/RateChangeEditor';
 import AccountBalanceChart from '../../components/AccountBalanceChart';
-import { getMaxRangeForAccount, getRangeEndYear } from '../../utils/chartRange';
+import { getMaxRangeForAccount, getRangeEndYear, currentYear } from '../../utils/chartRange';
 import { ChartYearRange } from '../../enums/ChartYearRange';
 import { extendOngoingAccount } from '../../utils/extendOngoingAccount';
 import { useTransfer } from '../../context/useTransfer';
@@ -32,6 +34,8 @@ import { useReinvestment } from '../../context/useReinvestment';
 import TransferModal from '../../components/TransferModal';
 import { APP_NAME } from '../../constants/app';
 import './AccountDetailPage.css';
+
+const taxCalculator = new AccountTaxCalculator();
 
 export default function AccountDetailPage() {
   useDocumentMeta();
@@ -47,7 +51,13 @@ export default function AccountDetailPage() {
   const { openModal } = useModal();
   const { transfers, getTransfersForAccount, deleteTransfer } = useTransfer();
   const { removeAllocationsForAccount } = useReinvestment();
+  const { useActualReturnFrom2028, hasFiscalPartner, applyExemption } = useTaxSettings();
   const account = results.find((r) => r.id === id);
+
+  const tax = useMemo(
+    () => account ? taxCalculator.calculate(account, { useActualReturnFrom2028, hasFiscalPartner, applyExemption }, currentYear()) : null,
+    [account, useActualReturnFrom2028, hasFiscalPartner, applyExemption],
+  );
 
   const currentMonthKey = toMonthKey(todayISO());
   const [editorMonthOffset, setEditorMonthOffset] = useState(0);
@@ -186,6 +196,8 @@ export default function AccountDetailPage() {
   const cur = (account.currency as Currency | undefined) ?? globalCurrency;
   const balance = account.effectiveBalance;
   const inPortfolio = portfolioIds.has(account.id);
+  const breakdown = tax!;
+  const netTooltip = (gross: number) => t('netIncome.netTooltip', { gross: formatCurrency(gross, cur) });
 
   const properties: { label: string; value: string; highlight?: boolean; badge?: string; info?: string; infoOnLabel?: boolean }[] = [];
   if (account.accountType) {
@@ -210,10 +222,10 @@ export default function AccountDetailPage() {
   }
   properties.push({ label: t('accounts.deposit'), value: formatCurrency(account.startAmount, cur) });
   if (!account.isOngoing) {
-    properties.push({ label: t('accounts.totalInterest'), value: formatCurrency(account.totalInterest, cur), highlight: true });
-    properties.push({ label: t('accounts.endAmount'), value: formatCurrency(account.endAmount, cur) });
+    properties.push({ label: t('accounts.totalInterest'), value: formatCurrency(breakdown.netTotalInterest, cur), highlight: true, info: netTooltip(account.totalInterest) });
+    properties.push({ label: t('accounts.endAmount'), value: formatCurrency(breakdown.netEndAmount, cur), info: netTooltip(account.endAmount) });
   }
-  properties.push({ label: t('accounts.interestThisMonth'), value: formatCurrency(account.interestThisMonth, cur), info: t('accounts.interestThisMonthInfo'), infoOnLabel: true });
+  properties.push({ label: t('accounts.interestThisMonth'), value: formatCurrency(breakdown.netInterestThisMonth, cur), info: `${t('accounts.interestThisMonthInfo')} ${netTooltip(account.interestThisMonth)}` });
   if (account.noticePeriodValue) {
     properties.push({ label: t('transferSettings.noticePeriod'), value: `${account.noticePeriodValue} ${account.noticePeriodUnit ? getNoticePeriodUnitLabel(account.noticePeriodUnit).toLowerCase() : t('transferSettings.daysSuffix')}` });
   }
@@ -240,32 +252,7 @@ export default function AccountDetailPage() {
 
   const autoEntries = [...compoundPayouts, ...recurringAutoEntries];
 
-  const getProjectedBalance = (targetDate: string): number => {
-    if (!account.startDate || account.periods.length === 0) return account.startAmount;
-
-    const allCashFlows = expandCashFlows(account.cashFlows, endISO);
-
-    for (let i = 0; i < account.periods.length; i++) {
-      const periodStart = i === 0 ? account.startDate : account.periods[i - 1].endDate!;
-      const periodEnd = account.periods[i].endDate;
-
-      if (!periodEnd) continue;
-      if (targetDate < periodStart) {
-        return i === 0 ? account.startAmount : account.periods[i - 1].endBalance;
-      }
-
-      if (targetDate >= periodStart && targetDate < periodEnd) {
-        const periodCashFlows = allCashFlows.filter((cf) => cf.date >= periodStart && cf.date < targetDate);
-        const { endBalance } = calculateDailyInterest(
-          periodStart, targetDate, account.periods[i].startBalance,
-          periodCashFlows, account.annualInterestRate, account.dayCount, account.rateChanges,
-        );
-        return endBalance;
-      }
-    }
-
-    return account.periods[account.periods.length - 1].endBalance;
-  };
+  const getProjectedBalance = (targetDate: string): number => projectedBalanceAt(account, targetDate);
 
   const entryBalances = new Map<string, number>();
   if (account.startDate) {
@@ -363,18 +350,18 @@ export default function AccountDetailPage() {
                   <div className="detail-status__item">
                     <dt>
                       {t('accounts.disbursed')}
-                      <InfoPopover label={t('accounts.infoAbout', { label: t('accounts.disbursed') })}>{t('accounts.disbursedInfo')}</InfoPopover>
+                      <InfoPopover label={t('accounts.infoAbout', { label: t('accounts.disbursed') })}>{`${t('accounts.disbursedInfo')} ${netTooltip(account.disbursedToDate)}`}</InfoPopover>
                     </dt>
-                    <dd>{formatCurrency(account.disbursedToDate, cur)}</dd>
+                    <dd>{formatCurrency(breakdown.netInterest(account.disbursedToDate), cur)}</dd>
                   </div>
                 )}
                 {account.accruedInterest > 0 && (
                   <div className="detail-status__item">
                     <dt>
                       {t('accounts.accrued')}
-                      <InfoPopover label={t('accounts.infoAbout', { label: t('accounts.accrued') })}>{t('accounts.accruedInfo')}</InfoPopover>
+                      <InfoPopover label={t('accounts.infoAbout', { label: t('accounts.accrued') })}>{`${t('accounts.accruedInfo')} ${netTooltip(account.accruedInterest)}`}</InfoPopover>
                     </dt>
-                    <dd>{formatCurrency(account.accruedInterest, cur)}</dd>
+                    <dd>{formatCurrency(breakdown.netInterest(account.accruedInterest), cur)}</dd>
                   </div>
                 )}
               </dl>

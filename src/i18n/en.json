@@ -270,6 +270,12 @@
     "chartLabel": "Balance over time",
     "monthBreakdownLabel": "Interest accrual this month"
   },
+  "netIncome": {
+    "regimeLabel": "Tax regime",
+    "regimeForfaitair": "Deemed return (2026)",
+    "regimeActual": "Actual return (2028)",
+    "netTooltip": "Net after box 3 tax. Gross: {{gross}}. The tax-free allowance is not included (it applies once across your entire wealth)."
+  },
   "chart": {
     "rangeLabel": "Time period",
     "yearSuffix": "Y",

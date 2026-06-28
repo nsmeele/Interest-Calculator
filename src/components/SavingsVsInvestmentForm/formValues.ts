@@ -2,16 +2,16 @@ import type { Currency } from '../../enums/Currency';
 import { formatAmountInput } from '../../utils/format';
 import { currentYear } from '../../utils/chartRange';
 
-/** Ruwe (string) invoerwaarden; de pagina parseert deze naar een rekenmodel. */
+/**
+ * Ruwe (string) invoerwaarden; de pagina parseert deze naar een rekenmodel.
+ * De belastinginstellingen leven in TaxSettingsProvider (SSOT), niet hier.
+ */
 export interface SavingsVsInvestmentFormValues {
   initialAmount: string;
   startYear: string;
   years: string;
   savingsRate: string;
   investmentReturn: string;
-  useActualReturnFrom2028: boolean;
-  hasFiscalPartner: boolean;
-  applyExemption: boolean;
 }
 
 const DEFAULT_INITIAL_AMOUNT = 100000;
@@ -31,8 +31,5 @@ export function createDefaultFormValues(currency: Currency): SavingsVsInvestment
     years: DEFAULT_YEARS,
     savingsRate: DEFAULT_SAVINGS_RATE,
     investmentReturn: DEFAULT_INVESTMENT_RETURN,
-    useActualReturnFrom2028: false,
-    hasFiscalPartner: false,
-    applyExemption: false,
   };
 }
