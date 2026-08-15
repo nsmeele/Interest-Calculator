@@ -105,7 +105,7 @@
     "dayCountHint": "Voor een nauwkeurige berekening: kies de conventie die je bank hanteert. Dit staat in het productinformatieblad (PIB) onder 'Renteberekening'.",
     "update": "Bijwerken",
     "advanced": "Geavanceerd",
-    "calculate": "Bereken",
+    "addAccount": "Voeg account toe",
     "cancel": "Annuleren",
     "errorInvalidAmount": "Vul een geldig bedrag in",
     "errorAmountPositive": "Bedrag moet hoger zijn dan 0",

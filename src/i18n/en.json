@@ -105,7 +105,7 @@
     "dayCountHint": "For accurate calculations: choose the convention your bank uses. This can be found in the product information sheet under 'Interest calculation'.",
     "update": "Update",
     "advanced": "Advanced",
-    "calculate": "Calculate",
+    "addAccount": "Add account",
     "cancel": "Cancel",
     "errorInvalidAmount": "Enter a valid amount",
     "errorAmountPositive": "Amount must be greater than 0",

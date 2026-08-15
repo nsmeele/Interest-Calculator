@@ -590,7 +590,7 @@ export default function AccountForm({ onResult, editingResult, onCancelEdit, ini
             )}
 
             <button type="submit" className="btn-primary">
-              {editingResult ? t('form.update') : t('form.calculate')}
+              {editingResult ? t('form.update') : t('form.addAccount')}
             </button>
             {onCancelEdit && (
               <button type="button" className="btn-secondary" onClick={onCancelEdit}>

@@ -5,12 +5,13 @@ import { useResultStorage } from '../hooks/useResultStorage';
 import { usePortfolio } from '../hooks/usePortfolio';
 import { AccountCalculator } from '../calculator/AccountCalculator';
 import { BankAccountInput } from '../models/BankAccountInput';
+import type { BankAccount } from '../models/BankAccount';
 import type { CashFlow } from '../models/CashFlow';
 import type { RateChange } from '../models/RateChange';
 
 export function AccountStoreProvider({ children }: { children: ReactNode }) {
   const {
-    results, addResult, updateResult, removeResult,
+    results, addResult: addResultRaw, updateResult, removeResult,
     clearResults, replaceResults, mergeResults,
   } = useResultStorage();
 
@@ -18,6 +19,13 @@ export function AccountStoreProvider({ children }: { children: ReactNode }) {
     portfolioIds, togglePortfolio, clearPortfolio,
     replacePortfolio, mergePortfolio,
   } = usePortfolio();
+
+  // New accounts are added to the portfolio automatically so they show up
+  // in the distribution chart without an extra step.
+  const addResult = useCallback((result: BankAccount) => {
+    addResultRaw(result);
+    mergePortfolio([result.id]);
+  }, [addResultRaw, mergePortfolio]);
 
   const handleUpdateCashFlows = useCallback((id: string, cashFlows: CashFlow[]) => {
     const existing = results.find((r) => r.id === id);
