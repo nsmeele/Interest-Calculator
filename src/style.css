@@ -536,6 +536,10 @@ body {
   @apply inline-flex items-center justify-center min-w-6 h-6 px-2 text-xs font-bold rounded-full ml-2 text-copper-600 bg-copper-100 dark:text-copper-400 dark:bg-copper-500/15;
 }
 
+.results-total {
+  @apply mt-1 text-sm font-medium text-navy-400 dark:text-navy-500;
+}
+
 /* ─── Scrollbar ─── */
 .scrollbar-thin::-webkit-scrollbar {
   @apply h-1.5;

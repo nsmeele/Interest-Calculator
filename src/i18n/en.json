@@ -80,7 +80,9 @@
     "interestThisMonth": "Interest this month",
     "interestThisMonthInfo": "The calculated interest for the current calendar month, based on your balance, interest rate and day count convention.",
     "infoAbout": "Info about {{label}}",
-    "sortBy": "Sort by {{column}}"
+    "sortBy": "Sort by {{column}}",
+    "totalBalance": "Total balance: {{amount}}",
+    "totalBalanceMixed": "Total balance unavailable with mixed currencies"
   },
   "form": {
     "deposit": "Deposit",

@@ -153,6 +153,10 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
 
   const sorted = sortAccounts(results, sortState);
 
+  const currencies = new Set(results.map((r) => (r.currency as Currency | undefined) ?? globalCurrency));
+  const hasMixedCurrencies = currencies.size > 1;
+  const totalBalance = results.reduce((sum, r) => sum + r.effectiveBalance, 0);
+
   return (
     <section className="card results-section" aria-label={t('accounts.sectionLabel')}>
       <div className="section-header">
@@ -161,6 +165,11 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
             {t('accounts.sectionLabel')}
             <span className="results-count">{results.length}</span>
           </h2>
+          <p className="results-total">
+            {hasMixedCurrencies
+              ? t('accounts.totalBalanceMixed')
+              : t('accounts.totalBalance', { amount: formatCurrency(totalBalance, [...currencies][0]) })}
+          </p>
         </div>
         <div className="section-header__actions">
           <button className="btn-action" onClick={onNewAccount}>

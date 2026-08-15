@@ -80,7 +80,9 @@
     "interestThisMonth": "Rente deze maand",
     "interestThisMonthInfo": "De berekende rente voor de huidige kalendermaand, op basis van je saldo, rentepercentage en dagtellingconventie.",
     "infoAbout": "Info over {{label}}",
-    "sortBy": "Sorteer op {{column}}"
+    "sortBy": "Sorteer op {{column}}",
+    "totalBalance": "Totaal saldo: {{amount}}",
+    "totalBalanceMixed": "Totaal saldo niet beschikbaar bij gemengde valuta's"
   },
   "form": {
     "deposit": "Inleg",
