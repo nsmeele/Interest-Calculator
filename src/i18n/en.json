@@ -57,7 +57,7 @@
     "balanceInfo": "Your current balance: the initial deposit plus all deposits minus all withdrawals. With compound interest, paid-out interest is included.",
     "interest": "Interest",
     "endDate": "End date",
-    "payout": "Payout",
+    "status": "Status",
     "ongoing": "Ongoing",
     "completed": "Completed",
     "edit": "Edit",

@@ -57,7 +57,7 @@
     "balanceInfo": "Je huidige saldo: het startbedrag plus alle stortingen en min alle opnames. Bij rente op rente wordt uitbetaalde rente meegenomen.",
     "interest": "Rente",
     "endDate": "Einddatum",
-    "payout": "Uitkering",
+    "status": "Status",
     "ongoing": "Lopend",
     "completed": "Voltooid",
     "edit": "Bewerken",

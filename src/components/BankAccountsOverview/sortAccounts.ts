@@ -12,7 +12,7 @@ export function sortAccounts(results: BankAccount[], sortState: SortState): Bank
       if (!a.endDate && !b.endDate) return 0;
       if (!a.endDate) return -1;
       if (!b.endDate) return 1;
-      return a.endDate.localeCompare(b.endDate);
+      return b.endDate.localeCompare(a.endDate);
     });
   }
 

@@ -6,10 +6,8 @@ import { InformationCircleIcon, PlusIcon, ChevronDownIcon, ChevronUpDownIcon, Pe
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 import type { BankAccount } from '../../models/BankAccount';
-import { getInterestTypeLabel } from '../../enums/InterestType';
-import { getIntervalLabel } from '../../enums/PayoutInterval';
 import type { Currency } from '../../enums/Currency';
-import { formatCurrency, formatDurationShort, formatDate, formatRate } from '../../utils/format';
+import { formatCurrency, formatRate } from '../../utils/format';
 import { useLocale } from '../../context/useLocale';
 import { useModal } from '../../context/useModal';
 import { sortAccounts, type SortColumn, type SortState } from './sortAccounts';
@@ -176,7 +174,7 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
           <thead>
             <tr>
               <th
-                className="comparison-table__th--sortable"
+                className="comparison-table__th--sortable comparison-table__col--balance"
                 onClick={() => toggleSort('balance')}
                 aria-sort={sortState?.column === 'balance' ? (sortState.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
                 aria-label={t('accounts.sortBy', { column: t('accounts.balance') })}
@@ -187,15 +185,14 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                 <SortIndicator column="balance" sortState={sortState} />
               </th>
               <th
-                className="comparison-table__th--sortable"
+                className="comparison-table__th--sortable comparison-table__col--status"
                 onClick={() => toggleSort('endDate')}
                 aria-sort={sortState?.column === 'endDate' ? (sortState.direction === 'asc' ? 'ascending' : 'descending') : 'none'}
-                aria-label={t('accounts.sortBy', { column: t('accounts.endDate') })}
+                aria-label={t('accounts.sortBy', { column: t('accounts.status') })}
               >
-                {t('accounts.endDate')}
+                {t('accounts.status')}
                 <SortIndicator column="endDate" sortState={sortState} />
               </th>
-              <th>{t('accounts.payout')}</th>
               <th></th>
             </tr>
           </thead>
@@ -215,20 +212,11 @@ export default function BankAccountsOverview({ results, onRemove, portfolioIds, 
                     {formatCurrency(r.effectiveBalance, cur)}
                     <span className="comparison-rate">@ {formatRate(r.currentRate, cur)}%</span>
                   </td>
-                  <td>
-                    {r.isOngoing
-                      ? <span className="badge comparison-badge comparison-badge--ongoing">{t('accounts.ongoing')}</span>
-                      : <>
-                          {r.endDate && formatDate(r.endDate)}{' '}
-                          <span className="badge comparison-badge">{formatDurationShort(r.durationMonths)}</span>
-                          {r.hasExpired && (
-                            <span className="badge comparison-badge comparison-badge--complete">{t('accounts.completed')}</span>
-                          )}
-                        </>
+                  <td className="comparison-table__col--status">
+                    {r.hasExpired
+                      ? <span className="badge comparison-badge comparison-badge--complete">{t('accounts.completed')}</span>
+                      : <span className="badge comparison-badge comparison-badge--ongoing">{t('accounts.ongoing')}</span>
                     }
-                  </td>
-                  <td>
-                    {getIntervalLabel(r.interval)} <span className="badge comparison-badge">{getInterestTypeLabel(r.interestType)}</span>
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
                     <div className="comparison-actions">
